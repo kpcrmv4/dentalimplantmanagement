@@ -96,15 +96,23 @@ export function Calendar({
         </div>
       </div>
 
-      {/* Legend */}
-      <div className="flex items-center gap-4 mb-4 text-sm">
+      {/* Legend - 4 สีตามบรีฟ */}
+      <div className="flex flex-wrap items-center gap-4 mb-4 text-sm">
         <div className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
-          <span className="text-gray-600">วัสดุพร้อม</span>
+          <span className="text-gray-600">พร้อมผ่าตัด</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
+          <span className="text-gray-600">รอวัสดุ</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
-          <span className="text-gray-600">วัสดุไม่พร้อม</span>
+          <span className="text-gray-600">วัสดุไม่พอ</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-gray-400" />
+          <span className="text-gray-600">ยังไม่จองวัสดุ</span>
         </div>
       </div>
 
@@ -152,7 +160,7 @@ export function Calendar({
               {/* Case indicators */}
               {dayCases.length > 0 && (
                 <div className="absolute bottom-1 left-1 right-1 flex flex-wrap gap-0.5 justify-center">
-                  {dayCases.slice(0, 4).map((c, i) => (
+                  {dayCases.slice(0, 4).map((c) => (
                     <span
                       key={c.id}
                       className={cn(

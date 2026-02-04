@@ -124,7 +124,7 @@ WHERE p.is_active = true;
 
 -- Add some items with low stock for testing alerts
 UPDATE public.inventory 
-SET quantity = 3 
+SET quantity = 3, available_quantity = 3
 WHERE product_id IN (
     SELECT id FROM public.products WHERE sku IN ('IMP-001', 'BIO-001')
 );
@@ -137,10 +137,51 @@ WHERE product_id IN (
 );
 
 -- =====================================================
--- NOTE: Users and Cases should be created through the app
--- after setting up Supabase Auth
+-- SAMPLE PATIENTS
 -- =====================================================
 
--- Example of how to create a test user (run after creating auth user):
--- INSERT INTO public.users (id, email, full_name, role)
--- VALUES ('your-auth-user-uuid', 'admin@clinic.com', 'ผู้ดูแลระบบ', 'admin');
+INSERT INTO public.patients (hn_number, first_name, last_name, date_of_birth, gender, phone, email, address, medical_history, allergies) VALUES
+('HN-2568-0001', 'สมชาย', 'ใจดี', '1985-03-15', 'male', '081-234-5678', 'somchai@email.com', '123 ถนนสุขุมวิท กรุงเทพฯ', 'ความดันโลหิตสูง, เบาหวาน Type 2', 'ไม่มี'),
+('HN-2568-0002', 'สมหญิง', 'รักสวย', '1990-07-22', 'female', '082-345-6789', 'somying@email.com', '456 ถนนพหลโยธิน กรุงเทพฯ', 'ไม่มีโรคประจำตัว', 'Penicillin'),
+('HN-2568-0003', 'วิชัย', 'มั่นคง', '1978-11-08', 'male', '083-456-7890', 'wichai@email.com', '789 ถนนรัชดาภิเษก กรุงเทพฯ', 'โรคหัวใจ, รับประทานยาละลายลิ่มเลือด', 'Aspirin'),
+('HN-2568-0004', 'นภา', 'สดใส', '1995-01-30', 'female', '084-567-8901', 'napa@email.com', '321 ถนนลาดพร้าว กรุงเทพฯ', 'ไม่มีโรคประจำตัว', 'ไม่มี'),
+('HN-2568-0005', 'ประเสริฐ', 'ยิ่งใหญ่', '1970-05-18', 'male', '085-678-9012', 'prasert@email.com', '654 ถนนรามคำแหง กรุงเทพฯ', 'เบาหวาน Type 2, ไขมันในเลือดสูง', 'Sulfa drugs'),
+('HN-2568-0006', 'มาลี', 'งามตา', '1988-09-12', 'female', '086-789-0123', 'malee@email.com', '987 ถนนบางนา กรุงเทพฯ', 'ไม่มีโรคประจำตัว', 'ไม่มี'),
+('HN-2568-0007', 'สุรชัย', 'เก่งกล้า', '1982-12-25', 'male', '087-890-1234', 'surachai@email.com', '147 ถนนพระราม 9 กรุงเทพฯ', 'ความดันโลหิตสูง', 'Iodine'),
+('HN-2568-0008', 'พิมพ์ใจ', 'สุขสันต์', '1992-04-05', 'female', '088-901-2345', 'pimjai@email.com', '258 ถนนสีลม กรุงเทพฯ', 'ไม่มีโรคประจำตัว', 'ไม่มี');
+
+-- =====================================================
+-- NOTE: Users need to be created through Supabase Auth first
+-- Then run this to add user profiles:
+-- =====================================================
+
+-- Example: After creating auth users, run these inserts with actual UUIDs
+-- INSERT INTO public.users (id, email, full_name, role, phone) VALUES
+-- ('uuid-from-auth-admin', 'admin@dentalclinic.com', 'ผู้ดูแลระบบ', 'admin', '02-000-0001'),
+-- ('uuid-from-auth-dentist1', 'dr.somchai@dentalclinic.com', 'ทพ.สมชาย รักษาดี', 'dentist', '02-000-0002'),
+-- ('uuid-from-auth-dentist2', 'dr.wipa@dentalclinic.com', 'ทพญ.วิภา ใจเย็น', 'dentist', '02-000-0003'),
+-- ('uuid-from-auth-stock', 'stock@dentalclinic.com', 'คุณนิดา จัดการดี', 'stock_staff', '02-000-0004'),
+-- ('uuid-from-auth-assistant', 'assistant@dentalclinic.com', 'คุณมานี ช่วยเหลือ', 'assistant', '02-000-0005'),
+-- ('uuid-from-auth-cs', 'cs@dentalclinic.com', 'คุณสมใจ บริการดี', 'cs', '02-000-0006');
+
+-- =====================================================
+-- SAMPLE CASES (Run after creating users)
+-- =====================================================
+
+-- Example: After creating users, run these inserts with actual patient and user UUIDs
+-- INSERT INTO public.cases (case_number, patient_id, dentist_id, assistant_id, surgery_date, surgery_time, estimated_duration, tooth_positions, procedure_type, status, notes) VALUES
+-- ('CASE-2568-0001', 'patient-uuid-1', 'dentist-uuid-1', 'assistant-uuid-1', CURRENT_DATE + INTERVAL '3 days', '09:00', 90, ARRAY['36'], 'single_implant', 'green', 'เคสปกติ วัสดุพร้อมแล้ว'),
+-- ('CASE-2568-0002', 'patient-uuid-2', 'dentist-uuid-1', 'assistant-uuid-1', CURRENT_DATE + INTERVAL '5 days', '10:30', 120, ARRAY['14', '15'], 'multiple_implants', 'yellow', 'รอวัสดุจาก Straumann'),
+-- ('CASE-2568-0003', 'patient-uuid-3', 'dentist-uuid-2', 'assistant-uuid-1', CURRENT_DATE + INTERVAL '7 days', '14:00', 180, ARRAY['11', '21'], 'implant_with_bone_graft', 'red', 'วัสดุ Bone Graft ไม่พอ'),
+-- ('CASE-2568-0004', 'patient-uuid-4', 'dentist-uuid-2', NULL, CURRENT_DATE + INTERVAL '10 days', '09:30', 60, ARRAY['46'], 'single_implant', 'gray', 'ยังไม่ได้จองวัสดุ'),
+-- ('CASE-2568-0005', 'patient-uuid-5', 'dentist-uuid-1', 'assistant-uuid-1', CURRENT_DATE - INTERVAL '2 days', '11:00', 90, ARRAY['26'], 'single_implant', 'completed', 'ผ่าตัดเสร็จเรียบร้อย');
+
+-- =====================================================
+-- ALTERNATIVE: Create test data without auth dependency
+-- Use this for development/demo purposes only
+-- =====================================================
+
+-- Create temporary users table entries (for demo only - normally use Supabase Auth)
+-- This requires disabling the foreign key constraint temporarily or using a different approach
+
+-- For production: Always create users through Supabase Auth and then add to public.users table

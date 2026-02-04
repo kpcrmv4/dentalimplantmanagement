@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { Calendar as CalendarIcon, Clock, Package, AlertTriangle } from 'lucide-react';
 import { Header } from '@/components/layout';
 import {
@@ -25,10 +25,20 @@ export default function DashboardPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  // Fetch real data from Supabase
   const { data: summary, mutate: mutateSummary } = useDashboardSummary();
   const { data: lowStockItems, mutate: mutateLowStock } = useLowStockItems();
   const { data: calendarCases, mutate: mutateCalendar } = useCalendarCases(currentMonth);
-  const { data: pendingCases, mutate: mutatePending } = useCases({ status: 'red' });
+  // Fetch all cases to filter for pending (red and gray status)
+  const { data: allCases, mutate: mutateAllCases } = useCases();
+
+  // Filter pending cases (red = วัสดุไม่พอ, gray = ยังไม่จองวัสดุ)
+  const pendingCases = useMemo(() => {
+    if (!allCases) return [];
+    return allCases.filter(
+      (c) => c.status === 'red' || c.status === 'gray'
+    );
+  }, [allCases]);
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
@@ -36,10 +46,10 @@ export default function DashboardPage() {
       mutateSummary(),
       mutateLowStock(),
       mutateCalendar(),
-      mutatePending(),
+      mutateAllCases(),
     ]);
     setIsRefreshing(false);
-  }, [mutateSummary, mutateLowStock, mutateCalendar, mutatePending]);
+  }, [mutateSummary, mutateLowStock, mutateCalendar, mutateAllCases]);
 
   const handleMonthChange = (date: Date) => {
     setCurrentMonth(date);
@@ -105,7 +115,7 @@ export default function DashboardPage() {
 
         {/* Alerts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <PendingCasesAlert cases={pendingCases || []} />
+          <PendingCasesAlert cases={pendingCases} />
           <LowStockAlert items={lowStockItems || []} />
         </div>
       </div>
