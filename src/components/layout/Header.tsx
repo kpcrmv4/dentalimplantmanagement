@@ -1,0 +1,88 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { Bell, RefreshCw, Search, Menu } from 'lucide-react';
+import { Button } from '@/components/ui';
+import { useAuthStore } from '@/stores/authStore';
+import { cn } from '@/lib/utils';
+
+interface HeaderProps {
+  title: string;
+  subtitle?: string;
+  onRefresh?: () => void;
+  isRefreshing?: boolean;
+  actions?: React.ReactNode;
+}
+
+export function Header({
+  title,
+  subtitle,
+  onRefresh,
+  isRefreshing = false,
+  actions,
+}: HeaderProps) {
+  const { user } = useAuthStore();
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+
+  return (
+    <header className="sticky top-0 z-30 bg-white border-b border-gray-200">
+      <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
+        {/* Left section */}
+        <div className="flex items-center gap-4">
+          <button
+            className="lg:hidden p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
+            onClick={() => setShowMobileMenu(!showMobileMenu)}
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{title}</h1>
+            {subtitle && (
+              <p className="text-sm text-gray-500 hidden sm:block">{subtitle}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Right section */}
+        <div className="flex items-center gap-2 sm:gap-4">
+          {/* Search - Desktop only */}
+          <div className="hidden md:block relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="ค้นหา..."
+              className="w-64 pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            />
+          </div>
+
+          {/* Notifications */}
+          <Link
+            href="/notifications"
+            className="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <Bell className="w-5 h-5" />
+            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+          </Link>
+
+          {/* Refresh button */}
+          {onRefresh && (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={onRefresh}
+              isLoading={isRefreshing}
+              leftIcon={<RefreshCw className={cn('w-4 h-4', isRefreshing && 'animate-spin')} />}
+              className="hidden sm:flex"
+            >
+              รีเฟรชข้อมูล
+            </Button>
+          )}
+
+          {/* Custom actions */}
+          {actions}
+        </div>
+      </div>
+    </header>
+  );
+}
