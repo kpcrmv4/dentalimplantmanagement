@@ -183,14 +183,14 @@ export default function SettingsPage() {
     try {
       if (editingItem) {
         const { error } = await supabase
-          .from('categories')
+          .from('product_categories')
           .update(categoryForm)
           .eq('id', editingItem.id);
         if (error) throw error;
         toast.success('แก้ไขหมวดหมู่เรียบร้อย');
       } else {
         const { error } = await supabase
-          .from('categories')
+          .from('product_categories')
           .insert(categoryForm);
         if (error) throw error;
         toast.success('เพิ่มหมวดหมู่เรียบร้อย');
@@ -209,7 +209,7 @@ export default function SettingsPage() {
   const handleDeleteCategory = async (id: string) => {
     if (!confirm('ต้องการลบหมวดหมู่นี้?')) return;
     try {
-      const { error } = await supabase.from('categories').delete().eq('id', id);
+      const { error } = await supabase.from('product_categories').delete().eq('id', id);
       if (error) throw error;
       toast.success('ลบหมวดหมู่เรียบร้อย');
       mutateCategories();

@@ -363,9 +363,9 @@ export function useUnreadNotificationCount(userId: string) {
 
 // Categories hooks
 export function useCategories() {
-  return useSWR<any[]>('categories', async () => {
+  return useSWR<any[]>('product_categories', async () => {
     const { data, error } = await supabase
-      .from('categories')
+      .from('product_categories')
       .select('*')
       .order('name', { ascending: true });
 

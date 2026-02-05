@@ -85,7 +85,7 @@ export default function NewProductPage() {
 
   const fetchCategories = async () => {
     const { data, error } = await supabase
-      .from('categories')
+      .from('product_categories')
       .select('*')
       .order('name');
     
@@ -146,7 +146,7 @@ export default function NewProductPage() {
     setSavingCategory(true);
     try {
       const { data, error } = await supabase
-        .from('categories')
+        .from('product_categories')
         .insert({
           name: newCategoryName.trim(),
           description: newCategoryDescription.trim() || null,

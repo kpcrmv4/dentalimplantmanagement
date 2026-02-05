@@ -89,7 +89,7 @@ export default function ReceiveInventoryPage() {
         .from('products')
         .select(`
           *,
-          categories(name),
+          product_categories(name),
           suppliers(name)
         `)
         .eq('is_active', true)
@@ -100,7 +100,7 @@ export default function ReceiveInventoryPage() {
 
       const results = data?.map(p => ({
         ...p,
-        category_name: p.categories?.name,
+        category_name: p.product_categories?.name,
         supplier_name: p.suppliers?.name,
       })) || [];
 
