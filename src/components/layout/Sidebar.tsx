@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
+import { supabase } from '@/lib/supabase';
 import {
   LayoutDashboard,
   Calendar,
@@ -21,6 +22,7 @@ import {
   ChevronRight,
   LogOut,
   Stethoscope,
+  History,
 } from 'lucide-react';
 import type { UserRole } from '@/types/database';
 
@@ -70,7 +72,7 @@ const menuItems: MenuItem[] = [
   },
   {
     name: 'ยืม-คืน/แลกเปลี่ยนกับบริษัท',
-    href: '/transfers',
+    href: '/exchanges',
     icon: ArrowLeftRight,
     roles: ['admin', 'stock_staff'],
   },
@@ -78,6 +80,12 @@ const menuItems: MenuItem[] = [
     name: 'รายงาน',
     href: '/reports',
     icon: FileText,
+    roles: ['admin'],
+  },
+  {
+    name: 'ประวัติการใช้งาน',
+    href: '/audit-logs',
+    icon: History,
     roles: ['admin'],
   },
   {
@@ -90,7 +98,9 @@ const menuItems: MenuItem[] = [
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const { user, logout } = useAuthStore();
 
   const filteredMenuItems = menuItems.filter(
@@ -98,8 +108,37 @@ export function Sidebar() {
   );
 
   const handleLogout = async () => {
-    logout();
-    window.location.href = '/login';
+    if (loggingOut) return;
+    
+    setLoggingOut(true);
+    try {
+      // Log the logout event
+      if (user) {
+        await fetch('/api/auth/log', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'LOGOUT',
+            userId: user.id,
+            email: user.email,
+          }),
+        });
+      }
+
+      // Sign out from Supabase
+      await supabase.auth.signOut();
+      
+      // Clear local state
+      logout();
+      
+      // Redirect to login
+      router.push('/login');
+      router.refresh();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setLoggingOut(false);
+    }
   };
 
   return (
@@ -173,10 +212,14 @@ export function Sidebar() {
           {!collapsed && (
             <button
               onClick={handleLogout}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              disabled={loggingOut}
+              className={cn(
+                'p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors',
+                loggingOut && 'opacity-50 cursor-not-allowed'
+              )}
               title="ออกจากระบบ"
             >
-              <LogOut className="w-5 h-5" />
+              <LogOut className={cn('w-5 h-5', loggingOut && 'animate-pulse')} />
             </button>
           )}
         </div>
