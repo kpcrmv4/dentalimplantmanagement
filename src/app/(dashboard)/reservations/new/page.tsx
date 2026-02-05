@@ -41,7 +41,7 @@ interface CartItem {
   id: string; // unique cart item id
   product_id: string;
   product_name: string;
-  product_sku: string;
+  product_sku?: string;
   ref_number?: string;
   inventory_id?: string;
   lot_number?: string;
@@ -140,7 +140,7 @@ export default function NewReservationPage() {
 
   const handleAddOutOfStock = (product: ProductSearchResult) => {
     setOutOfStockProduct(product);
-    setOutOfStockRef(product.ref_number || product.sku);
+    setOutOfStockRef(product.ref_number || product.sku || '');
     setOutOfStockLot('');
     setOutOfStockQty(1);
     setShowOutOfStockModal(true);

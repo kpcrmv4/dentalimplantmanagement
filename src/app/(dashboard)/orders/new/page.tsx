@@ -22,7 +22,8 @@ import toast from 'react-hot-toast';
 interface OrderItem {
   product_id: string;
   product_name: string;
-  sku: string;
+  sku?: string;
+  ref_number?: string;
   quantity: number;
   unit_cost: number;
   total_cost: number;

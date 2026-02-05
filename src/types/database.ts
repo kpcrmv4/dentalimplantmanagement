@@ -64,7 +64,7 @@ export interface ProductSpecifications {
 
 export interface Product {
   id: string;
-  sku: string;
+  sku?: string;
   ref_number?: string; // REF number from manufacturer
   name: string;
   description?: string;
@@ -337,7 +337,7 @@ export interface PendingStockRequest {
   dentist_id: string;
   dentist_name: string;
   product_id: string;
-  sku: string;
+  sku?: string;
   product_name: string;
   ref_number?: string;
   requested_ref?: string;
@@ -380,7 +380,7 @@ export interface DashboardSummary {
 
 export interface LowStockItem {
   product_id: string;
-  sku: string;
+  sku?: string;
   ref_number?: string;
   product_name: string;
   min_stock_level: number;
@@ -390,7 +390,7 @@ export interface LowStockItem {
 
 export interface ExpiringItem {
   inventory_id: string;
-  sku: string;
+  sku?: string;
   ref_number?: string;
   product_name: string;
   lot_number: string;
@@ -414,7 +414,7 @@ export interface CalendarCase {
 // Search result for products with inventory info
 export interface ProductSearchResult {
   id: string;
-  sku: string;
+  sku?: string;
   ref_number?: string;
   name: string;
   brand?: string;
@@ -479,7 +479,7 @@ export interface CreateReservationInput {
 }
 
 export interface CreateProductInput {
-  sku: string;
+  sku?: string;
   ref_number?: string;
   name: string;
   description?: string;
