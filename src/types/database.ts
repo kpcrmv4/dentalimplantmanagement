@@ -642,3 +642,96 @@ export interface DentistCaseItem {
     out_of_stock: number;
   };
 }
+
+// =====================================================
+// Assistant Dashboard Types
+// =====================================================
+
+export interface AssistantCaseItem {
+  id: string;
+  case_number: string;
+  surgery_date: string;
+  surgery_time?: string;
+  status: CaseStatus;
+  patient_id: string;
+  patient_name: string;
+  hn_number: string;
+  dentist_id: string;
+  dentist_name: string;
+  procedure_type?: string;
+  tooth_positions?: string[];
+  notes?: string;
+  reservations: AssistantReservationItem[];
+  material_summary: {
+    total: number;
+    prepared: number;
+    used: number;
+    pending: number;
+  };
+}
+
+export interface AssistantReservationItem {
+  id: string;
+  case_id: string;
+  product_id: string;
+  product_name: string;
+  product_sku?: string;
+  product_ref?: string;
+  inventory_id?: string;
+  lot_number?: string;
+  expiry_date?: string;
+  quantity: number;
+  used_quantity: number;
+  status: ReservationStatus;
+  photo_evidence?: string[];
+  is_out_of_stock: boolean;
+  notes?: string;
+}
+
+export interface MaterialUsageRecord {
+  id: string;
+  case_id: string;
+  reservation_id?: string;
+  product_id: string;
+  product_name: string;
+  product_sku?: string;
+  product_ref?: string;
+  inventory_id?: string;
+  lot_number?: string;
+  quantity_used: number;
+  photo_evidence: string[];
+  used_by: string;
+  used_at: string;
+  is_additional: boolean; // true if added during surgery (not pre-reserved)
+  notes?: string;
+}
+
+export interface CaseClosureSummary {
+  case_id: string;
+  case_number: string;
+  patient_name: string;
+  surgery_date: string;
+  dentist_name: string;
+  materials_used: MaterialUsageRecord[];
+  materials_returned: {
+    reservation_id: string;
+    product_name: string;
+    quantity: number;
+  }[];
+  total_materials_used: number;
+  total_materials_returned: number;
+  closed_by: string;
+  closed_at: string;
+  notes?: string;
+}
+
+export interface AuditLogEntry {
+  id: string;
+  action: string;
+  entity_type: string;
+  entity_id: string;
+  user_id: string;
+  user_name: string;
+  details: Record<string, unknown>;
+  created_at: string;
+}

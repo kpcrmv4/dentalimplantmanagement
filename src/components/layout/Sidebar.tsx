@@ -23,6 +23,7 @@ import {
   LogOut,
   Stethoscope,
   History,
+  ClipboardCheck,
 } from 'lucide-react';
 import type { UserRole } from '@/types/database';
 
@@ -45,6 +46,12 @@ const menuItems: MenuItem[] = [
     href: '/dentist-dashboard',
     icon: Calendar,
     roles: ['dentist'],
+  },
+  {
+    name: 'งานวันนี้',
+    href: '/assistant-dashboard',
+    icon: ClipboardCheck,
+    roles: ['assistant'],
   },
   {
     name: 'เคสผ่าตัดรากเทียม',

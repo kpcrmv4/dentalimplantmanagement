@@ -84,7 +84,7 @@ export function getCaseStatusText(status: string): string {
   const texts: Record<string, string> = {
     gray: 'ยังไม่จองวัสดุ',
     green: 'พร้อมผ่าตัด',
-    yellow: 'รอวัสดุ',
+    yellow: 'สั่งซื้อแล้ว รอของ', // Order placed, waiting for delivery
     red: 'วัสดุไม่พอ',
     completed: 'เสร็จสิ้น',
     cancelled: 'ยกเลิก',

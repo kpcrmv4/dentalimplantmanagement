@@ -3,12 +3,12 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import {
-  Plus,
   Calendar,
   Package,
   CheckCircle,
   AlertCircle,
   ClipboardList,
+  Eye,
 } from 'lucide-react';
 import { Header } from '@/components/layout';
 import { Button, Card, Modal, ModalFooter } from '@/components/ui';
@@ -87,6 +87,18 @@ export default function ReservationsPage() {
 
       if (error) throw error;
 
+      // Log the action
+      await supabase.from('audit_logs').insert({
+        action: 'RESERVATION_PREPARED',
+        entity_type: 'case_reservations',
+        entity_id: selectedReservation.id,
+        details: {
+          case_id: selectedReservation.case_id,
+          product_name: selectedReservation.product?.name,
+          quantity: selectedReservation.quantity,
+        },
+      });
+
       toast.success('เตรียมของเรียบร้อยแล้ว');
       mutate();
       setShowPrepareModal(false);
@@ -126,6 +138,18 @@ export default function ReservationsPage() {
 
       if (error) throw error;
 
+      // Log the action
+      await supabase.from('audit_logs').insert({
+        action: 'CASE_RESERVATIONS_PREPARED',
+        entity_type: 'cases',
+        entity_id: selectedCase.id,
+        details: {
+          case_number: selectedCase.case_number,
+          patient_name: selectedCase.patient_name,
+          items_prepared: confirmedReservations.length,
+        },
+      });
+
       toast.success(`เตรียมของ ${confirmedReservations.length} รายการเรียบร้อยแล้ว`);
       mutate();
       setShowPrepareAllModal(false);
@@ -151,12 +175,7 @@ export default function ReservationsPage() {
     <div className="min-h-screen">
       <Header
         title="เตรียมวัสดุสำหรับเคส"
-        subtitle="จัดเตรียมวัสดุและอุปกรณ์สำหรับเคสผ่าตัด"
-        actions={
-          <Link href="/reservations/new">
-            <Button leftIcon={<Plus className="w-4 h-4" />}>จองวัสดุใหม่</Button>
-          </Link>
-        }
+        subtitle="ภาพรวมการเตรียมวัสดุและอุปกรณ์สำหรับเคสผ่าตัด"
       />
 
       <div className="p-4 sm:p-6 lg:p-8">

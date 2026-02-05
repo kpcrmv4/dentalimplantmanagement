@@ -23,6 +23,8 @@ import type {
   UrgencyLevel,
   DentistDashboardSummary,
   DentistCaseItem,
+  AssistantCaseItem,
+  AssistantReservationItem,
 } from '@/types/database';
 
 // Generic fetcher for Supabase
@@ -1017,4 +1019,114 @@ export function useDentistDashboard(dentistId: string, filter: DateRangeFilter) 
       };
     }
   );
+}
+
+// =====================================================
+// Assistant Dashboard Hooks
+// =====================================================
+
+export function useAssistantCases(assistantId: string | null, dateFilter?: { startDate: string; endDate: string }) {
+  const filterKey = JSON.stringify({ assistantId, dateFilter });
+
+  return useSWR<AssistantCaseItem[]>(
+    assistantId ? `assistant_cases:${filterKey}` : null,
+    async () => {
+      let query = supabase
+        .from('cases')
+        .select(`
+          id,
+          case_number,
+          surgery_date,
+          surgery_time,
+          status,
+          procedure_type,
+          tooth_positions,
+          notes,
+          patient:patients(id, first_name, last_name, hn_number),
+          dentist:users!cases_dentist_id_fkey(id, full_name),
+          reservations:case_reservations(
+            id,
+            case_id,
+            product_id,
+            inventory_id,
+            quantity,
+            used_quantity,
+            status,
+            photo_evidence,
+            is_out_of_stock,
+            notes,
+            product:products(id, name, sku, ref_number),
+            inventory:inventory(id, lot_number, expiry_date)
+          )
+        `)
+        .eq('assistant_id', assistantId)
+        .not('status', 'in', '("completed","cancelled")')
+        .order('surgery_date', { ascending: true })
+        .order('surgery_time', { ascending: true });
+
+      if (dateFilter?.startDate && dateFilter?.endDate) {
+        query = query
+          .gte('surgery_date', dateFilter.startDate)
+          .lte('surgery_date', dateFilter.endDate);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      return (data || []).map((c: any) => {
+        const reservations = c.reservations || [];
+        const total = reservations.length;
+        const prepared = reservations.filter((r: any) => r.status === 'prepared').length;
+        const used = reservations.filter((r: any) => r.status === 'used').length;
+        const pending = reservations.filter((r: any) => r.status === 'pending' || r.status === 'confirmed').length;
+
+        const mappedReservations: AssistantReservationItem[] = reservations.map((r: any) => ({
+          id: r.id,
+          case_id: r.case_id,
+          product_id: r.product_id,
+          product_name: r.product?.name || 'ไม่ระบุ',
+          product_sku: r.product?.sku,
+          product_ref: r.product?.ref_number,
+          inventory_id: r.inventory_id,
+          lot_number: r.inventory?.lot_number,
+          expiry_date: r.inventory?.expiry_date,
+          quantity: r.quantity,
+          used_quantity: r.used_quantity || 0,
+          status: r.status,
+          photo_evidence: r.photo_evidence,
+          is_out_of_stock: r.is_out_of_stock,
+          notes: r.notes,
+        }));
+
+        return {
+          id: c.id,
+          case_number: c.case_number,
+          surgery_date: c.surgery_date,
+          surgery_time: c.surgery_time,
+          status: c.status,
+          patient_id: c.patient?.id || '',
+          patient_name: c.patient ? `${c.patient.first_name} ${c.patient.last_name}` : 'ไม่ระบุ',
+          hn_number: c.patient?.hn_number || '',
+          dentist_id: c.dentist?.id || '',
+          dentist_name: c.dentist?.full_name || 'ไม่ระบุ',
+          procedure_type: c.procedure_type,
+          tooth_positions: c.tooth_positions,
+          notes: c.notes,
+          reservations: mappedReservations,
+          material_summary: {
+            total,
+            prepared,
+            used,
+            pending,
+          },
+        };
+      });
+    }
+  );
+}
+
+// Get today's cases for the assistant
+export function useAssistantTodayCases(assistantId: string | null) {
+  const today = new Date().toISOString().split('T')[0];
+  return useAssistantCases(assistantId, { startDate: today, endDate: today });
 }

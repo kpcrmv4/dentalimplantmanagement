@@ -96,6 +96,42 @@ export default function OrdersPage() {
 
       if (error) throw error;
 
+      // Update case traffic light: Red → Yellow for cases with out-of-stock items being ordered
+      const productIds = (selectedOrder.items || []).map((item: any) => item.product_id);
+      if (productIds.length > 0) {
+        // Find cases with red status that have out-of-stock reservations for these products
+        const { data: affectedReservations } = await supabase
+          .from('case_reservations')
+          .select('case_id')
+          .in('product_id', productIds)
+          .eq('is_out_of_stock', true)
+          .eq('status', 'pending');
+
+        if (affectedReservations && affectedReservations.length > 0) {
+          const caseIds = [...new Set(affectedReservations.map((r) => r.case_id))];
+
+          // Update cases from red to yellow (materials on order)
+          await supabase
+            .from('cases')
+            .update({ status: 'yellow' })
+            .in('id', caseIds)
+            .eq('status', 'red');
+        }
+      }
+
+      // Log the action
+      await supabase.from('audit_logs').insert({
+        action: 'PO_APPROVED',
+        entity_type: 'purchase_orders',
+        entity_id: selectedOrder.id,
+        details: {
+          po_number: selectedOrder.po_number,
+          supplier: selectedOrder.supplier?.name,
+          total_amount: selectedOrder.total_amount,
+          items_count: selectedOrder.items?.length,
+        },
+      });
+
       toast.success('อนุมัติใบสั่งซื้อเรียบร้อย');
       mutate();
       setShowApproveModal(false);
@@ -123,9 +159,11 @@ export default function OrdersPage() {
 
       if (error) throw error;
 
-      // Add items to inventory
+      // Add items to inventory and track inventory IDs for reservation linking
+      const productInventoryMap: Record<string, string> = {};
+
       for (const item of selectedOrder.items || []) {
-        await supabase.from('inventory').insert({
+        const { data: newInventory } = await supabase.from('inventory').insert({
           product_id: item.product_id,
           lot_number: item.lot_number || `LOT-${Date.now()}`,
           expiry_date: item.expiry_date,
@@ -135,8 +173,97 @@ export default function OrdersPage() {
           received_date: new Date().toISOString().split('T')[0],
           unit_cost: item.unit_cost,
           supplier_id: selectedOrder.supplier_id,
-        });
+        }).select().single();
+
+        if (newInventory) {
+          productInventoryMap[item.product_id] = newInventory.id;
+        }
       }
+
+      // Update out-of-stock reservations for these products
+      const productIds = (selectedOrder.items || []).map((item: any) => item.product_id);
+      if (productIds.length > 0) {
+        // Find out-of-stock reservations for these products
+        const { data: outOfStockReservations } = await supabase
+          .from('case_reservations')
+          .select('id, case_id, product_id, quantity')
+          .in('product_id', productIds)
+          .eq('is_out_of_stock', true)
+          .in('status', ['pending', 'confirmed']);
+
+        // Link reservations to the new inventory
+        for (const reservation of outOfStockReservations || []) {
+          const inventoryId = productInventoryMap[reservation.product_id];
+          if (inventoryId) {
+            await supabase
+              .from('case_reservations')
+              .update({
+                inventory_id: inventoryId,
+                is_out_of_stock: false,
+                status: 'confirmed',
+              })
+              .eq('id', reservation.id);
+
+            // Reserve the quantity in inventory
+            const { data: inv } = await supabase
+              .from('inventory')
+              .select('reserved_quantity, available_quantity')
+              .eq('id', inventoryId)
+              .single();
+
+            if (inv) {
+              await supabase
+                .from('inventory')
+                .update({
+                  reserved_quantity: inv.reserved_quantity + reservation.quantity,
+                  available_quantity: Math.max(0, inv.available_quantity - reservation.quantity),
+                })
+                .eq('id', inventoryId);
+            }
+          }
+        }
+
+        // Update case traffic light: Yellow → Green for cases where all materials are now available
+        if (outOfStockReservations && outOfStockReservations.length > 0) {
+          const caseIds = [...new Set(outOfStockReservations.map((r) => r.case_id))];
+
+          // For each case, check if all reservations are now fulfilled
+          for (const caseId of caseIds) {
+            const { data: caseReservations } = await supabase
+              .from('case_reservations')
+              .select('id, status, is_out_of_stock')
+              .eq('case_id', caseId)
+              .not('status', 'eq', 'cancelled');
+
+            const hasOutOfStock = caseReservations?.some((r) => r.is_out_of_stock);
+            const allConfirmedOrBetter = caseReservations?.every(
+              (r) => r.status === 'confirmed' || r.status === 'prepared' || r.status === 'used'
+            );
+
+            if (!hasOutOfStock && allConfirmedOrBetter) {
+              // All materials available - update to green
+              await supabase
+                .from('cases')
+                .update({ status: 'green' })
+                .eq('id', caseId)
+                .in('status', ['yellow', 'red']);
+            }
+          }
+        }
+      }
+
+      // Log the action
+      await supabase.from('audit_logs').insert({
+        action: 'PO_RECEIVED',
+        entity_type: 'purchase_orders',
+        entity_id: selectedOrder.id,
+        details: {
+          po_number: selectedOrder.po_number,
+          supplier: selectedOrder.supplier?.name,
+          items_count: selectedOrder.items?.length,
+          linked_reservations: productIds.length,
+        },
+      });
 
       toast.success('รับของเข้าสต็อกเรียบร้อย');
       mutate();

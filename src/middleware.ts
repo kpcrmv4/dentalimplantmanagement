@@ -36,6 +36,7 @@ export async function middleware(request: NextRequest) {
   const protectedPaths = [
     '/dashboard',
     '/dentist-dashboard',
+    '/assistant-dashboard',
     '/cases',
     '/patients',
     '/inventory',
@@ -97,6 +98,25 @@ export async function middleware(request: NextRequest) {
       .single();
 
     if (!profile || profile.role !== 'dentist') {
+      return NextResponse.redirect(new URL('/dashboard?error=unauthorized', request.url));
+    }
+  }
+
+  // Assistant-only routes
+  const assistantOnlyPaths = ['/assistant-dashboard'];
+  const isAssistantOnlyPath = assistantOnlyPaths.some(path =>
+    request.nextUrl.pathname.startsWith(path)
+  );
+
+  if (isAssistantOnlyPath && user) {
+    // Check user role from database
+    const { data: profile } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile || profile.role !== 'assistant') {
       return NextResponse.redirect(new URL('/dashboard?error=unauthorized', request.url));
     }
   }
