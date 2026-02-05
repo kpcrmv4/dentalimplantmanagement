@@ -387,7 +387,8 @@ ORDER BY al.created_at DESC;
 -- =====================================================
 -- 12. สร้าง View สำหรับเคสด่วน 48 ชั่วโมง
 -- =====================================================
-CREATE OR REPLACE VIEW public.urgent_cases_48h AS
+DROP VIEW IF EXISTS public.urgent_cases_48h;
+CREATE VIEW public.urgent_cases_48h AS
 SELECT 
     c.id,
     c.case_number,
@@ -421,7 +422,8 @@ ORDER BY c.surgery_date ASC,
 -- =====================================================
 -- 13. สร้าง View สำหรับ Out-of-Stock Requests
 -- =====================================================
-CREATE OR REPLACE VIEW public.pending_stock_requests AS
+DROP VIEW IF EXISTS public.pending_stock_requests;
+CREATE VIEW public.pending_stock_requests AS
 SELECT 
     cr.id as reservation_id,
     cr.case_id,
