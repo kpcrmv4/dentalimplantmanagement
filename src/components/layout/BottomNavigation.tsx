@@ -1,7 +1,9 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
+import { supabase } from '@/lib/supabase';
 import {
   LayoutDashboard,
   FileText,
@@ -14,6 +16,9 @@ import {
   Stethoscope,
   UserCog,
   Bell,
+  MoreHorizontal,
+  LogOut,
+  X,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -119,10 +124,34 @@ export function getRoleHomePage(role: UserRole): string {
 export function BottomNavigation() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { user, logout } = useAuthStore();
+  const [isHydrated, setIsHydrated] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
-  // Show skeleton while loading
-  if (!user) {
+  // Handle hydration
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  const handleLogout = async () => {
+    if (loggingOut) return;
+    setLoggingOut(true);
+    try {
+      await supabase.auth.signOut();
+      logout();
+      router.push('/login');
+      router.refresh();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setLoggingOut(false);
+      setShowMoreMenu(false);
+    }
+  };
+
+  // Show skeleton while hydrating or no user
+  if (!isHydrated || !user) {
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
         <div className="absolute inset-0 bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]" />
@@ -157,42 +186,148 @@ export function BottomNavigation() {
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 
+  // Get only first 4 items for nav, 5th slot is "more" menu
+  const navItems = config.items.slice(0, 4);
+
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
-      {/* Background with blur effect */}
-      <div className="absolute inset-0 bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]" />
+    <>
+      {/* More Menu Overlay */}
+      {showMoreMenu && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 md:hidden animate-fade-in"
+          onClick={() => setShowMoreMenu(false)}
+        >
+          <div
+            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-4 pb-safe animate-slide-up"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className={cn("w-10 h-10 rounded-full flex items-center justify-center text-white font-medium", config.centerBgColor.split(' ')[0])}>
+                  {user.full_name?.charAt(0) || 'U'}
+                </div>
+                <div>
+                  <p className="font-medium text-gray-900">{user.full_name}</p>
+                  <p className="text-xs text-gray-500">
+                    {role === 'admin' && 'Admin'}
+                    {role === 'dentist' && 'ทันตแพทย์'}
+                    {role === 'assistant' && 'ผู้ช่วยทันตแพทย์'}
+                    {role === 'stock_staff' && 'เจ้าหน้าที่สต็อก'}
+                    {role === 'cs' && 'Customer Service'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowMoreMenu(false)}
+                className="p-2 hover:bg-gray-100 rounded-full"
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
 
-      {/* Safe area padding for devices with home indicator */}
-      <div className="relative pb-safe">
-        <div className="flex items-end justify-around px-2 pt-2 pb-3">
-          {config.items.map((item, index) => {
-            const Icon = item.icon;
-            const active = isActive(item.href);
-            const isCenter = index === 2;
+            {/* 5th menu item */}
+            <button
+              onClick={() => {
+                handleNavigation(config.items[4].href);
+                setShowMoreMenu(false);
+              }}
+              className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors"
+            >
+              {(() => {
+                const Icon = config.items[4].icon;
+                return <Icon className={cn("w-5 h-5", config.color)} />;
+              })()}
+              <span className="text-gray-700">{config.items[4].label}</span>
+            </button>
 
-            if (isCenter) {
-              // Center elevated button
+            {/* Divider */}
+            <div className="h-px bg-gray-200 my-2" />
+
+            {/* Logout button */}
+            <button
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="w-full flex items-center gap-3 p-3 hover:bg-red-50 rounded-xl transition-colors text-red-600"
+            >
+              <LogOut className={cn("w-5 h-5", loggingOut && "animate-pulse")} />
+              <span>{loggingOut ? 'กำลังออกจากระบบ...' : 'ออกจากระบบ'}</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden">
+        {/* Background with blur effect */}
+        <div className="absolute inset-0 bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]" />
+
+        {/* Safe area padding for devices with home indicator */}
+        <div className="relative pb-safe">
+          <div className="flex items-end justify-around px-2 pt-2 pb-3">
+            {navItems.map((item, index) => {
+              const Icon = item.icon;
+              const active = isActive(item.href);
+              const isCenter = index === 2;
+
+              if (isCenter) {
+                // Center elevated button
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleNavigation(item.href)}
+                    className="relative -mt-6 flex flex-col items-center"
+                  >
+                    {/* Elevated circle button */}
+                    <div
+                      className={cn(
+                        'flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all duration-200',
+                        'transform hover:scale-105 active:scale-95',
+                        active ? config.centerActiveColor : config.centerBgColor,
+                        'ring-4 ring-white'
+                      )}
+                    >
+                      <Icon className="w-6 h-6 text-white" />
+                    </div>
+                    {/* Label */}
+                    <span
+                      className={cn(
+                        'text-[10px] font-medium mt-1 transition-colors',
+                        active ? config.color : 'text-gray-500'
+                      )}
+                    >
+                      {item.label}
+                    </span>
+                  </button>
+                );
+              }
+
+              // Regular nav items
               return (
                 <button
                   key={item.id}
                   onClick={() => handleNavigation(item.href)}
-                  className="relative -mt-6 flex flex-col items-center"
+                  className={cn(
+                    'flex flex-col items-center justify-center py-1 px-3 min-w-[60px] transition-all duration-200',
+                    'active:scale-95'
+                  )}
                 >
-                  {/* Elevated circle button */}
                   <div
                     className={cn(
-                      'flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all duration-200',
-                      'transform hover:scale-105 active:scale-95',
-                      active ? config.centerActiveColor : config.centerBgColor,
-                      'ring-4 ring-white'
+                      'p-2 rounded-xl transition-all duration-200',
+                      active ? config.bgColor : 'hover:bg-gray-100'
                     )}
                   >
-                    <Icon className="w-6 h-6 text-white" />
+                    <Icon
+                      className={cn(
+                        'w-5 h-5 transition-colors',
+                        active ? config.color : 'text-gray-500'
+                      )}
+                    />
                   </div>
-                  {/* Label */}
                   <span
                     className={cn(
-                      'text-[10px] font-medium mt-1 transition-colors',
+                      'text-[10px] font-medium mt-0.5 transition-colors',
                       active ? config.color : 'text-gray-500'
                     )}
                   >
@@ -200,44 +335,26 @@ export function BottomNavigation() {
                   </span>
                 </button>
               );
-            }
+            })}
 
-            // Regular nav items
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleNavigation(item.href)}
-                className={cn(
-                  'flex flex-col items-center justify-center py-1 px-3 min-w-[60px] transition-all duration-200',
-                  'active:scale-95'
-                )}
-              >
-                <div
-                  className={cn(
-                    'p-2 rounded-xl transition-all duration-200',
-                    active ? config.bgColor : 'hover:bg-gray-100'
-                  )}
-                >
-                  <Icon
-                    className={cn(
-                      'w-5 h-5 transition-colors',
-                      active ? config.color : 'text-gray-500'
-                    )}
-                  />
-                </div>
-                <span
-                  className={cn(
-                    'text-[10px] font-medium mt-0.5 transition-colors',
-                    active ? config.color : 'text-gray-500'
-                  )}
-                >
-                  {item.label}
-                </span>
-              </button>
-            );
-          })}
+            {/* More button (5th slot) */}
+            <button
+              onClick={() => setShowMoreMenu(true)}
+              className={cn(
+                'flex flex-col items-center justify-center py-1 px-3 min-w-[60px] transition-all duration-200',
+                'active:scale-95'
+              )}
+            >
+              <div className="p-2 rounded-xl transition-all duration-200 hover:bg-gray-100">
+                <MoreHorizontal className="w-5 h-5 text-gray-500" />
+              </div>
+              <span className="text-[10px] font-medium mt-0.5 text-gray-500">
+                เพิ่มเติม
+              </span>
+            </button>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 }
