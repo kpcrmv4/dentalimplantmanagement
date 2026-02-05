@@ -393,6 +393,7 @@ SELECT
     c.case_number,
     c.surgery_date,
     c.status,
+    array_to_string(c.tooth_positions, ', ') as tooth_positions,
     p.hn_number,
     p.first_name || ' ' || p.last_name as patient_name,
     u.full_name as dentist_name,
