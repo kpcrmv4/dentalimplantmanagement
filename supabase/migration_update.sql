@@ -246,47 +246,74 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- =====================================================
--- 8. สร้าง Audit Triggers (DROP แล้วสร้างใหม่)
+-- 8. สร้าง Audit Triggers (ตรวจสอบว่าตารางมีอยู่ก่อนสร้าง)
 -- =====================================================
-DROP TRIGGER IF EXISTS audit_users ON public.users;
-CREATE TRIGGER audit_users
-    AFTER INSERT OR UPDATE OR DELETE ON public.users
-    FOR EACH ROW EXECUTE FUNCTION log_audit_event();
+DO $$
+BEGIN
+    -- Trigger for users table
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'users') THEN
+        DROP TRIGGER IF EXISTS audit_users ON public.users;
+        CREATE TRIGGER audit_users AFTER INSERT OR UPDATE OR DELETE ON public.users
+            FOR EACH ROW EXECUTE FUNCTION log_audit_event();
+        RAISE NOTICE 'Created audit trigger for users';
+    END IF;
 
-DROP TRIGGER IF EXISTS audit_patients ON public.patients;
-CREATE TRIGGER audit_patients
-    AFTER INSERT OR UPDATE OR DELETE ON public.patients
-    FOR EACH ROW EXECUTE FUNCTION log_audit_event();
+    -- Trigger for patients table
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'patients') THEN
+        DROP TRIGGER IF EXISTS audit_patients ON public.patients;
+        CREATE TRIGGER audit_patients AFTER INSERT OR UPDATE OR DELETE ON public.patients
+            FOR EACH ROW EXECUTE FUNCTION log_audit_event();
+        RAISE NOTICE 'Created audit trigger for patients';
+    END IF;
 
-DROP TRIGGER IF EXISTS audit_products ON public.products;
-CREATE TRIGGER audit_products
-    AFTER INSERT OR UPDATE OR DELETE ON public.products
-    FOR EACH ROW EXECUTE FUNCTION log_audit_event();
+    -- Trigger for products table
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'products') THEN
+        DROP TRIGGER IF EXISTS audit_products ON public.products;
+        CREATE TRIGGER audit_products AFTER INSERT OR UPDATE OR DELETE ON public.products
+            FOR EACH ROW EXECUTE FUNCTION log_audit_event();
+        RAISE NOTICE 'Created audit trigger for products';
+    END IF;
 
-DROP TRIGGER IF EXISTS audit_inventory ON public.inventory;
-CREATE TRIGGER audit_inventory
-    AFTER INSERT OR UPDATE OR DELETE ON public.inventory
-    FOR EACH ROW EXECUTE FUNCTION log_audit_event();
+    -- Trigger for inventory table
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'inventory') THEN
+        DROP TRIGGER IF EXISTS audit_inventory ON public.inventory;
+        CREATE TRIGGER audit_inventory AFTER INSERT OR UPDATE OR DELETE ON public.inventory
+            FOR EACH ROW EXECUTE FUNCTION log_audit_event();
+        RAISE NOTICE 'Created audit trigger for inventory';
+    END IF;
 
-DROP TRIGGER IF EXISTS audit_cases ON public.cases;
-CREATE TRIGGER audit_cases
-    AFTER INSERT OR UPDATE OR DELETE ON public.cases
-    FOR EACH ROW EXECUTE FUNCTION log_audit_event();
+    -- Trigger for cases table
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'cases') THEN
+        DROP TRIGGER IF EXISTS audit_cases ON public.cases;
+        CREATE TRIGGER audit_cases AFTER INSERT OR UPDATE OR DELETE ON public.cases
+            FOR EACH ROW EXECUTE FUNCTION log_audit_event();
+        RAISE NOTICE 'Created audit trigger for cases';
+    END IF;
 
-DROP TRIGGER IF EXISTS audit_case_reservations ON public.case_reservations;
-CREATE TRIGGER audit_case_reservations
-    AFTER INSERT OR UPDATE OR DELETE ON public.case_reservations
-    FOR EACH ROW EXECUTE FUNCTION log_audit_event();
+    -- Trigger for case_reservations table
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'case_reservations') THEN
+        DROP TRIGGER IF EXISTS audit_case_reservations ON public.case_reservations;
+        CREATE TRIGGER audit_case_reservations AFTER INSERT OR UPDATE OR DELETE ON public.case_reservations
+            FOR EACH ROW EXECUTE FUNCTION log_audit_event();
+        RAISE NOTICE 'Created audit trigger for case_reservations';
+    END IF;
 
-DROP TRIGGER IF EXISTS audit_purchase_orders ON public.purchase_orders;
-CREATE TRIGGER audit_purchase_orders
-    AFTER INSERT OR UPDATE OR DELETE ON public.purchase_orders
-    FOR EACH ROW EXECUTE FUNCTION log_audit_event();
+    -- Trigger for purchase_orders table
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'purchase_orders') THEN
+        DROP TRIGGER IF EXISTS audit_purchase_orders ON public.purchase_orders;
+        CREATE TRIGGER audit_purchase_orders AFTER INSERT OR UPDATE OR DELETE ON public.purchase_orders
+            FOR EACH ROW EXECUTE FUNCTION log_audit_event();
+        RAISE NOTICE 'Created audit trigger for purchase_orders';
+    END IF;
 
-DROP TRIGGER IF EXISTS audit_inventory_transfers ON public.inventory_transfers;
-CREATE TRIGGER audit_inventory_transfers
-    AFTER INSERT OR UPDATE OR DELETE ON public.inventory_transfers
-    FOR EACH ROW EXECUTE FUNCTION log_audit_event();
+    -- Trigger for transfers table
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'transfers') THEN
+        DROP TRIGGER IF EXISTS audit_transfers ON public.transfers;
+        CREATE TRIGGER audit_transfers AFTER INSERT OR UPDATE OR DELETE ON public.transfers
+            FOR EACH ROW EXECUTE FUNCTION log_audit_event();
+        RAISE NOTICE 'Created audit trigger for transfers';
+    END IF;
+END $$;
 
 -- =====================================================
 -- 9. RLS สำหรับ audit_logs
