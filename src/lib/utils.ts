@@ -128,11 +128,11 @@ export function getTransferTypeText(type: string): string {
 // Role utilities
 export function getRoleText(role: string): string {
   const texts: Record<string, string> = {
-    admin: 'ผู้ดูแลระบบ',
-    dentist: 'ทันตแพทย์',
-    stock_staff: 'เจ้าหน้าที่สต็อก',
-    assistant: 'ผู้ช่วยทันตแพทย์',
-    cs: 'Customer Service',
+    admin: 'Admin (ผู้บริหาร)',
+    cs: 'Customer Service (CS)',
+    dentist: 'Dentist (ทันตแพทย์)',
+    assistant: 'Dental Assistant (ผู้ช่วยทันตแพทย์)',
+    stock_staff: 'Inventory Manager (ฝ่ายคลัง)',
   };
   return texts[role] || 'ไม่ทราบบทบาท';
 }

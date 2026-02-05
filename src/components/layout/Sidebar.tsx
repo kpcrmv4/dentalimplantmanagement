@@ -201,11 +201,11 @@ export function Sidebar() {
                 {user?.full_name || 'ผู้ใช้งาน'}
               </p>
               <p className="text-xs text-gray-500 truncate">
-                {user?.role === 'admin' && 'ผู้ดูแลระบบ'}
-                {user?.role === 'dentist' && 'ทันตแพทย์'}
-                {user?.role === 'stock_staff' && 'เจ้าหน้าที่สต็อก'}
-                {user?.role === 'assistant' && 'ผู้ช่วยทันตแพทย์'}
-                {user?.role === 'cs' && 'Customer Service'}
+                {user?.role === 'admin' && 'Admin'}
+                {user?.role === 'cs' && 'CS'}
+                {user?.role === 'dentist' && 'Dentist'}
+                {user?.role === 'assistant' && 'Dental Assistant'}
+                {user?.role === 'stock_staff' && 'Inventory Manager'}
               </p>
             </div>
           )}

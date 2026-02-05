@@ -8,7 +8,6 @@ import {
   Package,
   Bell,
   Shield,
-  Database,
   Save,
   Plus,
   Edit,
@@ -37,11 +36,11 @@ import {
   TableHead,
   TableCell,
 } from '@/components/ui/Table';
-import { useSuppliers, useCategories, useUsers } from '@/hooks/useApi';
+import { useSuppliers, useUsers } from '@/hooks/useApi';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 
-type SettingsTab = 'general' | 'suppliers' | 'categories' | 'users' | 'notifications';
+type SettingsTab = 'general' | 'suppliers' | 'users' | 'notifications';
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<SettingsTab>('general');
@@ -60,7 +59,6 @@ export default function SettingsPage() {
 
   // Modal states
   const [showSupplierModal, setShowSupplierModal] = useState(false);
-  const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [showUserModal, setShowUserModal] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
 
@@ -72,34 +70,29 @@ export default function SettingsPage() {
     email: '',
     address: '',
   });
-  const [categoryForm, setCategoryForm] = useState({
-    name: '',
-    description: '',
-  });
   const [userForm, setUserForm] = useState({
     full_name: '',
     email: '',
-    role: 'staff',
+    role: 'assistant',
     license_number: '',
   });
 
   const { data: suppliers, mutate: mutateSuppliers } = useSuppliers();
-  const { data: categories, mutate: mutateCategories } = useCategories();
   const { data: users, mutate: mutateUsers } = useUsers();
 
   const tabs = [
     { id: 'general', label: 'ทั่วไป', icon: Building2 },
     { id: 'suppliers', label: 'ซัพพลายเออร์', icon: Package },
-    { id: 'categories', label: 'หมวดหมู่สินค้า', icon: Database },
     { id: 'users', label: 'ผู้ใช้งาน', icon: Users },
     { id: 'notifications', label: 'การแจ้งเตือน', icon: Bell },
   ];
 
   const roleOptions = [
-    { value: 'admin', label: 'ผู้ดูแลระบบ' },
-    { value: 'dentist', label: 'ทันตแพทย์' },
-    { value: 'assistant', label: 'ผู้ช่วย' },
-    { value: 'staff', label: 'พนักงาน' },
+    { value: 'admin', label: 'Admin (ผู้บริหาร)' },
+    { value: 'cs', label: 'Customer Service (CS)' },
+    { value: 'dentist', label: 'Dentist (ทันตแพทย์)' },
+    { value: 'assistant', label: 'Dental Assistant (ผู้ช่วยทันตแพทย์)' },
+    { value: 'stock_staff', label: 'Inventory Manager (ฝ่ายคลัง)' },
   ];
 
   const handleSaveGeneral = async () => {
@@ -177,47 +170,6 @@ export default function SettingsPage() {
     }
   };
 
-  // Category CRUD
-  const handleSaveCategory = async () => {
-    setIsSubmitting(true);
-    try {
-      if (editingItem) {
-        const { error } = await supabase
-          .from('product_categories')
-          .update(categoryForm)
-          .eq('id', editingItem.id);
-        if (error) throw error;
-        toast.success('แก้ไขหมวดหมู่เรียบร้อย');
-      } else {
-        const { error } = await supabase
-          .from('product_categories')
-          .insert(categoryForm);
-        if (error) throw error;
-        toast.success('เพิ่มหมวดหมู่เรียบร้อย');
-      }
-      mutateCategories();
-      setShowCategoryModal(false);
-      setEditingItem(null);
-      setCategoryForm({ name: '', description: '' });
-    } catch (error) {
-      toast.error('เกิดข้อผิดพลาด');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleDeleteCategory = async (id: string) => {
-    if (!confirm('ต้องการลบหมวดหมู่นี้?')) return;
-    try {
-      const { error } = await supabase.from('product_categories').delete().eq('id', id);
-      if (error) throw error;
-      toast.success('ลบหมวดหมู่เรียบร้อย');
-      mutateCategories();
-    } catch (error) {
-      toast.error('เกิดข้อผิดพลาด');
-    }
-  };
-
   // User CRUD
   const handleSaveUser = async () => {
     setIsSubmitting(true);
@@ -239,7 +191,7 @@ export default function SettingsPage() {
       mutateUsers();
       setShowUserModal(false);
       setEditingItem(null);
-      setUserForm({ full_name: '', email: '', role: 'staff', license_number: '' });
+      setUserForm({ full_name: '', email: '', role: 'assistant', license_number: '' });
     } catch (error) {
       toast.error('เกิดข้อผิดพลาด');
     } finally {
@@ -261,10 +213,11 @@ export default function SettingsPage() {
 
   const getRoleLabel = (role: string) => {
     const labels: Record<string, string> = {
-      admin: 'ผู้ดูแลระบบ',
-      dentist: 'ทันตแพทย์',
-      assistant: 'ผู้ช่วย',
-      staff: 'พนักงาน',
+      admin: 'Admin (ผู้บริหาร)',
+      cs: 'Customer Service (CS)',
+      dentist: 'Dentist (ทันตแพทย์)',
+      assistant: 'Dental Assistant (ผู้ช่วยทันตแพทย์)',
+      stock_staff: 'Inventory Manager (ฝ่ายคลัง)',
     };
     return labels[role] || role;
   };
@@ -427,73 +380,6 @@ export default function SettingsPage() {
               </Card>
             )}
 
-            {/* Categories */}
-            {activeTab === 'categories' && (
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <Database className="w-5 h-5" />
-                    หมวดหมู่สินค้า
-                  </CardTitle>
-                  <Button
-                    size="sm"
-                    leftIcon={<Plus className="w-4 h-4" />}
-                    onClick={() => {
-                      setEditingItem(null);
-                      setCategoryForm({ name: '', description: '' });
-                      setShowCategoryModal(true);
-                    }}
-                  >
-                    เพิ่มหมวดหมู่
-                  </Button>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>ชื่อหมวดหมู่</TableHead>
-                        <TableHead>คำอธิบาย</TableHead>
-                        <TableHead className="text-right">การดำเนินการ</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {categories?.map((category) => (
-                        <TableRow key={category.id}>
-                          <TableCell className="font-medium">{category.name}</TableCell>
-                          <TableCell>{category.description || '-'}</TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex items-center justify-end gap-2">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => {
-                                  setEditingItem(category);
-                                  setCategoryForm({
-                                    name: category.name,
-                                    description: category.description || '',
-                                  });
-                                  setShowCategoryModal(true);
-                                }}
-                              >
-                                <Edit className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleDeleteCategory(category.id)}
-                              >
-                                <Trash2 className="w-4 h-4 text-red-500" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            )}
-
             {/* Users */}
             {activeTab === 'users' && (
               <Card>
@@ -507,7 +393,7 @@ export default function SettingsPage() {
                     leftIcon={<Plus className="w-4 h-4" />}
                     onClick={() => {
                       setEditingItem(null);
-                      setUserForm({ full_name: '', email: '', role: 'staff', license_number: '' });
+                      setUserForm({ full_name: '', email: '', role: 'assistant', license_number: '' });
                       setShowUserModal(true);
                     }}
                   >
@@ -690,38 +576,6 @@ export default function SettingsPage() {
             ยกเลิก
           </Button>
           <Button onClick={handleSaveSupplier} isLoading={isSubmitting}>
-            บันทึก
-          </Button>
-        </ModalFooter>
-      </Modal>
-
-      {/* Category Modal */}
-      <Modal
-        isOpen={showCategoryModal}
-        onClose={() => setShowCategoryModal(false)}
-        title={editingItem ? 'แก้ไขหมวดหมู่' : 'เพิ่มหมวดหมู่'}
-      >
-        <div className="space-y-4">
-          <Input
-            label="ชื่อหมวดหมู่ *"
-            value={categoryForm.name}
-            onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
-          />
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">คำอธิบาย</label>
-            <textarea
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
-              rows={2}
-              value={categoryForm.description}
-              onChange={(e) => setCategoryForm({ ...categoryForm, description: e.target.value })}
-            />
-          </div>
-        </div>
-        <ModalFooter>
-          <Button variant="outline" onClick={() => setShowCategoryModal(false)}>
-            ยกเลิก
-          </Button>
-          <Button onClick={handleSaveCategory} isLoading={isSubmitting}>
             บันทึก
           </Button>
         </ModalFooter>
