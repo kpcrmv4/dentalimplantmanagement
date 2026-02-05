@@ -3,18 +3,13 @@
 import { useState, useMemo } from 'react';
 import { 
   Bell, 
-  Check, 
-  CheckCheck, 
   AlertTriangle, 
   Package, 
   Calendar,
   Clock,
-  Filter,
-  Trash2,
-  RefreshCw
 } from 'lucide-react';
 import { Header } from '@/components/layout';
-import { useNotifications, useUrgentCases48h, usePendingStockRequests, useLowStockItems } from '@/hooks/useApi';
+import { useUrgentCases48h, usePendingStockRequests, useLowStockItems } from '@/hooks/useApi';
 import { formatThaiDate, formatThaiDateTime } from '@/lib/utils';
 import Link from 'next/link';
 
@@ -51,9 +46,9 @@ export default function NotificationsPage() {
           id: `urgent-${c.id}`,
           type: 'urgent_case',
           title: 'เคสด่วน! ต้องเตรียมภายใน 48 ชม.',
-          message: `เคส ${c.case_number} - ${c.patient?.full_name || 'ไม่ระบุผู้ป่วย'} วันผ่าตัด: ${formatThaiDate(new Date(c.surgery_date))}`,
+          message: `เคส ${c.case_number} - ${c.patient_name || 'ไม่ระบุผู้ป่วย'} วันผ่าตัด: ${formatThaiDate(new Date(c.surgery_date))}`,
           link: `/cases/${c.id}`,
-          created_at: c.created_at,
+          created_at: c.surgery_date,
           is_read: false,
           priority: 'high',
         });
@@ -64,12 +59,12 @@ export default function NotificationsPage() {
     if (outOfStockRequests) {
       outOfStockRequests.forEach((r) => {
         items.push({
-          id: `outofstock-${r.id}`,
+          id: `outofstock-${r.reservation_id}`,
           type: 'out_of_stock',
           title: 'คำขอวัสดุที่ไม่มีในสต็อก',
-          message: `${r.product?.name || 'สินค้า'} - จำนวน ${r.quantity_requested} ชิ้น สำหรับเคส ${r.case?.case_number || ''}`,
+          message: `${r.product_name || 'สินค้า'} - จำนวน ${r.quantity} ชิ้น สำหรับเคส ${r.case_number || ''}`,
           link: `/inventory`,
-          created_at: r.created_at,
+          created_at: r.requested_at,
           is_read: false,
           priority: 'high',
         });
@@ -77,15 +72,16 @@ export default function NotificationsPage() {
     }
 
     // Add low stock items as notifications
+    // LowStockItem type: { product_id, sku, ref_number, product_name, min_stock_level, current_stock, shortage }
     if (lowStockItems) {
       lowStockItems.forEach((item) => {
         items.push({
-          id: `lowstock-${item.id}`,
+          id: `lowstock-${item.product_id}`,
           type: 'low_stock',
           title: 'วัสดุใกล้หมด',
-          message: `${item.product?.name || 'สินค้า'} - เหลือ ${item.quantity} ชิ้น (ต่ำกว่าขั้นต่ำ ${item.product?.min_stock || 0})`,
+          message: `${item.product_name || 'สินค้า'} ${item.sku ? `(${item.sku})` : ''} - เหลือ ${item.current_stock} ชิ้น (ต่ำกว่าขั้นต่ำ ${item.min_stock_level})`,
           link: `/inventory`,
-          created_at: item.updated_at || new Date().toISOString(),
+          created_at: new Date().toISOString(),
           is_read: false,
           priority: 'medium',
         });

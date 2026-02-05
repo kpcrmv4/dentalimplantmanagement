@@ -28,6 +28,13 @@ export function formatThaiDate(date: string | Date): string {
   return format(d, `dd MMMM`, { locale: th }) + ` ${thaiYear}`;
 }
 
+export function formatThaiDateTime(date: string | Date): string {
+  const d = typeof date === 'string' ? parseISO(date) : date;
+  if (!isValid(d)) return '-';
+  const thaiYear = d.getFullYear() + 543;
+  return format(d, `dd MMMM`, { locale: th }) + ` ${thaiYear} ` + format(d, 'HH:mm', { locale: th }) + ' น.';
+}
+
 export function formatTime(time: string): string {
   if (!time) return '-';
   const [hours, minutes] = time.split(':');
