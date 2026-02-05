@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { supabase } from '@/lib/supabase';
@@ -124,15 +124,9 @@ export function getRoleHomePage(role: UserRole): string {
 export function BottomNavigation() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useAuthStore();
-  const [isHydrated, setIsHydrated] = useState(false);
+  const { user, logout, _hasHydrated } = useAuthStore();
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
-
-  // Handle hydration
-  useEffect(() => {
-    setIsHydrated(true);
-  }, []);
 
   const handleLogout = async () => {
     if (loggingOut) return;
@@ -151,7 +145,7 @@ export function BottomNavigation() {
   };
 
   // Show skeleton while hydrating or no user
-  if (!isHydrated || !user) {
+  if (!_hasHydrated || !user) {
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
         <div className="absolute inset-0 bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]" />
