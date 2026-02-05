@@ -9718,3 +9718,2323 @@
 [2026-02-05T10:31:07.008Z] GET /notifications 200 in 484ms
 [2026-02-05T10:31:07.134Z] ✓ Compiled in 602ms (1090 modules)
 [2026-02-05T10:31:07.610Z] ✓ Compiled in 459ms (1090 modules)
+[2026-02-05T10:31:08.045Z] GET /notifications 200 in 442ms
+[2026-02-05T10:31:08.328Z] ✓ Compiled in 696ms (1090 modules)
+[2026-02-05T10:31:08.986Z] ✓ Compiled in 647ms (1090 modules)
+[2026-02-05T10:31:10.242Z] ✓ Compiled in 1241ms (1090 modules)
+[2026-02-05T10:31:10.256Z] GET /notifications 200 in 880ms
+[2026-02-05T10:31:11.098Z] ✓ Compiled in 832ms (1090 modules)
+[2026-02-05T10:31:11.745Z] ✓ Compiled in 636ms (1090 modules)
+[2026-02-05T10:31:12.580Z] ✓ Compiled in 828ms (1090 modules)
+[2026-02-05T10:31:12.592Z] GET /notifications 200 in 468ms
+[2026-02-05T10:31:13.146Z] ✓ Compiled in 551ms (1090 modules)
+[2026-02-05T10:31:13.712Z] ✓ Compiled in 558ms (1090 modules)
+[2026-02-05T10:31:13.725Z] GET /notifications 200 in 300ms
+[2026-02-05T10:31:14.141Z] ✓ Compiled in 420ms (1090 modules)
+[2026-02-05T10:31:14.466Z] GET /notifications 200 in 339ms
+[2026-02-05T10:31:14.639Z] ✓ Compiled in 493ms (1090 modules)
+[2026-02-05T10:31:15.040Z] ✓ Compiled in 392ms (1090 modules)
+[2026-02-05T10:31:15.324Z] GET /notifications 200 in 290ms
+[2026-02-05T10:31:15.489Z] ✓ Compiled in 444ms (1090 modules)
+[2026-02-05T10:31:15.970Z] ✓ Compiled in 472ms (1090 modules)
+[2026-02-05T10:31:16.245Z] GET /notifications 200 in 291ms
+[2026-02-05T10:31:16.421Z] ✓ Compiled in 444ms (1090 modules)
+[2026-02-05T10:31:17.258Z] ✓ Compiled in 827ms (1090 modules)
+[2026-02-05T10:31:17.475Z] GET /notifications 200 in 233ms
+[2026-02-05T10:31:17.578Z] ✓ Compiled in 312ms (1090 modules)
+[2026-02-05T10:31:17.838Z] ✓ Compiled in 255ms (1090 modules)
+[2026-02-05T10:31:18.196Z] ✓ Compiled in 353ms (1090 modules)
+[2026-02-05T10:31:18.203Z] GET /notifications 200 in 355ms
+[2026-02-05T10:31:18.473Z] ✓ Compiled in 272ms (1090 modules)
+[2026-02-05T10:31:18.767Z] GET /notifications 200 in 287ms
+[2026-02-05T10:31:18.772Z] ✓ Compiled in 292ms (1090 modules)
+[2026-02-05T10:31:19.031Z] ✓ Compiled in 254ms (1090 modules)
+[2026-02-05T10:31:19.334Z] ✓ Compiled in 295ms (1090 modules)
+[2026-02-05T10:31:19.344Z] GET /notifications 200 in 281ms
+[2026-02-05T10:31:19.600Z] ✓ Compiled in 259ms (1090 modules)
+[2026-02-05T10:31:19.893Z] ✓ Compiled in 286ms (1090 modules)
+[2026-02-05T10:31:19.901Z] GET /notifications 200 in 252ms
+[2026-02-05T10:31:20.150Z] ✓ Compiled in 252ms (1090 modules)
+[2026-02-05T10:31:20.442Z] ✓ Compiled in 286ms (1090 modules)
+[2026-02-05T10:31:20.450Z] GET /notifications 200 in 262ms
+[2026-02-05T10:31:20.710Z] ✓ Compiled in 263ms (1090 modules)
+[2026-02-05T10:31:20.982Z] ✓ Compiled in 265ms (1090 modules)
+[2026-02-05T10:31:20.993Z] GET /notifications 200 in 272ms
+[2026-02-05T10:31:21.246Z] ✓ Compiled in 251ms (1090 modules)
+[2026-02-05T10:31:21.429Z] GET /notifications 200 in 190ms
+[2026-02-05T10:31:21.517Z] ✓ Compiled in 263ms (1090 modules)
+[2026-02-05T10:31:21.755Z] ✓ Compiled in 233ms (1090 modules)
+[2026-02-05T10:31:21.946Z] GET /notifications 200 in 275ms
+[2026-02-05T10:31:22.037Z] ✓ Compiled in 276ms (1090 modules)
+[2026-02-05T10:31:22.289Z] ✓ Compiled in 247ms (1090 modules)
+[2026-02-05T10:31:22.444Z] GET /notifications 200 in 264ms
+[2026-02-05T10:31:22.560Z] ✓ Compiled in 264ms (1090 modules)
+[2026-02-05T10:31:22.803Z] ✓ Compiled in 239ms (1090 modules)
+[2026-02-05T10:31:22.968Z] GET /notifications 200 in 284ms
+[2026-02-05T10:31:23.096Z] ✓ Compiled in 288ms (1090 modules)
+[2026-02-05T10:31:23.368Z] ✓ Compiled in 267ms (1090 modules)
+[2026-02-05T10:31:23.533Z] GET /notifications 200 in 286ms
+[2026-02-05T10:31:23.652Z] ✓ Compiled in 276ms (1090 modules)
+[2026-02-05T10:31:23.905Z] ✓ Compiled in 246ms (1090 modules)
+[2026-02-05T10:31:24.065Z] GET /notifications 200 in 258ms
+[2026-02-05T10:31:24.194Z] ✓ Compiled in 284ms (1090 modules)
+[2026-02-05T10:31:24.459Z] ✓ Compiled in 257ms (1090 modules)
+[2026-02-05T10:31:24.611Z] GET /notifications 200 in 279ms
+[2026-02-05T10:31:24.797Z] ✓ Compiled in 332ms (1090 modules)
+[2026-02-05T10:31:25.064Z] ✓ Compiled in 262ms (1090 modules)
+[2026-02-05T10:31:25.227Z] GET /notifications 200 in 290ms
+[2026-02-05T10:31:25.376Z] ✓ Compiled in 260ms (1090 modules)
+[2026-02-05T10:31:25.654Z] ✓ Compiled in 273ms (1090 modules)
+[2026-02-05T10:31:25.667Z] GET /notifications 200 in 197ms
+[2026-02-05T10:31:25.921Z] ✓ Compiled in 255ms (1090 modules)
+[2026-02-05T10:31:26.241Z] ✓ Compiled in 312ms (1090 modules)
+[2026-02-05T10:31:26.246Z] GET /notifications 200 in 315ms
+[2026-02-05T10:31:26.493Z] ✓ Compiled in 246ms (1090 modules)
+[2026-02-05T10:31:26.693Z] GET /notifications 200 in 206ms
+[2026-02-05T10:31:26.782Z] ✓ Compiled in 282ms (1090 modules)
+[2026-02-05T10:31:27.038Z] ✓ Compiled in 251ms (1090 modules)
+[2026-02-05T10:31:27.209Z] GET /notifications 200 in 287ms
+[2026-02-05T10:31:27.344Z] ✓ Compiled in 300ms (1090 modules)
+[2026-02-05T10:31:27.596Z] ✓ Compiled in 246ms (1090 modules)
+[2026-02-05T10:31:27.658Z] GET /notifications 200 in 178ms
+[2026-02-05T10:31:27.878Z] ✓ Compiled in 244ms (1090 modules)
+[2026-02-05T10:31:28.178Z] ✓ Compiled in 294ms (1090 modules)
+[2026-02-05T10:31:28.188Z] GET /notifications 200 in 176ms
+[2026-02-05T10:31:28.462Z] ✓ Compiled in 278ms (1090 modules)
+[2026-02-05T10:31:28.728Z] ✓ Compiled in 260ms (1090 modules)
+[2026-02-05T10:31:28.766Z] GET /notifications 200 in 144ms
+[2026-02-05T10:31:28.995Z] ✓ Compiled in 263ms (1090 modules)
+[2026-02-05T10:31:29.233Z] ✓ Compiled in 233ms (1090 modules)
+[2026-02-05T10:31:29.396Z] GET /notifications 200 in 277ms
+[2026-02-05T10:31:29.621Z] ✓ Compiled in 381ms (1090 modules)
+[2026-02-05T10:31:30.314Z] ✓ Compiled in 687ms (1090 modules)
+[2026-02-05T10:31:30.322Z] GET /notifications 200 in 332ms
+[2026-02-05T10:31:30.591Z] ✓ Compiled in 271ms (1090 modules)
+[2026-02-05T10:31:30.901Z] GET /notifications 200 in 304ms
+[2026-02-05T10:31:30.913Z] ✓ Compiled in 315ms (1090 modules)
+[2026-02-05T10:31:31.197Z] ✓ Compiled in 279ms (1090 modules)
+[2026-02-05T10:31:31.262Z] GET /notifications 200 in 205ms
+[2026-02-05T10:31:31.518Z] ✓ Compiled in 268ms (1090 modules)
+[2026-02-05T10:31:31.762Z] ✓ Compiled in 238ms (1090 modules)
+[2026-02-05T10:31:31.815Z] GET /notifications 200 in 166ms
+[2026-02-05T10:31:32.083Z] ✓ Compiled in 273ms (1090 modules)
+[2026-02-05T10:31:32.401Z] ✓ Compiled in 311ms (1090 modules)
+[2026-02-05T10:31:32.421Z] GET /notifications 200 in 204ms
+[2026-02-05T10:31:32.692Z] ✓ Compiled in 276ms (1090 modules)
+[2026-02-05T10:31:32.885Z] GET /notifications 200 in 198ms
+[2026-02-05T10:31:32.979Z] ✓ Compiled in 282ms (1090 modules)
+[2026-02-05T10:31:33.237Z] ✓ Compiled in 253ms (1090 modules)
+[2026-02-05T10:31:33.419Z] GET /notifications 200 in 266ms
+[2026-02-05T10:31:33.529Z] ✓ Compiled in 287ms (1090 modules)
+[2026-02-05T10:31:33.772Z] ✓ Compiled in 238ms (1090 modules)
+[2026-02-05T10:31:33.937Z] GET /notifications 200 in 261ms
+[2026-02-05T10:31:34.067Z] ✓ Compiled in 290ms (1090 modules)
+[2026-02-05T10:31:34.367Z] ✓ Compiled in 294ms (1090 modules)
+[2026-02-05T10:31:34.376Z] GET /notifications 200 in 176ms
+[2026-02-05T10:31:34.615Z] ✓ Compiled in 242ms (1090 modules)
+[2026-02-05T10:31:34.906Z] ✓ Compiled in 284ms (1090 modules)
+[2026-02-05T10:31:35.065Z] GET /notifications 200 in 287ms
+[2026-02-05T10:31:35.205Z] ✓ Compiled in 295ms (1090 modules)
+[2026-02-05T10:31:35.458Z] ✓ Compiled in 247ms (1090 modules)
+[2026-02-05T10:31:35.622Z] GET /notifications 200 in 284ms
+[2026-02-05T10:31:35.747Z] ✓ Compiled in 251ms (1090 modules)
+[2026-02-05T10:31:36.016Z] ✓ Compiled in 262ms (1090 modules)
+[2026-02-05T10:31:36.084Z] GET /notifications 200 in 194ms
+[2026-02-05T10:31:36.311Z] ✓ Compiled in 247ms (1090 modules)
+[2026-02-05T10:31:36.596Z] ✓ Compiled in 276ms (1090 modules)
+[2026-02-05T10:31:36.606Z] GET /notifications 200 in 195ms
+[2026-02-05T10:31:36.854Z] ✓ Compiled in 251ms (1090 modules)
+[2026-02-05T10:31:37.142Z] ✓ Compiled in 283ms (1090 modules)
+[2026-02-05T10:31:37.154Z] GET /notifications 200 in 290ms
+[2026-02-05T10:31:37.392Z] ✓ Compiled in 238ms (1090 modules)
+[2026-02-05T10:31:37.685Z] ✓ Compiled in 284ms (1090 modules)
+[2026-02-05T10:31:37.690Z] GET /notifications 200 in 287ms
+[2026-02-05T10:31:37.933Z] ✓ Compiled in 241ms (1090 modules)
+[2026-02-05T10:31:38.240Z] ✓ Compiled in 301ms (1090 modules)
+[2026-02-05T10:31:38.247Z] GET /notifications 200 in 289ms
+[2026-02-05T10:31:38.500Z] ✓ Compiled in 255ms (1090 modules)
+[2026-02-05T10:31:38.796Z] ✓ Compiled in 290ms (1090 modules)
+[2026-02-05T10:31:38.805Z] GET /notifications 200 in 274ms
+[2026-02-05T10:31:39.035Z] ✓ Compiled in 234ms (1090 modules)
+[2026-02-05T10:31:39.310Z] ✓ Compiled in 270ms (1090 modules)
+[2026-02-05T10:31:39.318Z] GET /notifications 200 in 184ms
+[2026-02-05T10:31:39.559Z] ✓ Compiled in 243ms (1090 modules)
+[2026-02-05T10:31:39.855Z] ✓ Compiled in 290ms (1090 modules)
+[2026-02-05T10:31:39.864Z] GET /notifications 200 in 203ms
+[2026-02-05T10:31:40.096Z] ✓ Compiled in 236ms (1090 modules)
+[2026-02-05T10:31:40.373Z] ✓ Compiled in 270ms (1090 modules)
+[2026-02-05T10:31:40.382Z] GET /notifications 200 in 247ms
+[2026-02-05T10:31:40.619Z] ✓ Compiled in 238ms (1090 modules)
+[2026-02-05T10:31:40.899Z] ✓ Compiled in 272ms (1090 modules)
+[2026-02-05T10:31:40.905Z] GET /notifications 200 in 275ms
+[2026-02-05T10:31:41.135Z] ✓ Compiled in 231ms (1090 modules)
+[2026-02-05T10:31:41.378Z] ✓ Compiled in 237ms (1090 modules)
+[2026-02-05T10:31:41.553Z] GET /notifications 200 in 326ms
+[2026-02-05T10:31:41.634Z] ✓ Compiled in 244ms (1090 modules)
+[2026-02-05T10:31:41.881Z] ✓ Compiled in 242ms (1090 modules)
+[2026-02-05T10:31:42.046Z] GET /notifications 200 in 274ms
+[2026-02-05T10:31:42.157Z] ✓ Compiled in 264ms (1090 modules)
+[2026-02-05T10:31:42.733Z] ✓ Compiled in 571ms (1090 modules)
+[2026-02-05T10:31:42.927Z] GET /notifications 200 in 583ms
+[2026-02-05T10:31:43.045Z] ✓ Compiled in 307ms (1090 modules)
+[2026-02-05T10:31:43.300Z] ✓ Compiled in 250ms (1090 modules)
+[2026-02-05T10:31:43.467Z] GET /notifications 200 in 274ms
+[2026-02-05T10:31:43.577Z] ✓ Compiled in 270ms (1090 modules)
+[2026-02-05T10:31:43.816Z] ✓ Compiled in 234ms (1090 modules)
+[2026-02-05T10:31:43.990Z] GET /notifications 200 in 260ms
+[2026-02-05T10:31:44.076Z] ✓ Compiled in 254ms (1090 modules)
+[2026-02-05T10:31:44.315Z] ✓ Compiled in 233ms (1090 modules)
+[2026-02-05T10:31:44.502Z] GET /notifications 200 in 204ms
+[2026-02-05T10:31:44.589Z] ✓ Compiled in 266ms (1090 modules)
+[2026-02-05T10:31:44.821Z] ✓ Compiled in 228ms (1090 modules)
+[2026-02-05T10:31:45.012Z] GET /notifications 200 in 273ms
+[2026-02-05T10:31:45.097Z] ✓ Compiled in 270ms (1090 modules)
+[2026-02-05T10:31:45.413Z] ✓ Compiled in 312ms (1090 modules)
+[2026-02-05T10:31:45.568Z] GET /notifications 200 in 313ms
+[2026-02-05T10:31:45.691Z] ✓ Compiled in 272ms (1090 modules)
+[2026-02-05T10:31:46.001Z] ✓ Compiled in 304ms (1090 modules)
+[2026-02-05T10:31:46.009Z] GET /notifications 200 in 170ms
+[2026-02-05T10:31:46.261Z] ✓ Compiled in 254ms (1090 modules)
+[2026-02-05T10:31:46.505Z] ✓ Compiled in 228ms (1090 modules)
+[2026-02-05T10:31:46.691Z] GET /notifications 200 in 193ms
+[2026-02-05T10:31:46.777Z] ✓ Compiled in 267ms (1090 modules)
+[2026-02-05T10:31:47.021Z] ✓ Compiled in 239ms (1090 modules)
+[2026-02-05T10:31:47.197Z] GET /notifications 200 in 278ms
+[2026-02-05T10:31:47.311Z] ✓ Compiled in 282ms (1090 modules)
+[2026-02-05T10:31:47.549Z] ✓ Compiled in 233ms (1090 modules)
+[2026-02-05T10:31:47.703Z] GET /notifications 200 in 272ms
+[2026-02-05T10:31:47.803Z] ✓ Compiled in 248ms (1090 modules)
+[2026-02-05T10:31:48.027Z] ✓ Compiled in 220ms (1090 modules)
+[2026-02-05T10:31:48.212Z] GET /notifications 200 in 203ms
+[2026-02-05T10:31:48.299Z] ✓ Compiled in 266ms (1090 modules)
+[2026-02-05T10:31:48.551Z] ✓ Compiled in 247ms (1090 modules)
+[2026-02-05T10:31:48.720Z] GET /notifications 200 in 283ms
+[2026-02-05T10:31:48.839Z] ✓ Compiled in 280ms (1090 modules)
+[2026-02-05T10:31:49.085Z] ✓ Compiled in 241ms (1090 modules)
+[2026-02-05T10:31:49.241Z] GET /notifications 200 in 269ms
+[2026-02-05T10:31:49.355Z] ✓ Compiled in 264ms (1090 modules)
+[2026-02-05T10:31:49.595Z] ✓ Compiled in 236ms (1090 modules)
+[2026-02-05T10:31:49.777Z] GET /notifications 200 in 298ms
+[2026-02-05T10:31:49.902Z] ✓ Compiled in 298ms (1090 modules)
+[2026-02-05T10:31:50.154Z] ✓ Compiled in 246ms (1090 modules)
+[2026-02-05T10:31:50.308Z] GET /notifications 200 in 278ms
+[2026-02-05T10:31:50.418Z] ✓ Compiled in 258ms (1090 modules)
+[2026-02-05T10:31:50.668Z] ✓ Compiled in 245ms (1090 modules)
+[2026-02-05T10:31:50.825Z] GET /notifications 200 in 264ms
+[2026-02-05T10:31:50.940Z] ✓ Compiled in 266ms (1090 modules)
+[2026-02-05T10:31:51.179Z] ✓ Compiled in 233ms (1090 modules)
+[2026-02-05T10:31:51.333Z] GET /notifications 200 in 254ms
+[2026-02-05T10:31:51.440Z] ✓ Compiled in 255ms (1090 modules)
+[2026-02-05T10:31:51.679Z] ✓ Compiled in 235ms (1090 modules)
+[2026-02-05T10:31:51.871Z] GET /notifications 200 in 209ms
+[2026-02-05T10:31:51.959Z] ✓ Compiled in 273ms (1090 modules)
+[2026-02-05T10:31:52.208Z] ✓ Compiled in 245ms (1090 modules)
+[2026-02-05T10:31:52.362Z] GET /notifications 200 in 257ms
+[2026-02-05T10:31:52.473Z] ✓ Compiled in 258ms (1090 modules)
+[2026-02-05T10:31:52.714Z] ✓ Compiled in 237ms (1090 modules)
+[2026-02-05T10:31:52.878Z] GET /notifications 200 in 266ms
+[2026-02-05T10:31:52.994Z] ✓ Compiled in 271ms (1090 modules)
+[2026-02-05T10:31:53.243Z] ✓ Compiled in 244ms (1090 modules)
+[2026-02-05T10:31:53.309Z] GET /notifications 200 in 188ms
+[2026-02-05T10:31:53.513Z] ✓ Compiled in 235ms (1090 modules)
+[2026-02-05T10:31:53.781Z] ✓ Compiled in 261ms (1090 modules)
+[2026-02-05T10:31:53.787Z] GET /notifications 200 in 182ms
+[2026-02-05T10:31:54.035Z] ✓ Compiled in 250ms (1090 modules)
+[2026-02-05T10:31:54.683Z] ✓ Compiled in 643ms (1090 modules)
+[2026-02-05T10:31:54.691Z] GET /notifications 200 in 629ms
+[2026-02-05T10:31:54.948Z] ✓ Compiled in 259ms (1090 modules)
+[2026-02-05T10:31:55.235Z] ✓ Compiled in 274ms (1090 modules)
+[2026-02-05T10:31:55.242Z] GET /notifications 200 in 271ms
+[2026-02-05T10:31:55.472Z] ✓ Compiled in 231ms (1090 modules)
+[2026-02-05T10:31:55.745Z] ✓ Compiled in 267ms (1090 modules)
+[2026-02-05T10:31:55.758Z] GET /notifications 200 in 255ms
+[2026-02-05T10:31:55.980Z] ✓ Compiled in 223ms (1090 modules)
+[2026-02-05T10:31:56.244Z] ✓ Compiled in 259ms (1090 modules)
+[2026-02-05T10:31:56.251Z] GET /notifications 200 in 245ms
+[2026-02-05T10:31:56.469Z] ✓ Compiled in 219ms (1090 modules)
+[2026-02-05T10:31:56.744Z] ✓ Compiled in 270ms (1090 modules)
+[2026-02-05T10:31:56.754Z] GET /notifications 200 in 255ms
+[2026-02-05T10:31:56.982Z] ✓ Compiled in 230ms (1090 modules)
+[2026-02-05T10:31:57.266Z] ✓ Compiled in 279ms (1090 modules)
+[2026-02-05T10:31:57.275Z] GET /notifications 200 in 244ms
+[2026-02-05T10:31:57.518Z] ✓ Compiled in 246ms (1090 modules)
+[2026-02-05T10:31:57.822Z] ✓ Compiled in 299ms (1090 modules)
+[2026-02-05T10:31:57.831Z] GET /notifications 200 in 276ms
+[2026-02-05T10:31:58.088Z] ✓ Compiled in 257ms (1090 modules)
+[2026-02-05T10:31:58.378Z] ✓ Compiled in 285ms (1090 modules)
+[2026-02-05T10:31:58.385Z] GET /notifications 200 in 271ms
+[2026-02-05T10:31:58.620Z] ✓ Compiled in 237ms (1090 modules)
+[2026-02-05T10:31:58.924Z] ✓ Compiled in 296ms (1090 modules)
+[2026-02-05T10:31:58.930Z] GET /notifications 200 in 266ms
+[2026-02-05T10:31:59.162Z] ✓ Compiled in 232ms (1090 modules)
+[2026-02-05T10:31:59.444Z] ✓ Compiled in 277ms (1090 modules)
+[2026-02-05T10:31:59.452Z] GET /notifications 200 in 253ms
+[2026-02-05T10:31:59.683Z] ✓ Compiled in 233ms (1090 modules)
+[2026-02-05T10:31:59.969Z] ✓ Compiled in 281ms (1090 modules)
+[2026-02-05T10:31:59.975Z] GET /notifications 200 in 257ms
+[2026-02-05T10:32:00.210Z] ✓ Compiled in 236ms (1090 modules)
+[2026-02-05T10:32:00.486Z] ✓ Compiled in 270ms (1090 modules)
+[2026-02-05T10:32:00.495Z] GET /notifications 200 in 182ms
+[2026-02-05T10:32:00.743Z] ✓ Compiled in 251ms (1090 modules)
+[2026-02-05T10:32:01.027Z] ✓ Compiled in 278ms (1090 modules)
+[2026-02-05T10:32:01.034Z] GET /notifications 200 in 264ms
+[2026-02-05T10:32:01.285Z] ✓ Compiled in 251ms (1090 modules)
+[2026-02-05T10:32:01.578Z] ✓ Compiled in 289ms (1090 modules)
+[2026-02-05T10:32:01.585Z] GET /notifications 200 in 268ms
+[2026-02-05T10:32:01.829Z] ✓ Compiled in 244ms (1090 modules)
+[2026-02-05T10:32:02.102Z] ✓ Compiled in 268ms (1090 modules)
+[2026-02-05T10:32:02.109Z] GET /notifications 200 in 236ms
+[2026-02-05T10:32:02.328Z] ✓ Compiled in 221ms (1090 modules)
+[2026-02-05T10:32:02.588Z] ✓ Compiled in 255ms (1090 modules)
+[2026-02-05T10:32:02.596Z] GET /notifications 200 in 179ms
+[2026-02-05T10:32:02.830Z] ✓ Compiled in 236ms (1090 modules)
+[2026-02-05T10:32:03.111Z] ✓ Compiled in 276ms (1090 modules)
+[2026-02-05T10:32:03.118Z] GET /notifications 200 in 237ms
+[2026-02-05T10:32:03.378Z] ✓ Compiled in 262ms (1090 modules)
+[2026-02-05T10:32:03.674Z] ✓ Compiled in 290ms (1090 modules)
+[2026-02-05T10:32:03.680Z] GET /notifications 200 in 269ms
+[2026-02-05T10:32:03.957Z] ✓ Compiled in 278ms (1090 modules)
+[2026-02-05T10:32:04.168Z] GET /notifications 200 in 218ms
+[2026-02-05T10:32:04.256Z] ✓ Compiled in 293ms (1090 modules)
+[2026-02-05T10:32:04.484Z] ✓ Compiled in 224ms (1090 modules)
+[2026-02-05T10:32:04.666Z] GET /notifications 200 in 190ms
+[2026-02-05T10:32:04.755Z] ✓ Compiled in 266ms (1090 modules)
+[2026-02-05T10:32:05.038Z] ✓ Compiled in 277ms (1090 modules)
+[2026-02-05T10:32:05.203Z] GET /notifications 200 in 303ms
+[2026-02-05T10:32:05.338Z] ✓ Compiled in 292ms (1090 modules)
+[2026-02-05T10:32:05.631Z] ✓ Compiled in 286ms (1090 modules)
+[2026-02-05T10:32:05.645Z] GET /notifications 200 in 170ms
+[2026-02-05T10:32:05.876Z] ✓ Compiled in 232ms (1090 modules)
+[2026-02-05T10:32:06.191Z] ✓ Compiled in 309ms (1090 modules)
+[2026-02-05T10:32:06.201Z] GET /notifications 200 in 298ms
+[2026-02-05T10:32:06.461Z] ✓ Compiled in 262ms (1090 modules)
+[2026-02-05T10:32:07.183Z] ✓ Compiled in 713ms (1090 modules)
+[2026-02-05T10:32:07.201Z] GET /notifications 200 in 728ms
+[2026-02-05T10:32:07.466Z] ✓ Compiled in 266ms (1090 modules)
+[2026-02-05T10:32:07.659Z] GET /notifications 200 in 201ms
+[2026-02-05T10:32:07.750Z] ✓ Compiled in 277ms (1090 modules)
+[2026-02-05T10:32:08.010Z] ✓ Compiled in 255ms (1090 modules)
+[2026-02-05T10:32:08.220Z] GET /notifications 200 in 220ms
+[2026-02-05T10:32:08.311Z] ✓ Compiled in 292ms (1090 modules)
+[2026-02-05T10:32:08.549Z] ✓ Compiled in 232ms (1090 modules)
+[2026-02-05T10:32:08.725Z] GET /notifications 200 in 183ms
+[2026-02-05T10:32:08.812Z] ✓ Compiled in 258ms (1090 modules)
+[2026-02-05T10:32:09.043Z] ✓ Compiled in 227ms (1090 modules)
+[2026-02-05T10:32:09.230Z] GET /notifications 200 in 194ms
+[2026-02-05T10:32:09.338Z] ✓ Compiled in 290ms (1090 modules)
+[2026-02-05T10:32:09.570Z] ✓ Compiled in 224ms (1090 modules)
+[2026-02-05T10:32:09.750Z] GET /notifications 200 in 187ms
+[2026-02-05T10:32:09.841Z] ✓ Compiled in 266ms (1090 modules)
+[2026-02-05T10:32:10.084Z] ✓ Compiled in 238ms (1090 modules)
+[2026-02-05T10:32:10.275Z] GET /notifications 200 in 278ms
+[2026-02-05T10:32:10.362Z] ✓ Compiled in 273ms (1090 modules)
+[2026-02-05T10:32:10.603Z] ✓ Compiled in 236ms (1090 modules)
+[2026-02-05T10:32:10.760Z] GET /notifications 200 in 242ms
+[2026-02-05T10:32:10.857Z] ✓ Compiled in 249ms (1090 modules)
+[2026-02-05T10:32:11.091Z] ✓ Compiled in 229ms (1090 modules)
+[2026-02-05T10:32:11.293Z] GET /notifications 200 in 209ms
+[2026-02-05T10:32:11.382Z] ✓ Compiled in 282ms (1090 modules)
+[2026-02-05T10:32:11.629Z] ✓ Compiled in 242ms (1090 modules)
+[2026-02-05T10:32:11.787Z] GET /notifications 200 in 258ms
+[2026-02-05T10:32:11.907Z] ✓ Compiled in 270ms (1090 modules)
+[2026-02-05T10:32:12.172Z] ✓ Compiled in 259ms (1090 modules)
+[2026-02-05T10:32:12.366Z] GET /notifications 200 in 301ms
+[2026-02-05T10:32:12.499Z] ✓ Compiled in 316ms (1090 modules)
+[2026-02-05T10:32:12.763Z] ✓ Compiled in 257ms (1090 modules)
+[2026-02-05T10:32:12.913Z] GET /notifications 200 in 260ms
+[2026-02-05T10:32:13.011Z] ✓ Compiled in 244ms (1090 modules)
+[2026-02-05T10:32:13.237Z] ✓ Compiled in 220ms (1090 modules)
+[2026-02-05T10:32:13.399Z] GET /notifications 200 in 239ms
+[2026-02-05T10:32:13.483Z] ✓ Compiled in 240ms (1090 modules)
+[2026-02-05T10:32:13.712Z] ✓ Compiled in 225ms (1090 modules)
+[2026-02-05T10:32:13.898Z] GET /notifications 200 in 192ms
+[2026-02-05T10:32:13.985Z] ✓ Compiled in 268ms (1090 modules)
+[2026-02-05T10:32:14.220Z] ✓ Compiled in 230ms (1090 modules)
+[2026-02-05T10:32:14.397Z] GET /notifications 200 in 185ms
+[2026-02-05T10:32:14.485Z] ✓ Compiled in 259ms (1090 modules)
+[2026-02-05T10:32:14.734Z] ✓ Compiled in 244ms (1090 modules)
+[2026-02-05T10:32:14.914Z] GET /notifications 200 in 265ms
+[2026-02-05T10:32:15.002Z] ✓ Compiled in 263ms (1090 modules)
+[2026-02-05T10:32:15.244Z] ✓ Compiled in 238ms (1090 modules)
+[2026-02-05T10:32:15.448Z] GET /notifications 200 in 288ms
+[2026-02-05T10:32:15.541Z] ✓ Compiled in 291ms (1090 modules)
+[2026-02-05T10:32:15.787Z] ✓ Compiled in 240ms (1090 modules)
+[2026-02-05T10:32:15.949Z] GET /notifications 200 in 264ms
+[2026-02-05T10:32:16.062Z] ✓ Compiled in 267ms (1090 modules)
+[2026-02-05T10:32:16.301Z] ✓ Compiled in 233ms (1090 modules)
+[2026-02-05T10:32:16.453Z] GET /notifications 200 in 253ms
+[2026-02-05T10:32:16.556Z] ✓ Compiled in 251ms (1090 modules)
+[2026-02-05T10:32:16.776Z] ✓ Compiled in 215ms (1090 modules)
+[2026-02-05T10:32:16.948Z] GET /notifications 200 in 180ms
+[2026-02-05T10:32:17.035Z] ✓ Compiled in 254ms (1090 modules)
+[2026-02-05T10:32:17.278Z] ✓ Compiled in 239ms (1090 modules)
+[2026-02-05T10:32:17.448Z] GET /notifications 200 in 269ms
+[2026-02-05T10:32:17.579Z] ✓ Compiled in 292ms (1090 modules)
+[2026-02-05T10:32:17.826Z] ✓ Compiled in 241ms (1090 modules)
+[2026-02-05T10:32:17.989Z] GET /notifications 200 in 276ms
+[2026-02-05T10:32:18.099Z] ✓ Compiled in 267ms (1090 modules)
+[2026-02-05T10:32:18.366Z] ✓ Compiled in 262ms (1090 modules)
+[2026-02-05T10:32:18.901Z] GET /notifications 200 in 653ms
+[2026-02-05T10:32:19.050Z] ✓ Compiled in 676ms (1090 modules)
+[2026-02-05T10:32:19.358Z] ✓ Compiled in 303ms (1090 modules)
+[2026-02-05T10:32:19.365Z] GET /notifications 200 in 288ms
+[2026-02-05T10:32:19.603Z] ✓ Compiled in 239ms (1090 modules)
+[2026-02-05T10:32:19.896Z] ✓ Compiled in 288ms (1090 modules)
+[2026-02-05T10:32:19.905Z] GET /notifications 200 in 254ms
+[2026-02-05T10:32:20.137Z] ✓ Compiled in 235ms (1090 modules)
+[2026-02-05T10:32:20.425Z] ✓ Compiled in 284ms (1090 modules)
+[2026-02-05T10:32:20.432Z] GET /notifications 200 in 242ms
+[2026-02-05T10:32:20.681Z] ✓ Compiled in 250ms (1090 modules)
+[2026-02-05T10:32:20.963Z] ✓ Compiled in 277ms (1090 modules)
+[2026-02-05T10:32:20.970Z] GET /notifications 200 in 263ms
+[2026-02-05T10:32:21.229Z] ✓ Compiled in 259ms (1090 modules)
+[2026-02-05T10:32:21.507Z] ✓ Compiled in 272ms (1090 modules)
+[2026-02-05T10:32:21.515Z] GET /notifications 200 in 242ms
+[2026-02-05T10:32:21.741Z] ✓ Compiled in 229ms (1090 modules)
+[2026-02-05T10:32:22.006Z] ✓ Compiled in 261ms (1090 modules)
+[2026-02-05T10:32:22.015Z] GET /notifications 200 in 228ms
+[2026-02-05T10:32:22.269Z] ✓ Compiled in 254ms (1090 modules)
+[2026-02-05T10:32:22.538Z] GET /notifications 200 in 250ms
+[2026-02-05T10:32:22.549Z] ✓ Compiled in 279ms (1090 modules)
+[2026-02-05T10:32:22.797Z] ✓ Compiled in 242ms (1090 modules)
+[2026-02-05T10:32:22.940Z] GET /notifications 200 in 237ms
+[2026-02-05T10:32:23.050Z] ✓ Compiled in 247ms (1090 modules)
+[2026-02-05T10:32:23.282Z] ✓ Compiled in 227ms (1090 modules)
+[2026-02-05T10:32:23.427Z] GET /notifications 200 in 237ms
+[2026-02-05T10:32:23.547Z] ✓ Compiled in 258ms (1090 modules)
+[2026-02-05T10:32:23.769Z] ✓ Compiled in 217ms (1090 modules)
+[2026-02-05T10:32:23.917Z] GET /notifications 200 in 245ms
+[2026-02-05T10:32:24.034Z] ✓ Compiled in 259ms (1090 modules)
+[2026-02-05T10:32:24.304Z] ✓ Compiled in 262ms (1090 modules)
+[2026-02-05T10:32:24.480Z] GET /notifications 200 in 302ms
+[2026-02-05T10:32:24.637Z] ✓ Compiled in 282ms (1090 modules)
+[2026-02-05T10:32:24.969Z] ✓ Compiled in 324ms (1090 modules)
+[2026-02-05T10:32:24.981Z] GET /notifications 200 in 182ms
+[2026-02-05T10:32:25.253Z] ✓ Compiled in 271ms (1090 modules)
+[2026-02-05T10:32:25.642Z] GET /notifications 200 in 348ms
+[2026-02-05T10:32:25.655Z] ✓ Compiled in 384ms (1090 modules)
+[2026-02-05T10:32:26.084Z] ✓ Compiled in 424ms (1090 modules)
+[2026-02-05T10:32:26.305Z] GET /notifications 200 in 232ms
+[2026-02-05T10:32:26.498Z] ✓ Compiled in 398ms (1090 modules)
+[2026-02-05T10:32:26.872Z] ✓ Compiled in 367ms (1090 modules)
+[2026-02-05T10:32:27.346Z] GET /notifications 200 in 270ms
+[2026-02-05T10:32:27.366Z] ✓ Compiled in 466ms (1090 modules)
+[2026-02-05T10:32:27.958Z] ✓ Compiled in 581ms (1090 modules)
+[2026-02-05T10:32:28.227Z] GET /notifications 200 in 280ms
+[2026-02-05T10:32:28.364Z] ✓ Compiled in 397ms (1090 modules)
+[2026-02-05T10:32:28.833Z] ✓ Compiled in 455ms (1090 modules)
+[2026-02-05T10:32:29.134Z] GET /notifications 200 in 305ms
+[2026-02-05T10:32:29.310Z] ✓ Compiled in 468ms (1090 modules)
+[2026-02-05T10:32:29.789Z] ✓ Compiled in 472ms (1090 modules)
+[2026-02-05T10:32:30.346Z] ✓ Compiled in 548ms (1090 modules)
+[2026-02-05T10:32:30.362Z] GET /notifications 200 in 327ms
+[2026-02-05T10:32:30.771Z] ✓ Compiled in 407ms (1090 modules)
+[2026-02-05T10:32:31.049Z] GET /notifications 200 in 282ms
+[2026-02-05T10:32:31.171Z] ✓ Compiled in 389ms (1090 modules)
+[2026-02-05T10:32:31.495Z] ✓ Compiled in 311ms (1090 modules)
+[2026-02-05T10:32:31.734Z] GET /notifications 200 in 226ms
+[2026-02-05T10:32:31.829Z] ✓ Compiled in 323ms (1090 modules)
+[2026-02-05T10:32:32.172Z] ✓ Compiled in 333ms (1090 modules)
+[2026-02-05T10:32:32.404Z] GET /notifications 200 in 250ms
+[2026-02-05T10:32:32.583Z] ✓ Compiled in 397ms (1090 modules)
+[2026-02-05T10:32:32.965Z] ✓ Compiled in 376ms (1090 modules)
+[2026-02-05T10:32:33.585Z] GET /notifications 200 in 603ms
+[2026-02-05T10:32:33.715Z] ✓ Compiled in 728ms (1090 modules)
+[2026-02-05T10:32:34.040Z] ✓ Compiled in 318ms (1090 modules)
+[2026-02-05T10:32:34.214Z] GET /notifications 200 in 332ms
+[2026-02-05T10:32:34.320Z] ✓ Compiled in 263ms (1090 modules)
+[2026-02-05T10:32:34.601Z] ✓ Compiled in 275ms (1090 modules)
+[2026-02-05T10:32:34.785Z] GET /notifications 200 in 319ms
+[2026-02-05T10:32:34.884Z] ✓ Compiled in 275ms (1090 modules)
+[2026-02-05T10:32:35.159Z] ✓ Compiled in 271ms (1090 modules)
+[2026-02-05T10:32:35.316Z] GET /notifications 200 in 292ms
+[2026-02-05T10:32:35.424Z] ✓ Compiled in 258ms (1090 modules)
+[2026-02-05T10:32:35.663Z] ✓ Compiled in 235ms (1090 modules)
+[2026-02-05T10:32:35.814Z] GET /notifications 200 in 269ms
+[2026-02-05T10:32:35.917Z] ✓ Compiled in 248ms (1090 modules)
+[2026-02-05T10:32:36.148Z] ✓ Compiled in 227ms (1090 modules)
+[2026-02-05T10:32:36.318Z] GET /notifications 200 in 267ms
+[2026-02-05T10:32:36.433Z] ✓ Compiled in 276ms (1090 modules)
+[2026-02-05T10:32:36.735Z] ✓ Compiled in 297ms (1090 modules)
+[2026-02-05T10:32:36.744Z] GET /notifications 200 in 184ms
+[2026-02-05T10:32:36.997Z] ✓ Compiled in 255ms (1090 modules)
+[2026-02-05T10:32:37.268Z] ✓ Compiled in 266ms (1090 modules)
+[2026-02-05T10:32:37.275Z] GET /notifications 200 in 250ms
+[2026-02-05T10:32:37.522Z] ✓ Compiled in 249ms (1090 modules)
+[2026-02-05T10:32:37.913Z] GET /notifications 200 in 371ms
+[2026-02-05T10:32:37.935Z] ✓ Compiled in 399ms (1090 modules)
+[2026-02-05T10:32:38.433Z] ✓ Compiled in 488ms (1090 modules)
+[2026-02-05T10:32:38.440Z] GET /notifications 200 in 305ms
+[2026-02-05T10:32:38.891Z] ✓ Compiled in 441ms (1090 modules)
+[2026-02-05T10:32:39.227Z] GET /notifications 200 in 348ms
+[2026-02-05T10:32:39.405Z] ✓ Compiled in 504ms (1090 modules)
+[2026-02-05T10:32:39.893Z] ✓ Compiled in 479ms (1090 modules)
+[2026-02-05T10:32:40.250Z] GET /notifications 200 in 365ms
+[2026-02-05T10:32:40.450Z] ✓ Compiled in 531ms (1090 modules)
+[2026-02-05T10:32:40.940Z] ✓ Compiled in 483ms (1090 modules)
+[2026-02-05T10:32:41.332Z] GET /notifications 200 in 399ms
+[2026-02-05T10:32:41.488Z] ✓ Compiled in 537ms (1090 modules)
+[2026-02-05T10:32:42.055Z] ✓ Compiled in 556ms (1090 modules)
+[2026-02-05T10:32:42.163Z] GET /notifications 200 in 119ms
+[2026-02-05T10:32:42.686Z] ✓ Compiled in 531ms (1090 modules)
+[2026-02-05T10:32:43.163Z] ✓ Compiled in 470ms (1090 modules)
+[2026-02-05T10:32:43.820Z] ✓ Compiled in 640ms (1090 modules)
+[2026-02-05T10:32:43.832Z] GET /notifications 200 in 434ms
+[2026-02-05T10:32:44.325Z] ✓ Compiled in 486ms (1090 modules)
+[2026-02-05T10:32:45.066Z] ✓ Compiled in 709ms (1090 modules)
+[2026-02-05T10:32:45.084Z] GET /notifications 200 in 482ms
+[2026-02-05T10:32:45.581Z] ✓ Compiled in 494ms (1090 modules)
+[2026-02-05T10:32:46.341Z] ✓ Compiled in 749ms (1090 modules)
+[2026-02-05T10:32:46.352Z] GET /notifications 200 in 487ms
+[2026-02-05T10:32:46.856Z] ✓ Compiled in 505ms (1090 modules)
+[2026-02-05T10:32:47.432Z] ✓ Compiled in 563ms (1090 modules)
+[2026-02-05T10:32:48.410Z] GET /notifications 200 in 1000ms
+[2026-02-05T10:32:48.460Z] ✓ Compiled in 1016ms (1090 modules)
+[2026-02-05T10:32:49.137Z] ✓ Compiled in 650ms (1090 modules)
+[2026-02-05T10:32:50.111Z] ✓ Compiled in 919ms (1090 modules)
+[2026-02-05T10:32:50.152Z] GET /notifications 200 in 548ms
+[2026-02-05T10:32:50.863Z] ✓ Compiled in 682ms (1090 modules)
+[2026-02-05T10:32:51.810Z] ✓ Compiled in 861ms (1090 modules)
+[2026-02-05T10:32:51.857Z] GET /notifications 200 in 718ms
+[2026-02-05T10:32:52.512Z] ✓ Compiled in 643ms (1090 modules)
+[2026-02-05T10:32:53.334Z] ✓ Compiled in 790ms (1090 modules)
+[2026-02-05T10:32:53.847Z] GET /notifications 200 in 793ms
+[2026-02-05T10:32:54.212Z] ✓ Compiled in 701ms (1090 modules)
+[2026-02-05T10:32:54.934Z] ✓ Compiled in 707ms (1090 modules)
+[2026-02-05T10:32:55.999Z] ✓ Compiled in 1052ms (1090 modules)
+[2026-02-05T10:32:56.681Z] GET /notifications 200 in 1356ms
+[2026-02-05T10:32:57.344Z] ✓ Compiled in 1116ms (1090 modules)
+[2026-02-05T10:32:57.734Z] GET /notifications 200 in 578ms
+[2026-02-05T10:32:58.180Z] ✓ Compiled in 826ms (1090 modules)
+[2026-02-05T10:32:58.688Z] ✓ Compiled in 496ms (1090 modules)
+[2026-02-05T10:32:59.401Z] ✓ Compiled in 707ms (1090 modules)
+[2026-02-05T10:32:59.418Z] GET /notifications 200 in 498ms
+[2026-02-05T10:32:59.987Z] ✓ Compiled in 574ms (1090 modules)
+[2026-02-05T10:33:00.631Z] ✓ Compiled in 633ms (1090 modules)
+[2026-02-05T10:33:00.641Z] GET /notifications 200 in 419ms
+[2026-02-05T10:33:01.137Z] ✓ Compiled in 500ms (1090 modules)
+[2026-02-05T10:33:01.610Z] GET /notifications 200 in 477ms
+[2026-02-05T10:33:01.854Z] ✓ Compiled in 707ms (1090 modules)
+[2026-02-05T10:33:02.383Z] ✓ Compiled in 517ms (1090 modules)
+[2026-02-05T10:33:03.119Z] GET /notifications 200 in 422ms
+[2026-02-05T10:33:03.133Z] ✓ Compiled in 735ms (1090 modules)
+[2026-02-05T10:33:03.742Z] ✓ Compiled in 604ms (1090 modules)
+[2026-02-05T10:33:04.225Z] GET /notifications 200 in 488ms
+[2026-02-05T10:33:04.485Z] ✓ Compiled in 714ms (1090 modules)
+[2026-02-05T10:33:05.174Z] ✓ Compiled in 668ms (1090 modules)
+[2026-02-05T10:33:05.960Z] ✓ Compiled in 778ms (1090 modules)
+[2026-02-05T10:33:06.014Z] GET /notifications 200 in 556ms
+[2026-02-05T10:33:06.675Z] ✓ Compiled in 693ms (1090 modules)
+[2026-02-05T10:33:07.388Z] ✓ Compiled in 694ms (1090 modules)
+[2026-02-05T10:33:07.846Z] GET /notifications 200 in 696ms
+[2026-02-05T10:33:08.279Z] ✓ Compiled in 881ms (1090 modules)
+[2026-02-05T10:33:08.889Z] ✓ Compiled in 598ms (1090 modules)
+[2026-02-05T10:33:11.306Z] ✓ Compiled in 740ms (1090 modules)
+[2026-02-05T10:33:11.338Z] GET /notifications 200 in 487ms
+[2026-02-05T10:33:24.111Z] ✓ Compiled in 12.5s (1090 modules)
+[2026-02-05T10:33:27.866Z] GET /notifications 200 in 8604ms
+[2026-02-05T10:33:29.880Z] ✓ Compiled in 5.4s (1090 modules)
+[2026-02-05T10:33:33.545Z] ✓ Compiled in 3.5s (1090 modules)
+[2026-02-05T10:33:44.988Z] GET /notifications 200 in 7791ms
+[2026-02-05T10:33:45.358Z] ✓ Compiled in 11.5s (1090 modules)
+[2026-02-05T10:33:49.061Z] ✓ Compiled in 3.5s (1090 modules)
+[2026-02-05T10:33:57.198Z] ✓ Compiled in 8s (1090 modules)
+[2026-02-05T10:34:06.266Z] GET /notifications 200 in 9295ms
+[2026-02-05T10:34:07.167Z] ✓ Compiled in 9.8s (1090 modules)
+[2026-02-05T10:34:18.302Z] ✓ Compiled in 11s (1090 modules)
+[2026-02-05T10:34:46.719Z] ✓ Compiled in 28.2s (1090 modules)
+[2026-02-05T10:34:46.802Z] GET /notifications 200 in 18815ms
+[2026-02-05T10:34:47.189Z] ✓ Compiled in 453ms (1090 modules)
+[2026-02-05T10:34:47.511Z] GET /notifications 200 in 333ms
+[2026-02-05T10:34:47.515Z] ✓ Compiled in 320ms (1090 modules)
+[2026-02-05T10:34:47.795Z] ✓ Compiled in 275ms (1090 modules)
+[2026-02-05T10:34:48.020Z] GET /notifications 200 in 234ms
+[2026-02-05T10:34:48.112Z] ✓ Compiled in 301ms (1090 modules)
+[2026-02-05T10:34:48.590Z] ✓ Compiled in 473ms (1090 modules)
+[2026-02-05T10:34:49.037Z] GET /notifications 200 in 461ms
+[2026-02-05T10:34:49.044Z] ✓ Compiled in 425ms (1090 modules)
+[2026-02-05T10:34:49.323Z] ✓ Compiled in 274ms (1090 modules)
+[2026-02-05T10:34:49.539Z] GET /notifications 200 in 225ms
+[2026-02-05T10:34:49.627Z] ✓ Compiled in 299ms (1090 modules)
+[2026-02-05T10:34:49.889Z] ✓ Compiled in 257ms (1090 modules)
+[2026-02-05T10:34:50.098Z] GET /notifications 200 in 219ms
+[2026-02-05T10:34:50.190Z] ✓ Compiled in 295ms (1090 modules)
+[2026-02-05T10:34:50.444Z] ✓ Compiled in 249ms (1090 modules)
+[2026-02-05T10:34:50.649Z] GET /notifications 200 in 212ms
+[2026-02-05T10:34:50.738Z] ✓ Compiled in 288ms (1090 modules)
+[2026-02-05T10:34:51.003Z] ✓ Compiled in 260ms (1090 modules)
+[2026-02-05T10:34:51.211Z] GET /notifications 200 in 216ms
+[2026-02-05T10:34:51.300Z] ✓ Compiled in 286ms (1090 modules)
+[2026-02-05T10:34:51.598Z] ✓ Compiled in 292ms (1090 modules)
+[2026-02-05T10:34:51.816Z] GET /notifications 200 in 236ms
+[2026-02-05T10:34:51.901Z] ✓ Compiled in 294ms (1090 modules)
+[2026-02-05T10:34:52.172Z] ✓ Compiled in 266ms (1090 modules)
+[2026-02-05T10:34:52.369Z] GET /notifications 200 in 207ms
+[2026-02-05T10:34:52.464Z] ✓ Compiled in 286ms (1090 modules)
+[2026-02-05T10:34:52.733Z] ✓ Compiled in 264ms (1090 modules)
+[2026-02-05T10:34:52.920Z] GET /notifications 200 in 197ms
+[2026-02-05T10:34:53.009Z] ✓ Compiled in 270ms (1090 modules)
+[2026-02-05T10:34:53.278Z] ✓ Compiled in 262ms (1090 modules)
+[2026-02-05T10:34:53.564Z] GET /notifications 200 in 295ms
+[2026-02-05T10:34:53.578Z] ✓ Compiled in 292ms (1090 modules)
+[2026-02-05T10:34:53.873Z] ✓ Compiled in 288ms (1090 modules)
+[2026-02-05T10:34:54.085Z] GET /notifications 200 in 226ms
+[2026-02-05T10:34:54.181Z] ✓ Compiled in 299ms (1090 modules)
+[2026-02-05T10:34:54.457Z] ✓ Compiled in 271ms (1090 modules)
+[2026-02-05T10:34:54.639Z] GET /notifications 200 in 317ms
+[2026-02-05T10:34:54.783Z] ✓ Compiled in 283ms (1090 modules)
+[2026-02-05T10:34:55.075Z] GET /notifications 200 in 304ms
+[2026-02-05T10:34:55.079Z] ✓ Compiled in 290ms (1090 modules)
+[2026-02-05T10:34:55.350Z] ✓ Compiled in 266ms (1090 modules)
+[2026-02-05T10:34:55.555Z] GET /notifications 200 in 213ms
+[2026-02-05T10:34:55.653Z] ✓ Compiled in 290ms (1090 modules)
+[2026-02-05T10:34:56.031Z] ⨯ SyntaxError: Unexpected end of JSON input
+[2026-02-05T10:34:56.031Z] at JSON.parse (<anonymous>) {
+[2026-02-05T10:34:56.032Z] page: '/notifications'
+[2026-02-05T10:34:56.032Z] }
+[2026-02-05T10:34:56.821Z] ○ Compiling /_error ...
+[2026-02-05T10:34:57.121Z] ✓ Compiled /_error in 1465ms (2373 modules)
+[2026-02-05T10:34:57.452Z] GET /notifications 500 in 1651ms
+[2026-02-05T10:34:57.462Z] ✓ Compiled in 307ms (1091 modules)
+[2026-02-05T10:34:57.767Z] ✓ Compiled in 298ms (1091 modules)
+[2026-02-05T10:34:58.128Z] GET /notifications 200 in 367ms
+[2026-02-05T10:34:58.222Z] ✓ Compiled in 448ms (1091 modules)
+[2026-02-05T10:34:58.541Z] ✓ Compiled in 314ms (1091 modules)
+[2026-02-05T10:34:58.553Z] GET /notifications 200 in 180ms
+[2026-02-05T10:34:58.840Z] ✓ Compiled in 290ms (1091 modules)
+[2026-02-05T10:34:59.092Z] ✓ Compiled in 245ms (1091 modules)
+[2026-02-05T10:34:59.243Z] GET /notifications 200 in 279ms
+[2026-02-05T10:34:59.375Z] ✓ Compiled in 243ms (1091 modules)
+[2026-02-05T10:34:59.702Z] ✓ Compiled in 322ms (1091 modules)
+[2026-02-05T10:34:59.718Z] GET /notifications 200 in 220ms
+[2026-02-05T10:34:59.993Z] ✓ Compiled in 279ms (1091 modules)
+[2026-02-05T10:35:00.191Z] GET /notifications 200 in 207ms
+[2026-02-05T10:35:00.298Z] ✓ Compiled in 298ms (1091 modules)
+[2026-02-05T10:35:00.559Z] ✓ Compiled in 255ms (1091 modules)
+[2026-02-05T10:35:00.736Z] GET /notifications 200 in 301ms
+[2026-02-05T10:35:00.868Z] ✓ Compiled in 304ms (1091 modules)
+[2026-02-05T10:35:01.161Z] ✓ Compiled in 287ms (1091 modules)
+[2026-02-05T10:35:01.174Z] GET /notifications 200 in 195ms
+[2026-02-05T10:35:01.466Z] ✓ Compiled in 297ms (1091 modules)
+[2026-02-05T10:35:01.657Z] GET /notifications 200 in 199ms
+[2026-02-05T10:35:01.754Z] ✓ Compiled in 282ms (1091 modules)
+[2026-02-05T10:35:02.040Z] ✓ Compiled in 282ms (1091 modules)
+[2026-02-05T10:35:02.232Z] GET /notifications 200 in 325ms
+[2026-02-05T10:35:02.434Z] ✓ Compiled in 388ms (1091 modules)
+[2026-02-05T10:35:02.628Z] GET /notifications 200 in 206ms
+[2026-02-05T10:35:02.772Z] ✓ Compiled in 330ms (1091 modules)
+[2026-02-05T10:35:03.169Z] ⨯ SyntaxError: Unexpected end of JSON input
+[2026-02-05T10:35:03.170Z] at JSON.parse (<anonymous>) {
+[2026-02-05T10:35:03.171Z] page: '/notifications'
+[2026-02-05T10:35:03.171Z] }
+[2026-02-05T10:35:03.808Z] ✓ Compiled in 1028ms (2373 modules)
+[2026-02-05T10:35:04.207Z] GET /notifications 500 in 1277ms
+[2026-02-05T10:35:04.221Z] ✓ Compiled in 385ms (1091 modules)
+[2026-02-05T10:35:04.512Z] ✓ Compiled in 285ms (1091 modules)
+[2026-02-05T10:35:04.708Z] GET /notifications 200 in 329ms
+[2026-02-05T10:35:04.956Z] ✓ Compiled in 258ms (1091 modules)
+[2026-02-05T10:35:05.263Z] ✓ Compiled in 302ms (1091 modules)
+[2026-02-05T10:35:05.271Z] GET /notifications 200 in 269ms
+[2026-02-05T10:35:05.528Z] ✓ Compiled in 258ms (1091 modules)
+[2026-02-05T10:35:05.742Z] GET /notifications 200 in 221ms
+[2026-02-05T10:35:05.840Z] ✓ Compiled in 306ms (1091 modules)
+[2026-02-05T10:35:06.081Z] ✓ Compiled in 236ms (1091 modules)
+[2026-02-05T10:35:06.235Z] GET /notifications 200 in 261ms
+[2026-02-05T10:35:06.365Z] ✓ Compiled in 278ms (1091 modules)
+[2026-02-05T10:35:06.679Z] ⨯ SyntaxError: Unexpected end of JSON input
+[2026-02-05T10:35:06.679Z] at JSON.parse (<anonymous>) {
+[2026-02-05T10:35:06.680Z] page: '/notifications'
+[2026-02-05T10:35:06.680Z] }
+[2026-02-05T10:35:07.174Z] ✓ Compiled in 803ms (2373 modules)
+[2026-02-05T10:35:07.439Z] GET /notifications 500 in 958ms
+[2026-02-05T10:35:07.454Z] ✓ Compiled in 261ms (1091 modules)
+[2026-02-05T10:35:07.738Z] ✓ Compiled in 276ms (1091 modules)
+[2026-02-05T10:35:08.006Z] GET /notifications 200 in 370ms
+[2026-02-05T10:35:08.138Z] ✓ Compiled in 392ms (1091 modules)
+[2026-02-05T10:35:08.534Z] ✓ Compiled in 386ms (1091 modules)
+[2026-02-05T10:35:08.548Z] GET /notifications 200 in 236ms
+[2026-02-05T10:35:08.831Z] ✓ Compiled in 288ms (1091 modules)
+[2026-02-05T10:35:09.035Z] GET /notifications 200 in 212ms
+[2026-02-05T10:35:09.143Z] ✓ Compiled in 307ms (1091 modules)
+[2026-02-05T10:35:09.913Z] ✓ Compiled in 762ms (1091 modules)
+[2026-02-05T10:35:09.927Z] GET /notifications 200 in 640ms
+[2026-02-05T10:35:10.250Z] ✓ Compiled in 326ms (1091 modules)
+[2026-02-05T10:35:10.585Z] GET /notifications 200 in 342ms
+[2026-02-05T10:35:10.591Z] ✓ Compiled in 336ms (1091 modules)
+[2026-02-05T10:35:10.892Z] ✓ Compiled in 295ms (1091 modules)
+[2026-02-05T10:35:11.136Z] GET /notifications 200 in 253ms
+[2026-02-05T10:35:11.260Z] ✓ Compiled in 361ms (1091 modules)
+[2026-02-05T10:35:11.597Z] ⨯ SyntaxError: Unexpected end of JSON input
+[2026-02-05T10:35:11.598Z] at JSON.parse (<anonymous>) {
+[2026-02-05T10:35:11.599Z] page: '/notifications'
+[2026-02-05T10:35:11.599Z] }
+[2026-02-05T10:35:12.091Z] ✓ Compiled in 824ms (2373 modules)
+[2026-02-05T10:35:12.377Z] GET /notifications 500 in 986ms
+[2026-02-05T10:35:12.386Z] ✓ Compiled in 278ms (1091 modules)
+[2026-02-05T10:35:12.691Z] ✓ Compiled in 298ms (1091 modules)
+[2026-02-05T10:35:12.981Z] GET /notifications 200 in 299ms
+[2026-02-05T10:35:13.116Z] ✓ Compiled in 419ms (1091 modules)
+[2026-02-05T10:35:13.483Z] ⨯ SyntaxError: Unexpected end of JSON input
+[2026-02-05T10:35:13.484Z] at JSON.parse (<anonymous>) {
+[2026-02-05T10:35:13.484Z] page: '/notifications'
+[2026-02-05T10:35:13.485Z] }
+[2026-02-05T10:35:14.031Z] ✓ Compiled in 909ms (2373 modules)
+[2026-02-05T10:35:14.372Z] GET /notifications 500 in 1092ms
+[2026-02-05T10:35:14.382Z] ✓ Compiled in 335ms (1091 modules)
+[2026-02-05T10:35:14.676Z] ✓ Compiled in 287ms (1091 modules)
+[2026-02-05T10:35:14.956Z] GET /notifications 200 in 290ms
+[2026-02-05T10:35:15.062Z] ✓ Compiled in 379ms (1091 modules)
+[2026-02-05T10:35:15.371Z] ✓ Compiled in 304ms (1091 modules)
+[2026-02-05T10:35:15.381Z] GET /notifications 200 in 192ms
+[2026-02-05T10:35:15.695Z] ✓ Compiled in 316ms (1091 modules)
+[2026-02-05T10:35:15.933Z] GET /notifications 200 in 248ms
+[2026-02-05T10:35:16.037Z] ✓ Compiled in 334ms (1091 modules)
+[2026-02-05T10:35:16.335Z] ✓ Compiled in 290ms (1091 modules)
+[2026-02-05T10:35:16.508Z] GET /notifications 200 in 308ms
+[2026-02-05T10:35:16.642Z] ✓ Compiled in 302ms (1091 modules)
+[2026-02-05T10:35:16.936Z] ⨯ SyntaxError: Unexpected end of JSON input
+[2026-02-05T10:35:16.937Z] at JSON.parse (<anonymous>) {
+[2026-02-05T10:35:16.938Z] page: '/notifications'
+[2026-02-05T10:35:16.938Z] }
+[2026-02-05T10:35:17.412Z] ✓ Compiled in 763ms (2373 modules)
+[2026-02-05T10:35:17.687Z] GET /notifications 500 in 932ms
+[2026-02-05T10:35:17.694Z] ✓ Compiled in 266ms (1091 modules)
+[2026-02-05T10:35:17.967Z] ✓ Compiled in 267ms (1091 modules)
+[2026-02-05T10:35:18.286Z] GET /notifications 200 in 327ms
+[2026-02-05T10:35:18.391Z] ✓ Compiled in 417ms (1091 modules)
+[2026-02-05T10:35:18.708Z] ✓ Compiled in 310ms (1091 modules)
+[2026-02-05T10:35:18.719Z] GET /notifications 200 in 193ms
+[2026-02-05T10:35:19.028Z] ✓ Compiled in 312ms (1091 modules)
+[2026-02-05T10:35:19.240Z] GET /notifications 200 in 223ms
+[2026-02-05T10:35:19.349Z] ✓ Compiled in 314ms (1091 modules)
+[2026-02-05T10:35:19.668Z] ✓ Compiled in 314ms (1091 modules)
+[2026-02-05T10:35:19.828Z] GET /notifications 200 in 342ms
+[2026-02-05T10:35:19.987Z] ✓ Compiled in 269ms (1091 modules)
+[2026-02-05T10:35:20.283Z] GET /notifications 200 in 285ms
+[2026-02-05T10:35:20.286Z] ✓ Compiled in 294ms (1091 modules)
+[2026-02-05T10:35:20.568Z] ✓ Compiled in 275ms (1091 modules)
+[2026-02-05T10:35:20.771Z] GET /notifications 200 in 212ms
+[2026-02-05T10:35:20.866Z] ✓ Compiled in 289ms (1091 modules)
+[2026-02-05T10:35:21.119Z] ✓ Compiled in 247ms (1091 modules)
+[2026-02-05T10:35:21.281Z] GET /notifications 200 in 278ms
+[2026-02-05T10:35:21.413Z] ✓ Compiled in 287ms (1091 modules)
+[2026-02-05T10:35:21.677Z] ✓ Compiled in 259ms (1091 modules)
+[2026-02-05T10:35:21.689Z] GET /notifications 200 in 158ms
+[2026-02-05T10:35:21.929Z] ✓ Compiled in 246ms (1091 modules)
+[2026-02-05T10:35:22.097Z] GET /notifications 200 in 176ms
+[2026-02-05T10:35:22.204Z] ✓ Compiled in 270ms (1091 modules)
+[2026-02-05T10:35:22.935Z] ⨯ SyntaxError: Unexpected end of JSON input
+[2026-02-05T10:35:22.936Z] at JSON.parse (<anonymous>) {
+[2026-02-05T10:35:22.936Z] page: '/notifications'
+[2026-02-05T10:35:22.937Z] }
+[2026-02-05T10:35:23.458Z] ✓ Compiled in 1247ms (2373 modules)
+[2026-02-05T10:35:23.724Z] GET /notifications 500 in 984ms
+[2026-02-05T10:35:23.733Z] ✓ Compiled in 252ms (1091 modules)
+[2026-02-05T10:35:24.001Z] ✓ Compiled in 263ms (1091 modules)
+[2026-02-05T10:35:24.250Z] GET /notifications 200 in 256ms
+[2026-02-05T10:35:24.348Z] ✓ Compiled in 339ms (1091 modules)
+[2026-02-05T10:35:24.605Z] ✓ Compiled in 251ms (1091 modules)
+[2026-02-05T10:35:24.750Z] GET /notifications 200 in 272ms
+[2026-02-05T10:35:24.892Z] ✓ Compiled in 282ms (1091 modules)
+[2026-02-05T10:35:25.172Z] ✓ Compiled in 275ms (1091 modules)
+[2026-02-05T10:35:25.361Z] GET /notifications 200 in 352ms
+[2026-02-05T10:35:25.466Z] ✓ Compiled in 286ms (1091 modules)
+[2026-02-05T10:35:25.714Z] ✓ Compiled in 243ms (1091 modules)
+[2026-02-05T10:35:25.859Z] GET /notifications 200 in 254ms
+[2026-02-05T10:35:25.980Z] ✓ Compiled in 261ms (1091 modules)
+[2026-02-05T10:35:26.243Z] ✓ Compiled in 258ms (1091 modules)
+[2026-02-05T10:35:26.378Z] GET /notifications 200 in 258ms
+[2026-02-05T10:35:26.521Z] ✓ Compiled in 271ms (1091 modules)
+[2026-02-05T10:35:26.788Z] ✓ Compiled in 262ms (1091 modules)
+[2026-02-05T10:35:26.796Z] GET /notifications 200 in 241ms
+[2026-02-05T10:35:27.047Z] ✓ Compiled in 253ms (1091 modules)
+[2026-02-05T10:35:27.213Z] GET /notifications 200 in 174ms
+[2026-02-05T10:35:27.312Z] ✓ Compiled in 259ms (1091 modules)
+[2026-02-05T10:35:27.588Z] ✓ Compiled in 271ms (1091 modules)
+[2026-02-05T10:35:27.599Z] GET /notifications 200 in 166ms
+[2026-02-05T10:35:27.839Z] ✓ Compiled in 245ms (1091 modules)
+[2026-02-05T10:35:28.120Z] ✓ Compiled in 270ms (1091 modules)
+[2026-02-05T10:35:28.127Z] GET /notifications 200 in 178ms
+[2026-02-05T10:35:28.401Z] ✓ Compiled in 276ms (1091 modules)
+[2026-02-05T10:35:28.570Z] GET /notifications 200 in 176ms
+[2026-02-05T10:35:28.670Z] ✓ Compiled in 263ms (1091 modules)
+[2026-02-05T10:35:28.910Z] ✓ Compiled in 236ms (1091 modules)
+[2026-02-05T10:35:29.078Z] GET /notifications 200 in 178ms
+[2026-02-05T10:35:29.171Z] ✓ Compiled in 255ms (1091 modules)
+[2026-02-05T10:35:29.412Z] ✓ Compiled in 236ms (1091 modules)
+[2026-02-05T10:35:29.562Z] GET /notifications 200 in 264ms
+[2026-02-05T10:35:29.684Z] ✓ Compiled in 266ms (1091 modules)
+[2026-02-05T10:35:29.941Z] ✓ Compiled in 252ms (1091 modules)
+[2026-02-05T10:35:30.110Z] GET /notifications 200 in 306ms
+[2026-02-05T10:35:30.204Z] ✓ Compiled in 257ms (1091 modules)
+[2026-02-05T10:35:30.475Z] ✓ Compiled in 264ms (1091 modules)
+[2026-02-05T10:35:30.643Z] GET /notifications 200 in 256ms
+[2026-02-05T10:35:30.743Z] ✓ Compiled in 262ms (1091 modules)
+[2026-02-05T10:35:30.986Z] ✓ Compiled in 239ms (1091 modules)
+[2026-02-05T10:35:31.124Z] GET /notifications 200 in 244ms
+[2026-02-05T10:35:31.256Z] ✓ Compiled in 264ms (1091 modules)
+[2026-02-05T10:35:31.493Z] ✓ Compiled in 232ms (1091 modules)
+[2026-02-05T10:35:31.532Z] GET /notifications 200 in 157ms
+[2026-02-05T10:35:31.762Z] ✓ Compiled in 234ms (1091 modules)
+[2026-02-05T10:35:32.074Z] ✓ Compiled in 307ms (1091 modules)
+[2026-02-05T10:35:32.081Z] GET /notifications 200 in 268ms
+[2026-02-05T10:35:32.367Z] ✓ Compiled in 286ms (1091 modules)
+[2026-02-05T10:35:32.550Z] GET /notifications 200 in 190ms
+[2026-02-05T10:35:32.649Z] ✓ Compiled in 275ms (1091 modules)
+[2026-02-05T10:35:32.896Z] ✓ Compiled in 243ms (1091 modules)
+[2026-02-05T10:35:33.053Z] GET /notifications 200 in 268ms
+[2026-02-05T10:35:33.218Z] ✓ Compiled in 313ms (1091 modules)
+[2026-02-05T10:35:34.117Z] ✓ Compiled in 889ms (1091 modules)
+[2026-02-05T10:35:34.125Z] GET /notifications 200 in 653ms
+[2026-02-05T10:35:34.411Z] ✓ Compiled in 287ms (1091 modules)
+[2026-02-05T10:35:34.589Z] GET /notifications 200 in 186ms
+[2026-02-05T10:35:34.700Z] ✓ Compiled in 283ms (1091 modules)
+[2026-02-05T10:35:35.002Z] ✓ Compiled in 297ms (1091 modules)
+[2026-02-05T10:35:35.033Z] GET /notifications 200 in 200ms
+[2026-02-05T10:35:35.287Z] ✓ Compiled in 277ms (1091 modules)
+[2026-02-05T10:35:35.478Z] GET /notifications 200 in 185ms
+[2026-02-05T10:35:35.575Z] ✓ Compiled in 283ms (1091 modules)
+[2026-02-05T10:35:35.867Z] ✓ Compiled in 287ms (1091 modules)
+[2026-02-05T10:35:35.876Z] GET /notifications 200 in 165ms
+[2026-02-05T10:35:36.150Z] ✓ Compiled in 276ms (1091 modules)
+[2026-02-05T10:35:36.346Z] GET /notifications 200 in 205ms
+[2026-02-05T10:35:36.458Z] ✓ Compiled in 301ms (1091 modules)
+[2026-02-05T10:35:36.722Z] ✓ Compiled in 259ms (1091 modules)
+[2026-02-05T10:35:36.928Z] GET /notifications 200 in 347ms
+[2026-02-05T10:35:37.032Z] ✓ Compiled in 305ms (1091 modules)
+[2026-02-05T10:35:37.280Z] ✓ Compiled in 243ms (1091 modules)
+[2026-02-05T10:35:37.424Z] GET /notifications 200 in 251ms
+[2026-02-05T10:35:37.556Z] ✓ Compiled in 269ms (1091 modules)
+[2026-02-05T10:35:37.842Z] ✓ Compiled in 280ms (1091 modules)
+[2026-02-05T10:35:37.850Z] GET /notifications 200 in 174ms
+[2026-02-05T10:35:38.120Z] ✓ Compiled in 272ms (1091 modules)
+[2026-02-05T10:35:38.305Z] GET /notifications 200 in 193ms
+[2026-02-05T10:35:38.403Z] ✓ Compiled in 276ms (1091 modules)
+[2026-02-05T10:35:38.656Z] ✓ Compiled in 248ms (1091 modules)
+[2026-02-05T10:35:38.794Z] GET /notifications 200 in 251ms
+[2026-02-05T10:35:38.925Z] ✓ Compiled in 265ms (1091 modules)
+[2026-02-05T10:35:39.182Z] ✓ Compiled in 252ms (1091 modules)
+[2026-02-05T10:35:39.189Z] GET /notifications 200 in 154ms
+[2026-02-05T10:35:39.455Z] ✓ Compiled in 268ms (1091 modules)
+[2026-02-05T10:35:39.645Z] GET /notifications 200 in 200ms
+[2026-02-05T10:35:39.756Z] ✓ Compiled in 292ms (1091 modules)
+[2026-02-05T10:35:40.076Z] ✓ Compiled in 314ms (1091 modules)
+[2026-02-05T10:35:40.085Z] GET /notifications 200 in 173ms
+[2026-02-05T10:35:40.362Z] ✓ Compiled in 281ms (1091 modules)
+[2026-02-05T10:35:40.602Z] ✓ Compiled in 235ms (1091 modules)
+[2026-02-05T10:35:40.635Z] GET /notifications 200 in 137ms
+[2026-02-05T10:35:40.863Z] ✓ Compiled in 233ms (1091 modules)
+[2026-02-05T10:35:41.114Z] ✓ Compiled in 246ms (1091 modules)
+[2026-02-05T10:35:41.288Z] GET /notifications 200 in 312ms
+[2026-02-05T10:35:41.396Z] ✓ Compiled in 277ms (1091 modules)
+[2026-02-05T10:35:41.634Z] ✓ Compiled in 233ms (1091 modules)
+[2026-02-05T10:35:41.781Z] GET /notifications 200 in 255ms
+[2026-02-05T10:35:41.919Z] ✓ Compiled in 279ms (1091 modules)
+[2026-02-05T10:35:42.184Z] ✓ Compiled in 260ms (1091 modules)
+[2026-02-05T10:35:42.192Z] GET /notifications 200 in 153ms
+[2026-02-05T10:35:42.458Z] ✓ Compiled in 268ms (1091 modules)
+[2026-02-05T10:35:42.739Z] ✓ Compiled in 275ms (1091 modules)
+[2026-02-05T10:35:42.747Z] GET /notifications 200 in 181ms
+[2026-02-05T10:35:43.014Z] ✓ Compiled in 269ms (1091 modules)
+[2026-02-05T10:35:43.190Z] GET /notifications 200 in 184ms
+[2026-02-05T10:35:43.307Z] ✓ Compiled in 287ms (1091 modules)
+[2026-02-05T10:35:43.596Z] ✓ Compiled in 284ms (1091 modules)
+[2026-02-05T10:35:43.733Z] GET /notifications 200 in 290ms
+[2026-02-05T10:35:43.849Z] ✓ Compiled in 248ms (1091 modules)
+[2026-02-05T10:35:44.107Z] ✓ Compiled in 253ms (1091 modules)
+[2026-02-05T10:35:44.256Z] GET /notifications 200 in 278ms
+[2026-02-05T10:35:44.391Z] ✓ Compiled in 278ms (1091 modules)
+[2026-02-05T10:35:45.147Z] ✓ Compiled in 749ms (1091 modules)
+[2026-02-05T10:35:45.382Z] GET /notifications 200 in 843ms
+[2026-02-05T10:35:45.504Z] ✓ Compiled in 350ms (1091 modules)
+[2026-02-05T10:35:45.800Z] ⨯ SyntaxError: Unexpected end of JSON input
+[2026-02-05T10:35:45.801Z] at JSON.parse (<anonymous>) {
+[2026-02-05T10:35:45.802Z] page: '/notifications'
+[2026-02-05T10:35:45.802Z] }
+[2026-02-05T10:35:46.291Z] ✓ Compiled in 782ms (2373 modules)
+[2026-02-05T10:35:46.571Z] GET /notifications 500 in 947ms
+[2026-02-05T10:35:46.580Z] ✓ Compiled in 265ms (1091 modules)
+[2026-02-05T10:35:46.833Z] ✓ Compiled in 247ms (1091 modules)
+[2026-02-05T10:35:47.092Z] GET /notifications 200 in 268ms
+[2026-02-05T10:35:47.202Z] ✓ Compiled in 364ms (1091 modules)
+[2026-02-05T10:35:47.531Z] ⨯ SyntaxError: Unexpected end of JSON input
+[2026-02-05T10:35:47.532Z] at JSON.parse (<anonymous>) {
+[2026-02-05T10:35:47.533Z] page: '/notifications'
+[2026-02-05T10:35:47.533Z] }
+[2026-02-05T10:35:47.977Z] ✓ Compiled in 767ms (2373 modules)
+[2026-02-05T10:35:48.239Z] GET /notifications 500 in 876ms
+[2026-02-05T10:35:48.249Z] ✓ Compiled in 253ms (1091 modules)
+[2026-02-05T10:35:48.505Z] ✓ Compiled in 250ms (1091 modules)
+[2026-02-05T10:35:48.709Z] GET /notifications 200 in 305ms
+[2026-02-05T10:35:48.820Z] ✓ Compiled in 310ms (1091 modules)
+[2026-02-05T10:35:49.114Z] ✓ Compiled in 290ms (1091 modules)
+[2026-02-05T10:35:49.121Z] GET /notifications 200 in 186ms
+[2026-02-05T10:35:49.365Z] ✓ Compiled in 246ms (1091 modules)
+[2026-02-05T10:35:49.653Z] GET /notifications 200 in 269ms
+[2026-02-05T10:35:49.658Z] ✓ Compiled in 286ms (1091 modules)
+[2026-02-05T10:35:49.915Z] ✓ Compiled in 253ms (1091 modules)
+[2026-02-05T10:35:50.081Z] GET /notifications 200 in 178ms
+[2026-02-05T10:35:50.190Z] ✓ Compiled in 269ms (1091 modules)
+[2026-02-05T10:35:50.431Z] ✓ Compiled in 236ms (1091 modules)
+[2026-02-05T10:35:50.604Z] GET /notifications 200 in 284ms
+[2026-02-05T10:35:50.725Z] ✓ Compiled in 288ms (1091 modules)
+[2026-02-05T10:35:50.958Z] ✓ Compiled in 229ms (1091 modules)
+[2026-02-05T10:35:50.999Z] GET /notifications 200 in 150ms
+[2026-02-05T10:35:51.246Z] ✓ Compiled in 251ms (1091 modules)
+[2026-02-05T10:35:51.554Z] ✓ Compiled in 299ms (1091 modules)
+[2026-02-05T10:35:51.563Z] GET /notifications 200 in 190ms
+[2026-02-05T10:35:51.840Z] ✓ Compiled in 279ms (1091 modules)
+[2026-02-05T10:35:52.047Z] GET /notifications 200 in 214ms
+[2026-02-05T10:35:52.187Z] ✓ Compiled in 341ms (1091 modules)
+[2026-02-05T10:35:52.522Z] ✓ Compiled in 325ms (1091 modules)
+[2026-02-05T10:35:52.531Z] GET /notifications 200 in 199ms
+[2026-02-05T10:35:52.895Z] ✓ Compiled in 353ms (1091 modules)
+[2026-02-05T10:35:53.190Z] GET /notifications 200 in 305ms
+[2026-02-05T10:35:53.358Z] ✓ Compiled in 450ms (1091 modules)
+[2026-02-05T10:35:53.814Z] ✓ Compiled in 449ms (1091 modules)
+[2026-02-05T10:35:54.142Z] GET /notifications 200 in 337ms
+[2026-02-05T10:35:54.323Z] ✓ Compiled in 501ms (1091 modules)
+[2026-02-05T10:35:54.781Z] ✓ Compiled in 452ms (1091 modules)
+[2026-02-05T10:35:55.098Z] GET /notifications 200 in 334ms
+[2026-02-05T10:35:55.271Z] ✓ Compiled in 484ms (1091 modules)
+[2026-02-05T10:35:55.631Z] ✓ Compiled in 352ms (1091 modules)
+[2026-02-05T10:35:56.092Z] GET /notifications 200 in 441ms
+[2026-02-05T10:35:56.249Z] ✓ Compiled in 594ms (1091 modules)
+[2026-02-05T10:35:56.742Z] ✓ Compiled in 482ms (1091 modules)
+[2026-02-05T10:35:56.985Z] GET /notifications 200 in 260ms
+[2026-02-05T10:35:57.241Z] ✓ Compiled in 486ms (1091 modules)
+[2026-02-05T10:35:57.832Z] ✓ Compiled in 583ms (1091 modules)
+[2026-02-05T10:35:58.588Z] GET /notifications 200 in 853ms
+[2026-02-05T10:35:58.770Z] ✓ Compiled in 815ms (1091 modules)
+[2026-02-05T10:35:59.311Z] ✓ Compiled in 530ms (1091 modules)
+[2026-02-05T10:35:59.597Z] GET /notifications 200 in 294ms
+[2026-02-05T10:35:59.790Z] ✓ Compiled in 456ms (1091 modules)
+[2026-02-05T10:36:00.259Z] ✓ Compiled in 459ms (1091 modules)
+[2026-02-05T10:36:00.598Z] GET /notifications 200 in 365ms
+[2026-02-05T10:36:00.796Z] ✓ Compiled in 523ms (1091 modules)
+[2026-02-05T10:36:01.157Z] ✓ Compiled in 352ms (1091 modules)
+[2026-02-05T10:36:01.223Z] GET /notifications 200 in 82ms
+[2026-02-05T10:36:01.665Z] ✓ Compiled in 441ms (1091 modules)
+[2026-02-05T10:36:02.027Z] GET /notifications 200 in 366ms
+[2026-02-05T10:36:02.201Z] ✓ Compiled in 529ms (1091 modules)
+[2026-02-05T10:36:02.647Z] ✓ Compiled in 437ms (1091 modules)
+[2026-02-05T10:36:02.936Z] GET /notifications 200 in 303ms
+[2026-02-05T10:36:03.161Z] ✓ Compiled in 500ms (1091 modules)
+[2026-02-05T10:36:03.681Z] ✓ Compiled in 513ms (1091 modules)
+[2026-02-05T10:36:03.943Z] GET /notifications 200 in 272ms
+[2026-02-05T10:36:04.167Z] ✓ Compiled in 468ms (1091 modules)
+[2026-02-05T10:36:04.691Z] ✓ Compiled in 516ms (1091 modules)
+[2026-02-05T10:36:04.982Z] GET /notifications 200 in 310ms
+[2026-02-05T10:36:05.176Z] ✓ Compiled in 473ms (1091 modules)
+[2026-02-05T10:36:05.704Z] ✓ Compiled in 518ms (1091 modules)
+[2026-02-05T10:36:06.161Z] GET /notifications 200 in 460ms
+[2026-02-05T10:36:06.441Z] ✓ Compiled in 729ms (1091 modules)
+[2026-02-05T10:36:07.007Z] ✓ Compiled in 555ms (1091 modules)
+[2026-02-05T10:36:07.312Z] GET /notifications 200 in 309ms
+[2026-02-05T10:36:07.673Z] ✓ Compiled in 653ms (1091 modules)
+[2026-02-05T10:36:08.279Z] ✓ Compiled in 592ms (1091 modules)
+[2026-02-05T10:36:08.739Z] GET /notifications 200 in 465ms
+[2026-02-05T10:36:08.984Z] ✓ Compiled in 692ms (1091 modules)
+[2026-02-05T10:36:09.600Z] ✓ Compiled in 579ms (1091 modules)
+[2026-02-05T10:36:10.335Z] ✓ Compiled in 674ms (1091 modules)
+[2026-02-05T10:36:10.372Z] GET /notifications 200 in 449ms
+[2026-02-05T10:36:10.954Z] ✓ Compiled in 571ms (1091 modules)
+[2026-02-05T10:36:11.661Z] ✓ Compiled in 684ms (1091 modules)
+[2026-02-05T10:36:11.711Z] GET /notifications 200 in 517ms
+[2026-02-05T10:36:12.249Z] ✓ Compiled in 541ms (1091 modules)
+[2026-02-05T10:36:12.984Z] ✓ Compiled in 720ms (1091 modules)
+[2026-02-05T10:36:13.024Z] GET /notifications 200 in 497ms
+[2026-02-05T10:36:13.455Z] ✓ Compiled in 432ms (1091 modules)
+[2026-02-05T10:36:14.199Z] ✓ Compiled in 732ms (1091 modules)
+[2026-02-05T10:36:14.270Z] GET /notifications 200 in 515ms
+[2026-02-05T10:36:14.787Z] ✓ Compiled in 569ms (1091 modules)
+[2026-02-05T10:36:15.516Z] ✓ Compiled in 705ms (1091 modules)
+[2026-02-05T10:36:15.642Z] GET /notifications 200 in 368ms
+[2026-02-05T10:36:16.363Z] ✓ Compiled in 721ms (1091 modules)
+[2026-02-05T10:36:17.079Z] ✓ Compiled in 702ms (1091 modules)
+[2026-02-05T10:36:17.126Z] GET /notifications 200 in 496ms
+[2026-02-05T10:36:17.706Z] ✓ Compiled in 609ms (1091 modules)
+[2026-02-05T10:36:18.458Z] ✓ Compiled in 742ms (1091 modules)
+[2026-02-05T10:36:18.481Z] GET /notifications 200 in 502ms
+[2026-02-05T10:36:19.107Z] ✓ Compiled in 635ms (1091 modules)
+[2026-02-05T10:36:19.788Z] ✓ Compiled in 662ms (1091 modules)
+[2026-02-05T10:36:19.862Z] GET /notifications 200 in 511ms
+[2026-02-05T10:36:20.350Z] ✓ Compiled in 552ms (1091 modules)
+[2026-02-05T10:36:21.065Z] ✓ Compiled in 681ms (1091 modules)
+[2026-02-05T10:36:21.445Z] GET /notifications 200 in 602ms
+[2026-02-05T10:36:21.819Z] ✓ Compiled in 745ms (1091 modules)
+[2026-02-05T10:36:23.066Z] ✓ Compiled in 1170ms (1091 modules)
+[2026-02-05T10:36:23.372Z] GET /notifications 200 in 561ms
+[2026-02-05T10:36:23.666Z] ✓ Compiled in 583ms (1091 modules)
+[2026-02-05T10:36:24.267Z] ✓ Compiled in 593ms (1091 modules)
+[2026-02-05T10:36:25.067Z] ✓ Compiled in 790ms (1091 modules)
+[2026-02-05T10:36:25.089Z] GET /notifications 200 in 527ms
+[2026-02-05T10:36:25.747Z] ✓ Compiled in 670ms (1091 modules)
+[2026-02-05T10:36:26.733Z] ✓ Compiled in 977ms (1091 modules)
+[2026-02-05T10:36:26.747Z] GET /notifications 200 in 669ms
+[2026-02-05T10:36:27.416Z] ✓ Compiled in 668ms (1091 modules)
+[2026-02-05T10:36:28.370Z] ✓ Compiled in 934ms (1091 modules)
+[2026-02-05T10:36:28.465Z] GET /notifications 200 in 729ms
+[2026-02-05T10:36:28.968Z] ✓ Compiled in 563ms (1091 modules)
+[2026-02-05T10:36:29.666Z] ✓ Compiled in 639ms (1091 modules)
+[2026-02-05T10:36:30.164Z] GET /notifications 200 in 716ms
+[2026-02-05T10:36:30.510Z] ✓ Compiled in 834ms (1091 modules)
+[2026-02-05T10:36:31.159Z] ✓ Compiled in 634ms (1091 modules)
+[2026-02-05T10:36:32.066Z] ✓ Compiled in 857ms (1091 modules)
+[2026-02-05T10:36:32.090Z] GET /notifications 200 in 550ms
+[2026-02-05T10:36:32.787Z] ✓ Compiled in 677ms (1091 modules)
+[2026-02-05T10:36:33.666Z] ✓ Compiled in 815ms (1091 modules)
+[2026-02-05T10:36:33.682Z] GET /notifications 200 in 518ms
+[2026-02-05T10:36:34.291Z] ✓ Compiled in 590ms (1091 modules)
+[2026-02-05T10:36:35.220Z] ✓ Compiled in 906ms (1091 modules)
+[2026-02-05T10:36:35.268Z] GET /notifications 200 in 465ms
+[2026-02-05T10:36:36.065Z] ✓ Compiled in 761ms (1091 modules)
+[2026-02-05T10:36:37.096Z] ✓ Compiled in 997ms (1091 modules)
+[2026-02-05T10:36:37.817Z] GET /notifications 200 in 917ms
+[2026-02-05T10:36:38.151Z] ✓ Compiled in 982ms (1091 modules)
+[2026-02-05T10:36:38.997Z] ✓ Compiled in 820ms (1091 modules)
+[2026-02-05T10:36:39.830Z] GET /notifications 200 in 489ms
+[2026-02-05T10:36:39.870Z] ✓ Compiled in 822ms (1091 modules)
+[2026-02-05T10:36:40.740Z] ✓ Compiled in 812ms (1091 modules)
+[2026-02-05T10:36:41.723Z] ✓ Compiled in 929ms (1091 modules)
+[2026-02-05T10:36:41.861Z] GET /notifications 200 in 809ms
+[2026-02-05T10:36:42.576Z] ✓ Compiled in 733ms (1091 modules)
+[2026-02-05T10:36:43.448Z] ✓ Compiled in 835ms (1091 modules)
+[2026-02-05T10:36:44.023Z] GET /notifications 200 in 848ms
+[2026-02-05T10:36:44.439Z] ✓ Compiled in 920ms (1091 modules)
+[2026-02-05T10:36:45.352Z] ✓ Compiled in 898ms (1091 modules)
+[2026-02-05T10:36:46.596Z] ✓ Compiled in 1233ms (1091 modules)
+[2026-02-05T10:36:46.710Z] GET /notifications 200 in 994ms
+[2026-02-05T10:36:47.351Z] ✓ Compiled in 709ms (1091 modules)
+[2026-02-05T10:36:48.553Z] ✓ Compiled in 1180ms (1091 modules)
+[2026-02-05T10:36:48.584Z] GET /notifications 200 in 791ms
+[2026-02-05T10:36:49.271Z] ✓ Compiled in 697ms (1090 modules)
+[2026-02-05T10:36:50.173Z] ✓ Compiled in 892ms (1090 modules)
+[2026-02-05T10:36:50.930Z] GET /notifications 200 in 801ms
+[2026-02-05T10:36:51.180Z] ✓ Compiled in 936ms (1090 modules)
+[2026-02-05T10:36:51.860Z] ✓ Compiled in 659ms (1090 modules)
+[2026-02-05T10:36:52.759Z] ✓ Compiled in 890ms (1090 modules)
+[2026-02-05T10:36:53.405Z] GET /notifications 200 in 644ms
+[2026-02-05T10:36:53.752Z] ✓ Compiled in 970ms (1090 modules)
+[2026-02-05T10:36:54.624Z] ✓ Compiled in 784ms (1090 modules)
+[2026-02-05T10:36:55.866Z] ✓ Compiled in 1157ms (1090 modules)
+[2026-02-05T10:36:56.217Z] GET /notifications 200 in 939ms
+[2026-02-05T10:36:57.238Z] ✓ Compiled in 1362ms (1090 modules)
+[2026-02-05T10:36:58.965Z] ✓ Compiled in 1511ms (1090 modules)
+[2026-02-05T10:36:59.765Z] GET /notifications 200 in 825ms
+[2026-02-05T10:37:00.070Z] ✓ Compiled in 1093ms (1090 modules)
+[2026-02-05T10:37:00.828Z] ✓ Compiled in 732ms (1090 modules)
+[2026-02-05T10:37:01.863Z] GET /notifications 200 in 755ms
+[2026-02-05T10:37:01.895Z] ✓ Compiled in 1057ms (1090 modules)
+[2026-02-05T10:37:02.834Z] ✓ Compiled in 875ms (1090 modules)
+[2026-02-05T10:37:03.719Z] GET /notifications 200 in 507ms
+[2026-02-05T10:37:04.048Z] ✓ Compiled in 1184ms (1090 modules)
+[2026-02-05T10:37:04.727Z] ✓ Compiled in 668ms (1090 modules)
+[2026-02-05T10:37:05.832Z] ✓ Compiled in 1080ms (1090 modules)
+[2026-02-05T10:37:05.853Z] GET /notifications 200 in 680ms
+[2026-02-05T10:37:06.667Z] ✓ Compiled in 821ms (1090 modules)
+[2026-02-05T10:37:07.692Z] ✓ Compiled in 999ms (1090 modules)
+[2026-02-05T10:37:08.475Z] GET /notifications 200 in 988ms
+[2026-02-05T10:37:08.792Z] ✓ Compiled in 1021ms (1090 modules)
+[2026-02-05T10:37:09.518Z] ✓ Compiled in 705ms (1090 modules)
+[2026-02-05T10:37:10.670Z] ✓ Compiled in 1099ms (1090 modules)
+[2026-02-05T10:37:11.560Z] GET /notifications 200 in 1216ms
+[2026-02-05T10:37:12.027Z] ✓ Compiled in 1278ms (1090 modules)
+[2026-02-05T10:37:12.835Z] ✓ Compiled in 785ms (1090 modules)
+[2026-02-05T10:37:13.789Z] ✓ Compiled in 887ms (1090 modules)
+[2026-02-05T10:37:14.479Z] GET /notifications 200 in 976ms
+[2026-02-05T10:37:15.086Z] ✓ Compiled in 1289ms (1090 modules)
+[2026-02-05T10:37:16.022Z] ✓ Compiled in 912ms (1090 modules)
+[2026-02-05T10:37:17.778Z] GET /notifications 200 in 1605ms
+[2026-02-05T10:37:17.887Z] ✓ Compiled in 1834ms (1090 modules)
+[2026-02-05T10:37:18.595Z] ✓ Compiled in 641ms (1090 modules)
+[2026-02-05T10:37:19.547Z] ✓ Compiled in 880ms (1090 modules)
+[2026-02-05T10:37:20.691Z] GET /notifications 200 in 893ms
+[2026-02-05T10:37:20.765Z] ✓ Compiled in 1163ms (1090 modules)
+[2026-02-05T10:37:21.513Z] ✓ Compiled in 723ms (1090 modules)
+[2026-02-05T10:37:22.368Z] ✓ Compiled in 823ms (1090 modules)
+[2026-02-05T10:37:23.313Z] ✓ Compiled in 942ms (1090 modules)
+[2026-02-05T10:37:23.344Z] GET /notifications 200 in 571ms
+[2026-02-05T10:37:24.417Z] ✓ Compiled in 1072ms (1090 modules)
+[2026-02-05T10:37:25.529Z] ✓ Compiled in 1094ms (1090 modules)
+[2026-02-05T10:37:26.396Z] GET /notifications 200 in 1180ms
+[2026-02-05T10:37:26.867Z] ✓ Compiled in 1315ms (1090 modules)
+[2026-02-05T10:37:27.748Z] ✓ Compiled in 863ms (1090 modules)
+[2026-02-05T10:37:28.828Z] ✓ Compiled in 1056ms (1090 modules)
+[2026-02-05T10:37:30.170Z] GET /notifications 200 in 1327ms
+[2026-02-05T10:37:30.575Z] ✓ Compiled in 1722ms (1090 modules)
+[2026-02-05T10:37:31.697Z] ✓ Compiled in 1026ms (1090 modules)
+[2026-02-05T10:37:33.211Z] ✓ Compiled in 1499ms (1090 modules)
+[2026-02-05T10:37:34.907Z] GET /notifications 200 in 1756ms
+[2026-02-05T10:37:35.295Z] ✓ Compiled in 2.1s (1090 modules)
+[2026-02-05T10:37:38.960Z] ✓ Compiled in 3.6s (1090 modules)
+[2026-02-05T10:37:42.744Z] ✓ Compiled in 3.6s (1090 modules)
+[2026-02-05T10:37:43.540Z] GET /notifications 200 in 2259ms
+[2026-02-05T10:37:44.284Z] ✓ Compiled in 1478ms (1090 modules)
+[2026-02-05T10:37:45.455Z] ✓ Compiled in 1122ms (1090 modules)
+[2026-02-05T10:37:47.549Z] GET /notifications 200 in 1112ms
+[2026-02-05T10:37:48.366Z] ✓ Compiled in 2.9s (1090 modules)
+[2026-02-05T10:37:50.242Z] ✓ Compiled in 1481ms (1090 modules)
+[2026-02-05T10:37:51.523Z] GET /notifications 200 in 1107ms
+[2026-02-05T10:37:51.660Z] ✓ Compiled in 1393ms (1090 modules)
+[2026-02-05T10:37:52.480Z] ✓ Compiled in 768ms (1090 modules)
+[2026-02-05T10:37:53.495Z] ✓ Compiled in 986ms (1090 modules)
+[2026-02-05T10:37:54.417Z] GET /notifications 200 in 951ms
+[2026-02-05T10:37:54.764Z] ✓ Compiled in 1248ms (1090 modules)
+[2026-02-05T10:37:55.629Z] ✓ Compiled in 812ms (1090 modules)
+[2026-02-05T10:37:57.028Z] ✓ Compiled in 1318ms (1090 modules)
+[2026-02-05T10:37:58.043Z] GET /notifications 200 in 1306ms
+[2026-02-05T10:37:58.711Z] ✓ Compiled in 1601ms (1090 modules)
+[2026-02-05T10:37:59.823Z] ✓ Compiled in 1054ms (1090 modules)
+[2026-02-05T10:38:01.407Z] ✓ Compiled in 1566ms (1090 modules)
+[2026-02-05T10:38:01.449Z] GET /notifications 200 in 1124ms
+[2026-02-05T10:38:02.192Z] ✓ Compiled in 755ms (1090 modules)
+[2026-02-05T10:38:03.292Z] ✓ Compiled in 1078ms (1090 modules)
+[2026-02-05T10:38:04.565Z] GET /notifications 200 in 1271ms
+[2026-02-05T10:38:04.934Z] ✓ Compiled in 1622ms (1090 modules)
+[2026-02-05T10:38:05.895Z] ✓ Compiled in 947ms (1090 modules)
+[2026-02-05T10:38:07.606Z] ✓ Compiled in 1628ms (1090 modules)
+[2026-02-05T10:38:07.745Z] GET /notifications 200 in 1001ms
+[2026-02-05T10:38:08.597Z] ✓ Compiled in 877ms (1090 modules)
+[2026-02-05T10:38:09.834Z] ✓ Compiled in 988ms (1090 modules)
+[2026-02-05T10:38:11.808Z] GET /notifications 200 in 962ms
+[2026-02-05T10:38:11.975Z] ✓ Compiled in 2.1s (1090 modules)
+[2026-02-05T10:38:12.882Z] ✓ Compiled in 880ms (1090 modules)
+[2026-02-05T10:38:14.459Z] ✓ Compiled in 1552ms (1090 modules)
+[2026-02-05T10:38:15.435Z] GET /notifications 200 in 1594ms
+[2026-02-05T10:38:15.863Z] ✓ Compiled in 1324ms (1090 modules)
+[2026-02-05T10:38:17.484Z] ✓ Compiled in 1566ms (1090 modules)
+[2026-02-05T10:38:19.824Z] ✓ Compiled in 2.3s (1090 modules)
+[2026-02-05T10:38:21.431Z] GET /notifications 200 in 2105ms
+[2026-02-05T10:38:22.027Z] ✓ Compiled in 2.2s (1090 modules)
+[2026-02-05T10:38:23.726Z] ✓ Compiled in 1639ms (1090 modules)
+[2026-02-05T10:38:26.616Z] ✓ Compiled in 2.8s (1090 modules)
+[2026-02-05T10:38:27.892Z] GET /notifications 200 in 1898ms
+[2026-02-05T10:38:28.830Z] ✓ Compiled in 2.2s (1090 modules)
+[2026-02-05T10:38:31.226Z] ✓ Compiled in 2.3s (1090 modules)
+[2026-02-05T10:38:33.923Z] GET /notifications 200 in 2686ms
+[2026-02-05T10:38:34.522Z] ✓ Compiled in 3.3s (1090 modules)
+[2026-02-05T10:38:36.526Z] ✓ Compiled in 1893ms (1090 modules)
+[2026-02-05T10:38:42.053Z] ✓ Compiled in 5.5s (1090 modules)
+[2026-02-05T10:38:44.875Z] GET /notifications 200 in 4457ms
+[2026-02-05T10:38:46.066Z] ✓ Compiled in 4s (1090 modules)
+[2026-02-05T10:38:49.334Z] ✓ Compiled in 3.2s (1090 modules)
+[2026-02-05T10:38:58.630Z] ⨯ SyntaxError: Unexpected end of JSON input
+[2026-02-05T10:38:59.224Z] at JSON.parse (<anonymous>) {
+[2026-02-05T10:39:00.368Z] page: '/notifications'
+[2026-02-05T10:39:00.900Z] }
+[2026-02-05T10:39:05.460Z] ○ Compiling /_error ...
+[2026-02-05T10:40:25.572Z] ✓ Compiled /_error in 95.9s (2373 modules)
+[2026-02-05T10:40:26.015Z] GET /notifications 500 in 93512ms
+[2026-02-05T10:40:26.253Z] ✓ Compiled in 583ms (1091 modules)
+[2026-02-05T10:40:26.648Z] ✓ Compiled in 390ms (1091 modules)
+[2026-02-05T10:40:27.285Z] ✓ Compiled in 625ms (1091 modules)
+[2026-02-05T10:40:27.313Z] GET /notifications 200 in 428ms
+[2026-02-05T10:40:27.767Z] ✓ Compiled in 450ms (1091 modules)
+[2026-02-05T10:40:28.122Z] GET /notifications 200 in 366ms
+[2026-02-05T10:40:28.274Z] ✓ Compiled in 496ms (1091 modules)
+[2026-02-05T10:40:28.789Z] ✓ Compiled in 503ms (1091 modules)
+[2026-02-05T10:40:29.113Z] GET /notifications 200 in 343ms
+[2026-02-05T10:40:29.299Z] ✓ Compiled in 507ms (1091 modules)
+[2026-02-05T10:40:29.829Z] ✓ Compiled in 520ms (1091 modules)
+[2026-02-05T10:40:30.184Z] GET /notifications 200 in 360ms
+[2026-02-05T10:40:30.420Z] ✓ Compiled in 583ms (1091 modules)
+[2026-02-05T10:40:31.027Z] ✓ Compiled in 598ms (1091 modules)
+[2026-02-05T10:40:31.542Z] ✓ Compiled in 504ms (1091 modules)
+[2026-02-05T10:40:31.553Z] GET /notifications 200 in 340ms
+[2026-02-05T10:40:32.073Z] ✓ Compiled in 517ms (1090 modules)
+[2026-02-05T10:40:32.483Z] GET /notifications 200 in 429ms
+[2026-02-05T10:40:32.693Z] ✓ Compiled in 595ms (1090 modules)
+[2026-02-05T10:40:33.188Z] ✓ Compiled in 489ms (1090 modules)
+[2026-02-05T10:40:33.569Z] GET /notifications 200 in 390ms
+[2026-02-05T10:40:33.765Z] ✓ Compiled in 568ms (1090 modules)
+[2026-02-05T10:40:34.291Z] ✓ Compiled in 517ms (1090 modules)
+[2026-02-05T10:40:34.703Z] GET /notifications 200 in 420ms
+[2026-02-05T10:40:34.881Z] ✓ Compiled in 584ms (1090 modules)
+[2026-02-05T10:40:35.404Z] ✓ Compiled in 512ms (1090 modules)
+[2026-02-05T10:40:35.817Z] GET /notifications 200 in 419ms
+[2026-02-05T10:40:36.020Z] ✓ Compiled in 610ms (1090 modules)
+[2026-02-05T10:40:36.508Z] ✓ Compiled in 481ms (1090 modules)
+[2026-02-05T10:40:37.049Z] ✓ Compiled in 519ms (1090 modules)
+[2026-02-05T10:40:37.059Z] GET /notifications 200 in 337ms
+[2026-02-05T10:40:37.570Z] ✓ Compiled in 508ms (1090 modules)
+[2026-02-05T10:40:38.197Z] ✓ Compiled in 587ms (1090 modules)
+[2026-02-05T10:40:38.206Z] GET /notifications 200 in 358ms
+[2026-02-05T10:40:38.728Z] ✓ Compiled in 520ms (1090 modules)
+[2026-02-05T10:40:39.407Z] ✓ Compiled in 633ms (1090 modules)
+[2026-02-05T10:40:39.463Z] GET /notifications 200 in 432ms
+[2026-02-05T10:40:40.002Z] ✓ Compiled in 538ms (1090 modules)
+[2026-02-05T10:40:40.768Z] ✓ Compiled in 759ms (1090 modules)
+[2026-02-05T10:40:40.880Z] GET /notifications 200 in 627ms
+[2026-02-05T10:40:41.374Z] ✓ Compiled in 593ms (1090 modules)
+[2026-02-05T10:40:42.131Z] ✓ Compiled in 733ms (1090 modules)
+[2026-02-05T10:40:42.162Z] GET /notifications 200 in 514ms
+[2026-02-05T10:40:42.871Z] ✓ Compiled in 724ms (1090 modules)
+[2026-02-05T10:40:43.627Z] ✓ Compiled in 742ms (1090 modules)
+[2026-02-05T10:40:43.647Z] GET /notifications 200 in 481ms
+[2026-02-05T10:40:44.235Z] ✓ Compiled in 598ms (1090 modules)
+[2026-02-05T10:40:44.926Z] ✓ Compiled in 678ms (1090 modules)
+[2026-02-05T10:40:45.518Z] GET /notifications 200 in 601ms
+[2026-02-05T10:40:45.750Z] ✓ Compiled in 815ms (1090 modules)
+[2026-02-05T10:40:46.373Z] ✓ Compiled in 608ms (1090 modules)
+[2026-02-05T10:40:47.216Z] GET /notifications 200 in 559ms
+[2026-02-05T10:40:47.257Z] ✓ Compiled in 838ms (1090 modules)
+[2026-02-05T10:40:47.966Z] ✓ Compiled in 672ms (1090 modules)
+[2026-02-05T10:40:49.237Z] ✓ Compiled in 1240ms (1090 modules)
+[2026-02-05T10:40:49.249Z] GET /notifications 200 in 925ms
+[2026-02-05T10:40:49.609Z] ✓ Compiled in 358ms (1090 modules)
+[2026-02-05T10:40:49.822Z] GET /notifications 200 in 224ms
+[2026-02-05T10:40:49.939Z] ✓ Compiled in 321ms (1090 modules)
+[2026-02-05T10:40:50.227Z] ✓ Compiled in 282ms (1090 modules)
+[2026-02-05T10:40:50.414Z] GET /notifications 200 in 199ms
+[2026-02-05T10:40:50.503Z] ✓ Compiled in 268ms (1090 modules)
+[2026-02-05T10:40:50.767Z] ✓ Compiled in 259ms (1090 modules)
+[2026-02-05T10:40:50.946Z] GET /notifications 200 in 188ms
+[2026-02-05T10:40:51.038Z] ✓ Compiled in 262ms (1090 modules)
+[2026-02-05T10:40:51.305Z] ✓ Compiled in 262ms (1090 modules)
+[2026-02-05T10:40:51.476Z] GET /notifications 200 in 181ms
+[2026-02-05T10:40:51.564Z] ✓ Compiled in 253ms (1090 modules)
+[2026-02-05T10:40:51.838Z] ✓ Compiled in 267ms (1090 modules)
+[2026-02-05T10:40:52.026Z] GET /notifications 200 in 200ms
+[2026-02-05T10:40:52.113Z] ✓ Compiled in 269ms (1090 modules)
+[2026-02-05T10:40:52.353Z] ✓ Compiled in 235ms (1090 modules)
+[2026-02-05T10:40:52.613Z] ✓ Compiled in 253ms (1090 modules)
+[2026-02-05T10:40:52.618Z] GET /notifications 200 in 256ms
+[2026-02-05T10:40:52.862Z] ✓ Compiled in 243ms (1090 modules)
+[2026-02-05T10:40:53.037Z] GET /notifications 200 in 182ms
+[2026-02-05T10:40:53.129Z] ✓ Compiled in 260ms (1090 modules)
+[2026-02-05T10:40:53.387Z] ✓ Compiled in 254ms (1090 modules)
+[2026-02-05T10:40:53.636Z] GET /notifications 200 in 257ms
+[2026-02-05T10:40:53.646Z] ✓ Compiled in 252ms (1090 modules)
+[2026-02-05T10:40:53.877Z] ✓ Compiled in 225ms (1090 modules)
+[2026-02-05T10:40:54.148Z] ✓ Compiled in 257ms (1090 modules)
+[2026-02-05T10:40:54.154Z] GET /notifications 200 in 262ms
+[2026-02-05T10:40:54.411Z] ✓ Compiled in 256ms (1090 modules)
+[2026-02-05T10:40:54.573Z] GET /notifications 200 in 170ms
+[2026-02-05T10:40:54.663Z] ✓ Compiled in 246ms (1090 modules)
+[2026-02-05T10:40:54.929Z] ✓ Compiled in 262ms (1090 modules)
+[2026-02-05T10:40:55.111Z] GET /notifications 200 in 189ms
+[2026-02-05T10:40:55.192Z] ✓ Compiled in 254ms (1090 modules)
+[2026-02-05T10:40:55.474Z] ✓ Compiled in 277ms (1090 modules)
+[2026-02-05T10:40:55.645Z] GET /notifications 200 in 177ms
+[2026-02-05T10:40:55.730Z] ✓ Compiled in 250ms (1090 modules)
+[2026-02-05T10:40:56.000Z] ✓ Compiled in 264ms (1090 modules)
+[2026-02-05T10:40:56.206Z] GET /notifications 200 in 217ms
+[2026-02-05T10:40:56.285Z] ✓ Compiled in 280ms (1090 modules)
+[2026-02-05T10:40:56.527Z] ✓ Compiled in 237ms (1090 modules)
+[2026-02-05T10:40:56.798Z] GET /notifications 200 in 261ms
+[2026-02-05T10:40:56.801Z] ✓ Compiled in 266ms (1090 modules)
+[2026-02-05T10:40:57.057Z] ✓ Compiled in 251ms (1090 modules)
+[2026-02-05T10:40:57.221Z] GET /notifications 200 in 172ms
+[2026-02-05T10:40:57.306Z] ✓ Compiled in 244ms (1090 modules)
+[2026-02-05T10:40:57.551Z] ✓ Compiled in 239ms (1090 modules)
+[2026-02-05T10:40:57.824Z] ✓ Compiled in 266ms (1090 modules)
+[2026-02-05T10:40:57.832Z] GET /notifications 200 in 254ms
+[2026-02-05T10:40:58.105Z] ✓ Compiled in 275ms (1090 modules)
+[2026-02-05T10:40:58.275Z] GET /notifications 200 in 180ms
+[2026-02-05T10:40:58.366Z] ✓ Compiled in 255ms (1090 modules)
+[2026-02-05T10:40:58.673Z] ✓ Compiled in 302ms (1090 modules)
+[2026-02-05T10:40:58.867Z] GET /notifications 200 in 205ms
+[2026-02-05T10:40:58.960Z] ✓ Compiled in 278ms (1090 modules)
+[2026-02-05T10:40:59.744Z] ✓ Compiled in 779ms (1090 modules)
+[2026-02-05T10:40:59.949Z] GET /notifications 200 in 489ms
+[2026-02-05T10:41:00.060Z] ✓ Compiled in 308ms (1090 modules)
+[2026-02-05T10:41:00.366Z] ✓ Compiled in 298ms (1090 modules)
+[2026-02-05T10:41:00.552Z] GET /notifications 200 in 196ms
+[2026-02-05T10:41:00.649Z] ✓ Compiled in 276ms (1090 modules)
+[2026-02-05T10:41:00.929Z] ✓ Compiled in 273ms (1090 modules)
+[2026-02-05T10:41:01.099Z] GET /notifications 200 in 180ms
+[2026-02-05T10:41:01.209Z] ✓ Compiled in 274ms (1090 modules)
+[2026-02-05T10:41:01.474Z] ✓ Compiled in 258ms (1090 modules)
+[2026-02-05T10:41:01.657Z] GET /notifications 200 in 193ms
+[2026-02-05T10:41:01.754Z] ✓ Compiled in 272ms (1090 modules)
+[2026-02-05T10:41:02.021Z] ✓ Compiled in 262ms (1090 modules)
+[2026-02-05T10:41:02.203Z] GET /notifications 200 in 190ms
+[2026-02-05T10:41:02.294Z] ✓ Compiled in 267ms (1090 modules)
+[2026-02-05T10:41:02.549Z] ✓ Compiled in 250ms (1090 modules)
+[2026-02-05T10:41:02.819Z] GET /notifications 200 in 273ms
+[2026-02-05T10:41:02.830Z] ✓ Compiled in 272ms (1090 modules)
+[2026-02-05T10:41:03.095Z] ✓ Compiled in 260ms (1090 modules)
+[2026-02-05T10:41:03.283Z] GET /notifications 200 in 196ms
+[2026-02-05T10:41:03.377Z] ✓ Compiled in 277ms (1090 modules)
+[2026-02-05T10:41:03.638Z] ✓ Compiled in 254ms (1090 modules)
+[2026-02-05T10:41:03.892Z] GET /notifications 200 in 261ms
+[2026-02-05T10:41:03.901Z] ✓ Compiled in 255ms (1090 modules)
+[2026-02-05T10:41:04.161Z] ✓ Compiled in 255ms (1090 modules)
+[2026-02-05T10:41:04.349Z] GET /notifications 200 in 193ms
+[2026-02-05T10:41:04.433Z] ✓ Compiled in 265ms (1090 modules)
+[2026-02-05T10:41:04.682Z] ✓ Compiled in 244ms (1090 modules)
+[2026-02-05T10:41:04.864Z] GET /notifications 200 in 178ms
+[2026-02-05T10:41:04.952Z] ✓ Compiled in 262ms (1090 modules)
+[2026-02-05T10:41:05.223Z] ✓ Compiled in 266ms (1090 modules)
+[2026-02-05T10:41:05.479Z] GET /notifications 200 in 261ms
+[2026-02-05T10:41:05.492Z] ✓ Compiled in 263ms (1090 modules)
+[2026-02-05T10:41:05.747Z] ✓ Compiled in 250ms (1090 modules)
+[2026-02-05T10:41:05.935Z] GET /notifications 200 in 197ms
+[2026-02-05T10:41:06.030Z] ✓ Compiled in 277ms (1090 modules)
+[2026-02-05T10:41:06.277Z] ✓ Compiled in 242ms (1090 modules)
+[2026-02-05T10:41:06.533Z] GET /notifications 200 in 247ms
+[2026-02-05T10:41:06.537Z] ✓ Compiled in 252ms (1090 modules)
+[2026-02-05T10:41:06.804Z] ✓ Compiled in 261ms (1090 modules)
+[2026-02-05T10:41:06.979Z] GET /notifications 200 in 185ms
+[2026-02-05T10:41:07.063Z] ✓ Compiled in 252ms (1090 modules)
+[2026-02-05T10:41:07.319Z] ✓ Compiled in 249ms (1090 modules)
+[2026-02-05T10:41:07.584Z] GET /notifications 200 in 269ms
+[2026-02-05T10:41:07.591Z] ✓ Compiled in 264ms (1090 modules)
+[2026-02-05T10:41:07.873Z] ✓ Compiled in 277ms (1090 modules)
+[2026-02-05T10:41:08.050Z] GET /notifications 200 in 186ms
+[2026-02-05T10:41:08.136Z] ✓ Compiled in 257ms (1090 modules)
+[2026-02-05T10:41:08.406Z] ✓ Compiled in 266ms (1090 modules)
+[2026-02-05T10:41:08.581Z] GET /notifications 200 in 184ms
+[2026-02-05T10:41:08.665Z] ✓ Compiled in 254ms (1090 modules)
+[2026-02-05T10:41:08.917Z] ✓ Compiled in 248ms (1090 modules)
+[2026-02-05T10:41:09.175Z] GET /notifications 200 in 267ms
+[2026-02-05T10:41:09.187Z] ✓ Compiled in 264ms (1090 modules)
+[2026-02-05T10:41:09.437Z] ✓ Compiled in 246ms (1090 modules)
+[2026-02-05T10:41:10.134Z] GET /notifications 200 in 704ms
+[2026-02-05T10:41:10.252Z] ✓ Compiled in 807ms (1090 modules)
+[2026-02-05T10:41:10.549Z] ✓ Compiled in 292ms (1090 modules)
+[2026-02-05T10:41:10.744Z] GET /notifications 200 in 204ms
+[2026-02-05T10:41:10.832Z] ✓ Compiled in 276ms (1090 modules)
+[2026-02-05T10:41:11.095Z] ✓ Compiled in 259ms (1090 modules)
+[2026-02-05T10:41:11.363Z] GET /notifications 200 in 258ms
+[2026-02-05T10:41:11.366Z] ✓ Compiled in 264ms (1090 modules)
+[2026-02-05T10:41:11.636Z] ✓ Compiled in 262ms (1090 modules)
+[2026-02-05T10:41:11.822Z] GET /notifications 200 in 198ms
+[2026-02-05T10:41:11.912Z] ✓ Compiled in 269ms (1090 modules)
+[2026-02-05T10:41:12.179Z] ✓ Compiled in 262ms (1090 modules)
+[2026-02-05T10:41:12.377Z] GET /notifications 200 in 209ms
+[2026-02-05T10:41:12.474Z] ✓ Compiled in 289ms (1090 modules)
+[2026-02-05T10:41:12.831Z] ✓ Compiled in 352ms (1090 modules)
+[2026-02-05T10:41:13.171Z] GET /notifications 200 in 444ms
+[2026-02-05T10:41:13.324Z] ✓ Compiled in 486ms (1090 modules)
+[2026-02-05T10:41:13.601Z] ✓ Compiled in 272ms (1090 modules)
+[2026-02-05T10:41:13.785Z] GET /notifications 200 in 180ms
+[2026-02-05T10:41:13.863Z] ✓ Compiled in 255ms (1090 modules)
+[2026-02-05T10:41:14.153Z] ✓ Compiled in 284ms (1090 modules)
+[2026-02-05T10:41:14.380Z] GET /notifications 200 in 237ms
+[2026-02-05T10:41:14.472Z] ✓ Compiled in 311ms (1090 modules)
+[2026-02-05T10:41:14.743Z] ✓ Compiled in 266ms (1090 modules)
+[2026-02-05T10:41:14.923Z] GET /notifications 200 in 188ms
+[2026-02-05T10:41:15.014Z] ✓ Compiled in 264ms (1090 modules)
+[2026-02-05T10:41:15.285Z] ✓ Compiled in 264ms (1090 modules)
+[2026-02-05T10:41:15.472Z] GET /notifications 200 in 197ms
+[2026-02-05T10:41:15.565Z] ✓ Compiled in 271ms (1090 modules)
+[2026-02-05T10:41:15.851Z] ✓ Compiled in 281ms (1090 modules)
+[2026-02-05T10:41:16.058Z] GET /notifications 200 in 218ms
+[2026-02-05T10:41:16.153Z] ✓ Compiled in 294ms (1090 modules)
+[2026-02-05T10:41:16.420Z] ✓ Compiled in 263ms (1090 modules)
+[2026-02-05T10:41:16.600Z] GET /notifications 200 in 190ms
+[2026-02-05T10:41:16.697Z] ✓ Compiled in 271ms (1090 modules)
+[2026-02-05T10:41:16.961Z] ✓ Compiled in 256ms (1090 modules)
+[2026-02-05T10:41:17.154Z] GET /notifications 200 in 184ms
+[2026-02-05T10:41:17.243Z] ✓ Compiled in 275ms (1090 modules)
+[2026-02-05T10:41:17.714Z] ✓ Compiled in 447ms (1090 modules)
+[2026-02-05T10:41:17.933Z] GET /notifications 200 in 241ms
+[2026-02-05T10:41:18.143Z] ✓ Compiled in 330ms (1090 modules)
+[2026-02-05T10:41:18.537Z] ✓ Compiled in 381ms (1090 modules)
+[2026-02-05T10:41:18.994Z] GET /notifications 200 in 273ms
+[2026-02-05T10:41:19.000Z] ✓ Compiled in 441ms (1090 modules)
+[2026-02-05T10:41:19.456Z] ✓ Compiled in 439ms (1090 modules)
+[2026-02-05T10:41:19.753Z] GET /notifications 200 in 314ms
+[2026-02-05T10:41:19.979Z] ✓ Compiled in 511ms (1090 modules)
+[2026-02-05T10:41:20.478Z] ✓ Compiled in 489ms (1090 modules)
+[2026-02-05T10:41:20.788Z] GET /notifications 200 in 319ms
+[2026-02-05T10:41:20.959Z] ✓ Compiled in 459ms (1090 modules)
+[2026-02-05T10:41:21.525Z] ✓ Compiled in 557ms (1090 modules)
+[2026-02-05T10:41:21.841Z] GET /notifications 200 in 319ms
+[2026-02-05T10:41:22.007Z] ✓ Compiled in 474ms (1090 modules)
+[2026-02-05T10:41:22.565Z] ✓ Compiled in 547ms (1090 modules)
+[2026-02-05T10:41:23.824Z] GET /notifications 200 in 551ms
+[2026-02-05T10:41:23.835Z] ✓ Compiled in 1190ms (1090 modules)
+[2026-02-05T10:41:24.434Z] ✓ Compiled in 580ms (1090 modules)
+[2026-02-05T10:41:25.087Z] ✓ Compiled in 633ms (1090 modules)
+[2026-02-05T10:41:25.112Z] GET /notifications 200 in 351ms
+[2026-02-05T10:41:25.797Z] ✓ Compiled in 680ms (1090 modules)
+[2026-02-05T10:41:26.312Z] GET /notifications 200 in 531ms
+[2026-02-05T10:41:26.562Z] ✓ Compiled in 749ms (1090 modules)
+[2026-02-05T10:41:27.157Z] ✓ Compiled in 581ms (1090 modules)
+[2026-02-05T10:41:27.941Z] ✓ Compiled in 765ms (1090 modules)
+[2026-02-05T10:41:27.976Z] GET /notifications 200 in 453ms
+[2026-02-05T10:41:28.591Z] ✓ Compiled in 574ms (1090 modules)
+[2026-02-05T10:41:29.432Z] ✓ Compiled in 774ms (1090 modules)
+[2026-02-05T10:41:29.451Z] GET /notifications 200 in 464ms
+[2026-02-05T10:41:30.176Z] ✓ Compiled in 686ms (1090 modules)
+[2026-02-05T10:41:30.865Z] GET /notifications 200 in 349ms
+[2026-02-05T10:41:31.094Z] ✓ Compiled in 876ms (1090 modules)
+[2026-02-05T10:41:31.977Z] ✓ Compiled in 865ms (1090 modules)
+[2026-02-05T10:41:32.898Z] GET /notifications 200 in 598ms
+[2026-02-05T10:41:32.935Z] ✓ Compiled in 951ms (1090 modules)
+[2026-02-05T10:41:33.737Z] ✓ Compiled in 777ms (1090 modules)
+[2026-02-05T10:41:34.577Z] ✓ Compiled in 809ms (1090 modules)
+[2026-02-05T10:41:34.611Z] GET /notifications 200 in 513ms
+[2026-02-05T10:41:35.196Z] ✓ Compiled in 587ms (1090 modules)
+[2026-02-05T10:41:36.175Z] ✓ Compiled in 937ms (1090 modules)
+[2026-02-05T10:41:36.894Z] GET /notifications 200 in 905ms
+[2026-02-05T10:41:37.201Z] ✓ Compiled in 1000ms (1090 modules)
+[2026-02-05T10:41:37.922Z] ✓ Compiled in 684ms (1090 modules)
+[2026-02-05T10:41:38.780Z] ✓ Compiled in 786ms (1090 modules)
+[2026-02-05T10:41:39.230Z] GET /notifications 200 in 756ms
+[2026-02-05T10:41:39.580Z] ✓ Compiled in 775ms (1090 modules)
+[2026-02-05T10:41:40.383Z] ✓ Compiled in 780ms (1090 modules)
+[2026-02-05T10:41:41.472Z] ✓ Compiled in 1033ms (1090 modules)
+[2026-02-05T10:41:41.508Z] GET /notifications 200 in 796ms
+[2026-02-05T10:41:42.300Z] ✓ Compiled in 793ms (1090 modules)
+[2026-02-05T10:41:43.347Z] ⨯ SyntaxError: Unexpected end of JSON input
+[2026-02-05T10:41:43.366Z] at JSON.parse (<anonymous>) {
+[2026-02-05T10:41:43.367Z] page: '/notifications'
+[2026-02-05T10:41:43.368Z] }
+[2026-02-05T10:41:43.973Z] ○ Compiling /_error ...
+[2026-02-05T10:41:44.871Z] ✓ Compiled /_error in 2.5s (2373 modules)
+[2026-02-05T10:41:47.545Z] GET /notifications 500 in 4613ms
+[2026-02-05T10:41:48.420Z] ✓ Compiled in 1494ms (1091 modules)
+[2026-02-05T10:41:50.354Z] ✓ Compiled in 1911ms (1091 modules)
+[2026-02-05T10:41:50.615Z] GET /notifications 200 in 1615ms
+[2026-02-05T10:41:51.883Z] ✓ Compiled in 1491ms (1091 modules)
+[2026-02-05T10:41:53.330Z] ✓ Compiled in 1369ms (1091 modules)
+[2026-02-05T10:41:54.148Z] GET /notifications 200 in 1373ms
+[2026-02-05T10:41:54.781Z] ✓ Compiled in 1426ms (1091 modules)
+[2026-02-05T10:41:55.495Z] ✓ Compiled in 709ms (1091 modules)
+[2026-02-05T10:41:56.034Z] GET /notifications 200 in 545ms
+[2026-02-05T10:41:56.289Z] ✓ Compiled in 768ms (1091 modules)
+[2026-02-05T10:41:56.862Z] ✓ Compiled in 555ms (1091 modules)
+[2026-02-05T10:41:58.282Z] ✓ Compiled in 1414ms (1091 modules)
+[2026-02-05T10:41:58.296Z] GET /notifications 200 in 990ms
+[2026-02-05T10:41:58.872Z] ✓ Compiled in 579ms (1091 modules)
+[2026-02-05T10:41:59.284Z] GET /notifications 200 in 407ms
+[2026-02-05T10:41:59.526Z] ✓ Compiled in 645ms (1091 modules)
+[2026-02-05T10:42:00.152Z] ✓ Compiled in 615ms (1091 modules)
+[2026-02-05T10:42:00.923Z] ✓ Compiled in 745ms (1091 modules)
+[2026-02-05T10:42:00.955Z] GET /notifications 200 in 514ms
+[2026-02-05T10:42:01.572Z] ✓ Compiled in 612ms (1091 modules)
+[2026-02-05T10:42:02.401Z] GET /notifications 200 in 427ms
+[2026-02-05T10:42:02.427Z] ✓ Compiled in 851ms (1091 modules)
+[2026-02-05T10:42:03.054Z] ✓ Compiled in 596ms (1091 modules)
+[2026-02-05T10:42:03.483Z] GET /notifications 200 in 445ms
+[2026-02-05T10:42:03.683Z] ✓ Compiled in 624ms (1091 modules)
+[2026-02-05T10:42:04.239Z] ✓ Compiled in 543ms (1091 modules)
+[2026-02-05T10:42:04.792Z] GET /notifications 200 in 254ms
+[2026-02-05T10:42:05.008Z] ✓ Compiled in 767ms (1091 modules)
+[2026-02-05T10:42:05.572Z] ✓ Compiled in 554ms (1091 modules)
+[2026-02-05T10:42:06.011Z] GET /notifications 200 in 445ms
+[2026-02-05T10:42:06.285Z] ✓ Compiled in 697ms (1091 modules)
+[2026-02-05T10:42:06.881Z] ✓ Compiled in 588ms (1091 modules)
+[2026-02-05T10:42:07.645Z] GET /notifications 200 in 458ms
+[2026-02-05T10:42:07.659Z] ✓ Compiled in 759ms (1091 modules)
+[2026-02-05T10:42:08.310Z] ✓ Compiled in 639ms (1091 modules)
+[2026-02-05T10:42:08.997Z] ✓ Compiled in 666ms (1091 modules)
+[2026-02-05T10:42:09.013Z] GET /notifications 200 in 458ms
+[2026-02-05T10:42:09.564Z] ✓ Compiled in 542ms (1091 modules)
+[2026-02-05T10:42:10.366Z] GET /notifications 200 in 509ms
+[2026-02-05T10:42:10.434Z] ✓ Compiled in 834ms (1091 modules)
+[2026-02-05T10:42:11.077Z] ✓ Compiled in 605ms (1091 modules)
+[2026-02-05T10:42:11.841Z] ✓ Compiled in 758ms (1091 modules)
+[2026-02-05T10:42:11.869Z] GET /notifications 200 in 522ms
+[2026-02-05T10:42:12.613Z] ✓ Compiled in 752ms (1091 modules)
+[2026-02-05T10:42:13.481Z] ✓ Compiled in 856ms (1091 modules)
+[2026-02-05T10:42:13.498Z] GET /notifications 200 in 571ms
+[2026-02-05T10:42:14.257Z] ✓ Compiled in 762ms (1091 modules)
+[2026-02-05T10:42:15.073Z] ⨯ SyntaxError: Unexpected end of JSON input
+[2026-02-05T10:42:15.122Z] at JSON.parse (<anonymous>) {
+[2026-02-05T10:42:15.124Z] page: '/notifications'
+[2026-02-05T10:42:15.125Z] }
+[2026-02-05T10:42:16.329Z] ✓ Compiled in 2s (2373 modules)
+[2026-02-05T10:42:16.749Z] GET /notifications 500 in 2018ms
+[2026-02-05T10:42:17.210Z] ✓ Compiled in 780ms (1091 modules)
+[2026-02-05T10:42:18.170Z] ✓ Compiled in 938ms (1091 modules)
+[2026-02-05T10:42:18.909Z] GET /notifications 200 in 1051ms
+[2026-02-05T10:42:19.296Z] ✓ Compiled in 1106ms (1091 modules)
+[2026-02-05T10:42:20.103Z] ✓ Compiled in 801ms (1091 modules)
+[2026-02-05T10:42:21.113Z] ✓ Compiled in 984ms (1091 modules)
+[2026-02-05T10:42:21.142Z] GET /notifications 200 in 677ms
+[2026-02-05T10:42:21.799Z] ✓ Compiled in 672ms (1091 modules)
+[2026-02-05T10:42:22.981Z] ✓ Compiled in 1163ms (1091 modules)
+[2026-02-05T10:42:23.623Z] GET /notifications 200 in 910ms
+[2026-02-05T10:42:24.376Z] ✓ Compiled in 1383ms (1091 modules)
+[2026-02-05T10:42:26.039Z] ✓ Compiled in 1289ms (1091 modules)
+[2026-02-05T10:42:26.735Z] GET /notifications 200 in 1036ms
+[2026-02-05T10:42:27.163Z] ✓ Compiled in 1103ms (1091 modules)
+[2026-02-05T10:42:28.065Z] ✓ Compiled in 884ms (1091 modules)
+[2026-02-05T10:42:29.146Z] ✓ Compiled in 1044ms (1091 modules)
+[2026-02-05T10:42:29.286Z] GET /notifications 200 in 793ms
+[2026-02-05T10:42:30.139Z] ✓ Compiled in 929ms (1091 modules)
+[2026-02-05T10:42:31.192Z] ✓ Compiled in 1044ms (1091 modules)
+[2026-02-05T10:42:31.280Z] GET /notifications 200 in 616ms
+[2026-02-05T10:42:32.418Z] ✓ Compiled in 1206ms (1091 modules)
+[2026-02-05T10:42:33.561Z] ✓ Compiled in 1119ms (1091 modules)
+[2026-02-05T10:42:33.659Z] GET /notifications 200 in 751ms
+[2026-02-05T10:42:34.701Z] ✓ Compiled in 1086ms (1091 modules)
+[2026-02-05T10:42:36.078Z] ✓ Compiled in 1312ms (1091 modules)
+[2026-02-05T10:42:36.120Z] GET /notifications 200 in 919ms
+[2026-02-05T10:42:36.962Z] ✓ Compiled in 851ms (1091 modules)
+[2026-02-05T10:42:37.712Z] ✓ Compiled in 740ms (1091 modules)
+[2026-02-05T10:42:38.450Z] GET /notifications 200 in 741ms
+[2026-02-05T10:42:38.790Z] ✓ Compiled in 1059ms (1091 modules)
+[2026-02-05T10:42:39.614Z] ✓ Compiled in 786ms (1091 modules)
+[2026-02-05T10:42:40.821Z] ✓ Compiled in 1121ms (1091 modules)
+[2026-02-05T10:42:41.496Z] GET /notifications 200 in 909ms
+[2026-02-05T10:42:42.009Z] ✓ Compiled in 1139ms (1091 modules)
+[2026-02-05T10:42:43.071Z] ✓ Compiled in 1044ms (1091 modules)
+[2026-02-05T10:42:44.380Z] GET /notifications 200 in 895ms
+[2026-02-05T10:42:44.494Z] ✓ Compiled in 1407ms (1091 modules)
+[2026-02-05T10:42:45.328Z] ✓ Compiled in 760ms (1091 modules)
+[2026-02-05T10:42:46.694Z] ✓ Compiled in 1322ms (1091 modules)
+[2026-02-05T10:42:47.352Z] GET /notifications 200 in 1130ms
+[2026-02-05T10:42:48.042Z] ✓ Compiled in 1328ms (1091 modules)
+[2026-02-05T10:42:49.145Z] ✓ Compiled in 1015ms (1091 modules)
+[2026-02-05T10:42:50.232Z] GET /notifications 200 in 1113ms
+[2026-02-05T10:42:50.684Z] ✓ Compiled in 1435ms (1091 modules)
+[2026-02-05T10:42:51.727Z] ✓ Compiled in 979ms (1091 modules)
+[2026-02-05T10:42:53.379Z] ✓ Compiled in 1633ms (1091 modules)
+[2026-02-05T10:42:53.477Z] GET /notifications 200 in 1315ms
+[2026-02-05T10:42:54.368Z] ✓ Compiled in 956ms (1091 modules)
+[2026-02-05T10:42:56.063Z] ✓ Compiled in 1681ms (1091 modules)
+[2026-02-05T10:42:56.770Z] GET /notifications 200 in 1071ms
+[2026-02-05T10:42:57.370Z] ✓ Compiled in 1288ms (1091 modules)
+[2026-02-05T10:42:58.473Z] ✓ Compiled in 925ms (1091 modules)
+[2026-02-05T10:43:00.987Z] GET /notifications 200 in 1545ms
+[2026-02-05T10:43:01.208Z] ✓ Compiled in 2.7s (1091 modules)
+[2026-02-05T10:43:02.309Z] ✓ Compiled in 1043ms (1091 modules)
+[2026-02-05T10:43:04.519Z] ✓ Compiled in 2.1s (1091 modules)
+[2026-02-05T10:43:07.474Z] ✓ Compiled in 2.9s (1091 modules)
+[2026-02-05T10:43:08.286Z] GET /notifications 200 in 2443ms
+[2026-02-05T10:43:09.884Z] ✓ Compiled in 2.4s (1091 modules)
+[2026-02-05T10:43:12.317Z] ✓ Compiled in 2.3s (1091 modules)
+[2026-02-05T10:43:13.811Z] GET /notifications 200 in 2384ms
+[2026-02-05T10:43:15.364Z] ✓ Compiled in 3s (1091 modules)
+[2026-02-05T10:43:16.866Z] ✓ Compiled in 1476ms (1091 modules)
+[2026-02-05T10:43:17.582Z] GET /notifications 200 in 719ms
+[2026-02-05T10:43:18.140Z] ✓ Compiled in 1240ms (1091 modules)
+[2026-02-05T10:51:04.133Z] ✓ Compiled in 466s (1091 modules)
+[2026-02-05T10:51:05.608Z] ✓ Compiled in 1423ms (1091 modules)
+[2026-02-05T10:51:11.903Z] GET /notifications 200 in 6353ms
+[2026-02-05T10:51:12.069Z] ✓ Compiled in 6.4s (1091 modules)
+[2026-02-05T10:51:12.676Z] GET /notifications 200 in 615ms
+[2026-02-05T10:51:12.811Z] ✓ Compiled in 734ms (1091 modules)
+[2026-02-05T10:51:13.102Z] ✓ Compiled in 285ms (1091 modules)
+[2026-02-05T10:51:13.375Z] ✓ Compiled in 267ms (1091 modules)
+[2026-02-05T10:51:13.617Z] ✓ Compiled in 236ms (1091 modules)
+[2026-02-05T10:51:13.925Z] ✓ Compiled in 302ms (1091 modules)
+[2026-02-05T10:51:14.802Z] ✓ Compiled in 868ms (1091 modules)
+[2026-02-05T10:51:15.032Z] ✓ Compiled in 224ms (1091 modules)
+[2026-02-05T10:51:15.360Z] ✓ Compiled in 320ms (1091 modules)
+[2026-02-05T10:51:15.663Z] ✓ Compiled in 296ms (1091 modules)
+[2026-02-05T10:51:16.744Z] ○ Compiling /favicon.ico ...
+[2026-02-05T10:51:17.858Z] ✓ Compiled /favicon.ico in 2.2s (2295 modules)
+[2026-02-05T10:51:18.052Z] GET /favicon.ico 200 in 2380ms
+[2026-02-05T10:51:18.324Z] ✓ Compiled in 454ms (1091 modules)
+[2026-02-05T10:51:18.610Z] GET /notifications 200 in 296ms
+[2026-02-05T10:51:18.708Z] ✓ Compiled in 378ms (1091 modules)
+[2026-02-05T10:51:18.993Z] ✓ Compiled in 278ms (1091 modules)
+[2026-02-05T10:51:19.181Z] GET /notifications 200 in 206ms
+[2026-02-05T10:51:19.276Z] ✓ Compiled in 276ms (1091 modules)
+[2026-02-05T10:51:19.546Z] ✓ Compiled in 265ms (1091 modules)
+[2026-02-05T10:51:19.738Z] GET /notifications 200 in 203ms
+[2026-02-05T10:51:19.839Z] ✓ Compiled in 285ms (1091 modules)
+[2026-02-05T10:51:20.095Z] ✓ Compiled in 251ms (1091 modules)
+[2026-02-05T10:51:20.256Z] GET /notifications 200 in 281ms
+[2026-02-05T10:51:20.379Z] ✓ Compiled in 278ms (1091 modules)
+[2026-02-05T10:51:20.644Z] ✓ Compiled in 261ms (1091 modules)
+[2026-02-05T10:51:20.651Z] GET /notifications 200 in 243ms
+[2026-02-05T10:51:20.896Z] ✓ Compiled in 247ms (1091 modules)
+[2026-02-05T10:51:21.063Z] GET /notifications 200 in 175ms
+[2026-02-05T10:51:21.147Z] ✓ Compiled in 246ms (1091 modules)
+[2026-02-05T10:51:21.378Z] ✓ Compiled in 224ms (1091 modules)
+[2026-02-05T10:51:21.531Z] GET /notifications 200 in 243ms
+[2026-02-05T10:51:21.650Z] ✓ Compiled in 267ms (1091 modules)
+[2026-02-05T10:51:21.924Z] ⨯ SyntaxError: Unexpected end of JSON input
+[2026-02-05T10:51:21.925Z] at JSON.parse (<anonymous>) {
+[2026-02-05T10:51:21.925Z] page: '/notifications'
+[2026-02-05T10:51:21.925Z] }
+[2026-02-05T10:51:22.408Z] ✓ Compiled /_error in 752ms (2390 modules)
+[2026-02-05T10:51:22.861Z] GET /notifications 500 in 1105ms
+[2026-02-05T10:51:23.355Z] ✓ Compiled in 814ms (1091 modules)
+[2026-02-05T10:51:23.770Z] ✓ Compiled in 408ms (1091 modules)
+[2026-02-05T10:51:23.776Z] GET /notifications 200 in 409ms
+[2026-02-05T10:51:23.994Z] ✓ Compiled in 218ms (1091 modules)
+[2026-02-05T10:51:24.263Z] ✓ Compiled in 262ms (1091 modules)
+[2026-02-05T10:51:24.268Z] GET /notifications 200 in 265ms
+[2026-02-05T10:51:24.511Z] ✓ Compiled in 242ms (1091 modules)
+[2026-02-05T10:51:24.696Z] GET /notifications 200 in 191ms
+[2026-02-05T10:51:24.781Z] ✓ Compiled in 264ms (1091 modules)
+[2026-02-05T10:51:25.013Z] ✓ Compiled in 228ms (1091 modules)
+[2026-02-05T10:51:25.158Z] GET /notifications 200 in 254ms
+[2026-02-05T10:51:25.267Z] ✓ Compiled in 248ms (1091 modules)
+[2026-02-05T10:51:25.491Z] ✓ Compiled in 219ms (1091 modules)
+[2026-02-05T10:51:25.628Z] GET /notifications 200 in 242ms
+[2026-02-05T10:51:25.738Z] ✓ Compiled in 210ms (1091 modules)
+[2026-02-05T10:51:25.963Z] ✓ Compiled in 220ms (1091 modules)
+[2026-02-05T10:51:26.208Z] GET /notifications 200 in 358ms
+[2026-02-05T10:51:26.222Z] ✓ Compiled in 254ms (1091 modules)
+[2026-02-05T10:51:26.444Z] ✓ Compiled in 217ms (1091 modules)
+[2026-02-05T10:51:26.577Z] GET /notifications 200 in 231ms
+[2026-02-05T10:51:26.690Z] ✓ Compiled in 215ms (1091 modules)
+[2026-02-05T10:51:26.919Z] ✓ Compiled in 225ms (1091 modules)
+[2026-02-05T10:51:27.054Z] GET /notifications 200 in 243ms
+[2026-02-05T10:51:27.172Z] ✓ Compiled in 218ms (1091 modules)
+[2026-02-05T10:51:27.397Z] ✓ Compiled in 221ms (1091 modules)
+[2026-02-05T10:51:27.452Z] GET /notifications 200 in 165ms
+[2026-02-05T10:51:27.658Z] ✓ Compiled in 219ms (1091 modules)
+[2026-02-05T10:51:27.927Z] ✓ Compiled in 264ms (1091 modules)
+[2026-02-05T10:51:27.934Z] GET /notifications 200 in 244ms
+[2026-02-05T10:51:28.169Z] ✓ Compiled in 236ms (1091 modules)
+[2026-02-05T10:51:28.338Z] GET /notifications 200 in 177ms
+[2026-02-05T10:51:28.428Z] ✓ Compiled in 253ms (1091 modules)
+[2026-02-05T10:51:28.678Z] ✓ Compiled in 246ms (1091 modules)
+[2026-02-05T10:51:28.819Z] GET /notifications 200 in 254ms
+[2026-02-05T10:51:28.944Z] ✓ Compiled in 261ms (1091 modules)
+[2026-02-05T10:51:29.216Z] ✓ Compiled in 267ms (1091 modules)
+[2026-02-05T10:51:29.236Z] GET /notifications 200 in 176ms
+[2026-02-05T10:51:29.948Z] ✓ Compiled in 726ms (1091 modules)
+[2026-02-05T10:51:30.119Z] GET /notifications 200 in 180ms
+[2026-02-05T10:51:30.222Z] ✓ Compiled in 270ms (1091 modules)
+[2026-02-05T10:51:30.440Z] ✓ Compiled in 213ms (1091 modules)
+[2026-02-05T10:51:30.591Z] GET /notifications 200 in 243ms
+[2026-02-05T10:51:30.708Z] ✓ Compiled in 259ms (1091 modules)
+[2026-02-05T10:51:30.929Z] ✓ Compiled in 216ms (1091 modules)
+[2026-02-05T10:51:30.990Z] GET /notifications 200 in 163ms
+[2026-02-05T10:51:31.200Z] ✓ Compiled in 235ms (1091 modules)
+[2026-02-05T10:51:31.473Z] ✓ Compiled in 267ms (1091 modules)
+[2026-02-05T10:51:31.480Z] GET /notifications 200 in 256ms
+[2026-02-05T10:51:31.721Z] ✓ Compiled in 243ms (1091 modules)
+[2026-02-05T10:51:31.888Z] GET /notifications 200 in 174ms
+[2026-02-05T10:51:31.976Z] ✓ Compiled in 250ms (1091 modules)
+[2026-02-05T10:51:32.205Z] ✓ Compiled in 223ms (1091 modules)
+[2026-02-05T10:51:32.347Z] GET /notifications 200 in 230ms
+[2026-02-05T10:51:32.452Z] ✓ Compiled in 243ms (1091 modules)
+[2026-02-05T10:51:32.671Z] ✓ Compiled in 215ms (1091 modules)
+[2026-02-05T10:51:32.808Z] GET /notifications 200 in 251ms
+[2026-02-05T10:51:32.921Z] ✓ Compiled in 244ms (1091 modules)
+[2026-02-05T10:51:33.170Z] ✓ Compiled in 244ms (1091 modules)
+[2026-02-05T10:51:33.180Z] GET /notifications 200 in 156ms
+[2026-02-05T10:51:33.383Z] ✓ Compiled in 207ms (1091 modules)
+[2026-02-05T10:51:33.606Z] ✓ Compiled in 218ms (1091 modules)
+[2026-02-05T10:51:33.770Z] GET /notifications 200 in 246ms
+[2026-02-05T10:51:33.870Z] ✓ Compiled in 260ms (1091 modules)
+[2026-02-05T10:51:34.100Z] ✓ Compiled in 224ms (1091 modules)
+[2026-02-05T10:51:34.287Z] GET /notifications 200 in 296ms
+[2026-02-05T10:51:34.403Z] ✓ Compiled in 296ms (1091 modules)
+[2026-02-05T10:51:34.635Z] ✓ Compiled in 227ms (1091 modules)
+[2026-02-05T10:51:34.711Z] GET /notifications 200 in 178ms
+[2026-02-05T10:51:34.903Z] ✓ Compiled in 229ms (1091 modules)
+[2026-02-05T10:51:35.176Z] ✓ Compiled in 268ms (1091 modules)
+[2026-02-05T10:51:35.182Z] GET /notifications 200 in 260ms
+[2026-02-05T10:51:35.419Z] ✓ Compiled in 238ms (1091 modules)
+[2026-02-05T10:51:35.588Z] GET /notifications 200 in 181ms
+[2026-02-05T10:51:35.697Z] ✓ Compiled in 272ms (1091 modules)
+[2026-02-05T10:51:36.560Z] ✓ Compiled in 857ms (1091 modules)
+[2026-02-05T10:51:36.569Z] GET /notifications 200 in 203ms
+[2026-02-05T10:51:36.848Z] ✓ Compiled in 283ms (1091 modules)
+[2026-02-05T10:51:37.032Z] GET /notifications 200 in 192ms
+[2026-02-05T10:51:37.135Z] ✓ Compiled in 282ms (1091 modules)
+[2026-02-05T10:51:37.397Z] ✓ Compiled in 257ms (1091 modules)
+[2026-02-05T10:51:37.557Z] GET /notifications 200 in 292ms
+[2026-02-05T10:51:37.694Z] ✓ Compiled in 291ms (1091 modules)
+[2026-02-05T10:51:37.942Z] ✓ Compiled in 244ms (1091 modules)
+[2026-02-05T10:51:37.946Z] GET /notifications 200 in 238ms
+[2026-02-05T10:51:38.179Z] ✓ Compiled in 232ms (1091 modules)
+[2026-02-05T10:51:38.337Z] GET /notifications 200 in 165ms
+[2026-02-05T10:51:38.425Z] ✓ Compiled in 240ms (1091 modules)
+[2026-02-05T10:51:38.645Z] ✓ Compiled in 215ms (1091 modules)
+[2026-02-05T10:51:38.789Z] GET /notifications 200 in 233ms
+[2026-02-05T10:51:38.915Z] ✓ Compiled in 266ms (1091 modules)
+[2026-02-05T10:51:39.128Z] ✓ Compiled in 208ms (1091 modules)
+[2026-02-05T10:51:39.177Z] GET /notifications 200 in 155ms
+[2026-02-05T10:51:39.375Z] ✓ Compiled in 213ms (1091 modules)
+[2026-02-05T10:51:39.623Z] ✓ Compiled in 244ms (1091 modules)
+[2026-02-05T10:51:39.631Z] GET /notifications 200 in 171ms
+[2026-02-05T10:51:39.862Z] ✓ Compiled in 234ms (1091 modules)
+[2026-02-05T10:51:40.024Z] GET /notifications 200 in 169ms
+[2026-02-05T10:51:40.203Z] ✓ Compiled in 328ms (1091 modules)
+[2026-02-05T10:51:41.080Z] GET /notifications 200 in 533ms
+[2026-02-05T10:51:41.131Z] ✓ Compiled in 919ms (1091 modules)
+[2026-02-05T10:51:42.252Z] ✓ Compiled in 1063ms (1091 modules)
+[2026-02-05T10:51:45.089Z] ✓ Compiled in 2.8s (1091 modules)
+[2026-02-05T10:52:02.145Z] GET /notifications 200 in 18191ms
+[2026-02-05T10:52:05.630Z] ✓ Compiled in 20.5s (1091 modules)
+[2026-02-05T10:53:02.722Z] ✓ Compiled in 56.8s (1091 modules)
+[2026-02-05T10:53:02.992Z] GET /notifications 200 in 559ms
+[2026-02-05T10:53:03.154Z] ✓ Compiled in 424ms (1091 modules)
+[2026-02-05T10:53:03.661Z] ✓ Compiled in 498ms (1091 modules)
+[2026-02-05T10:53:03.882Z] GET /notifications 200 in 236ms
+[2026-02-05T10:53:04.083Z] ✓ Compiled in 406ms (1091 modules)
+[2026-02-05T10:53:04.483Z] ✓ Compiled in 393ms (1091 modules)
+[2026-02-05T10:53:04.751Z] GET /notifications 200 in 273ms
+[2026-02-05T10:53:04.863Z] ✓ Compiled in 373ms (1091 modules)
+[2026-02-05T10:53:05.183Z] ✓ Compiled in 310ms (1091 modules)
+[2026-02-05T10:53:05.416Z] GET /notifications 200 in 244ms
+[2026-02-05T10:53:05.545Z] ✓ Compiled in 348ms (1091 modules)
+[2026-02-05T10:53:05.973Z] ✓ Compiled in 416ms (1091 modules)
+[2026-02-05T10:53:05.986Z] GET /notifications 200 in 272ms
+[2026-02-05T10:53:06.373Z] ✓ Compiled in 383ms (1091 modules)
+[2026-02-05T10:53:06.649Z] GET /notifications 200 in 289ms
+[2026-02-05T10:53:06.812Z] ✓ Compiled in 431ms (1091 modules)
+[2026-02-05T10:53:07.263Z] ✓ Compiled in 443ms (1091 modules)
+[2026-02-05T10:53:07.635Z] GET /notifications 200 in 372ms
+[2026-02-05T10:53:07.840Z] ✓ Compiled in 560ms (1091 modules)
+[2026-02-05T10:53:08.347Z] ✓ Compiled in 496ms (1091 modules)
+[2026-02-05T10:53:08.722Z] GET /notifications 200 in 391ms
+[2026-02-05T10:53:08.923Z] ✓ Compiled in 570ms (1091 modules)
+[2026-02-05T10:53:09.418Z] ✓ Compiled in 484ms (1091 modules)
+[2026-02-05T10:53:09.742Z] GET /notifications 200 in 335ms
+[2026-02-05T10:53:09.952Z] ✓ Compiled in 518ms (1091 modules)
+[2026-02-05T10:53:10.470Z] ✓ Compiled in 509ms (1091 modules)
+[2026-02-05T10:53:10.840Z] GET /notifications 200 in 378ms
+[2026-02-05T10:53:11.040Z] ✓ Compiled in 533ms (1091 modules)
+[2026-02-05T10:53:11.646Z] ✓ Compiled in 599ms (1091 modules)
+[2026-02-05T10:53:12.093Z] GET /notifications 200 in 440ms
+[2026-02-05T10:53:12.300Z] ✓ Compiled in 640ms (1091 modules)
+[2026-02-05T10:53:12.858Z] ✓ Compiled in 549ms (1091 modules)
+[2026-02-05T10:53:13.391Z] GET /notifications 200 in 530ms
+[2026-02-05T10:53:13.720Z] ✓ Compiled in 825ms (1091 modules)
+[2026-02-05T10:53:14.236Z] ✓ Compiled in 511ms (1091 modules)
+[2026-02-05T10:53:14.946Z] ✓ Compiled in 699ms (1091 modules)
+[2026-02-05T10:53:15.040Z] GET /notifications 200 in 509ms
+[2026-02-05T10:53:15.509Z] ✓ Compiled in 554ms (1091 modules)
+[2026-02-05T10:53:16.387Z] ✓ Compiled in 861ms (1091 modules)
+[2026-02-05T10:53:16.428Z] GET /notifications 200 in 491ms
+[2026-02-05T10:53:17.047Z] ✓ Compiled in 638ms (1091 modules)
+[2026-02-05T10:53:17.966Z] ✓ Compiled in 906ms (1091 modules)
+[2026-02-05T10:53:17.983Z] GET /notifications 200 in 673ms
+[2026-02-05T10:53:18.590Z] ✓ Compiled in 601ms (1091 modules)
+[2026-02-05T10:53:19.363Z] ✓ Compiled in 723ms (1091 modules)
+[2026-02-05T10:53:19.400Z] GET /notifications 200 in 515ms
+[2026-02-05T10:53:20.524Z] ✓ Compiled in 1143ms (1091 modules)
+[2026-02-05T10:53:20.783Z] GET /notifications 200 in 277ms
+[2026-02-05T10:53:20.928Z] ✓ Compiled in 398ms (1091 modules)
+[2026-02-05T10:53:21.250Z] ✓ Compiled in 315ms (1091 modules)
+[2026-02-05T10:53:21.564Z] GET /notifications 200 in 305ms
+[2026-02-05T10:53:21.570Z] ✓ Compiled in 310ms (1091 modules)
+[2026-02-05T10:53:21.885Z] ✓ Compiled in 310ms (1091 modules)
+[2026-02-05T10:53:22.094Z] GET /notifications 200 in 219ms
+[2026-02-05T10:53:22.190Z] ✓ Compiled in 300ms (1091 modules)
+[2026-02-05T10:53:22.484Z] ✓ Compiled in 288ms (1091 modules)
+[2026-02-05T10:53:22.684Z] GET /notifications 200 in 211ms
+[2026-02-05T10:53:22.779Z] ✓ Compiled in 290ms (1091 modules)
+[2026-02-05T10:53:23.067Z] ✓ Compiled in 279ms (1091 modules)
+[2026-02-05T10:53:23.225Z] GET /notifications 200 in 168ms
+[2026-02-05T10:53:23.357Z] ✓ Compiled in 278ms (1091 modules)
+[2026-02-05T10:53:23.661Z] ✓ Compiled in 299ms (1091 modules)
+[2026-02-05T10:53:23.671Z] GET /notifications 200 in 172ms
+[2026-02-05T10:53:24.009Z] ✓ Compiled in 340ms (1091 modules)
+[2026-02-05T10:53:24.245Z] GET /notifications 200 in 249ms
+[2026-02-05T10:53:24.391Z] ✓ Compiled in 378ms (1091 modules)
+[2026-02-05T10:53:24.810Z] ✓ Compiled in 406ms (1091 modules)
+[2026-02-05T10:53:25.068Z] GET /notifications 200 in 274ms
+[2026-02-05T10:53:25.221Z] ✓ Compiled in 406ms (1091 modules)
+[2026-02-05T10:53:25.605Z] ✓ Compiled in 373ms (1091 modules)
+[2026-02-05T10:53:25.894Z] GET /notifications 200 in 296ms
+[2026-02-05T10:53:26.064Z] ✓ Compiled in 443ms (1091 modules)
+[2026-02-05T10:53:26.514Z] ✓ Compiled in 443ms (1091 modules)
+[2026-02-05T10:53:26.819Z] GET /notifications 200 in 324ms
+[2026-02-05T10:53:26.995Z] ✓ Compiled in 475ms (1091 modules)
+[2026-02-05T10:53:27.394Z] ✓ Compiled in 393ms (1091 modules)
+[2026-02-05T10:53:27.727Z] GET /notifications 200 in 340ms
+[2026-02-05T10:53:27.910Z] ✓ Compiled in 510ms (1091 modules)
+[2026-02-05T10:53:28.424Z] ✓ Compiled in 506ms (1091 modules)
+[2026-02-05T10:53:28.725Z] GET /notifications 200 in 315ms
+[2026-02-05T10:53:28.990Z] ✓ Compiled in 550ms (1091 modules)
+[2026-02-05T10:53:29.525Z] ✓ Compiled in 523ms (1091 modules)
+[2026-02-05T10:53:29.897Z] GET /notifications 200 in 383ms
+[2026-02-05T10:53:30.110Z] ✓ Compiled in 577ms (1091 modules)
+[2026-02-05T10:53:30.599Z] ✓ Compiled in 476ms (1091 modules)
+[2026-02-05T10:53:31.044Z] GET /notifications 200 in 423ms
+[2026-02-05T10:53:31.185Z] ✓ Compiled in 568ms (1091 modules)
+[2026-02-05T10:53:31.723Z] ✓ Compiled in 533ms (1091 modules)
+[2026-02-05T10:53:32.335Z] ✓ Compiled in 605ms (1090 modules)
+[2026-02-05T10:53:32.361Z] GET /notifications 200 in 374ms
+[2026-02-05T10:53:33.445Z] ✓ Compiled in 1104ms (1090 modules)
+[2026-02-05T10:53:33.816Z] ✓ Compiled in 365ms (1090 modules)
+[2026-02-05T10:53:33.832Z] GET /notifications 200 in 259ms
+[2026-02-05T10:53:34.137Z] ✓ Compiled in 304ms (1090 modules)
+[2026-02-05T10:53:34.332Z] GET /notifications 200 in 205ms
+[2026-02-05T10:53:34.428Z] ✓ Compiled in 282ms (1090 modules)
+[2026-02-05T10:53:34.689Z] ✓ Compiled in 256ms (1090 modules)
+[2026-02-05T10:53:34.844Z] GET /notifications 200 in 256ms
+[2026-02-05T10:53:34.965Z] ✓ Compiled in 268ms (1090 modules)
+[2026-02-05T10:53:35.199Z] ✓ Compiled in 227ms (1090 modules)
+[2026-02-05T10:53:35.357Z] GET /notifications 200 in 264ms
+[2026-02-05T10:53:35.468Z] ✓ Compiled in 260ms (1090 modules)
+[2026-02-05T10:53:35.713Z] ✓ Compiled in 240ms (1090 modules)
+[2026-02-05T10:53:35.861Z] GET /notifications 200 in 245ms
+[2026-02-05T10:53:35.986Z] ✓ Compiled in 268ms (1090 modules)
+[2026-02-05T10:53:36.219Z] ✓ Compiled in 228ms (1090 modules)
+[2026-02-05T10:53:36.362Z] GET /notifications 200 in 250ms
+[2026-02-05T10:53:36.481Z] ✓ Compiled in 256ms (1090 modules)
+[2026-02-05T10:53:36.709Z] ✓ Compiled in 224ms (1090 modules)
+[2026-02-05T10:53:36.857Z] GET /notifications 200 in 258ms
+[2026-02-05T10:53:36.975Z] ✓ Compiled in 259ms (1090 modules)
+[2026-02-05T10:53:37.205Z] ✓ Compiled in 224ms (1090 modules)
+[2026-02-05T10:53:37.360Z] GET /notifications 200 in 262ms
+[2026-02-05T10:53:37.477Z] ✓ Compiled in 267ms (1090 modules)
+[2026-02-05T10:53:37.687Z] ✓ Compiled in 205ms (1090 modules)
+[2026-02-05T10:53:37.833Z] GET /notifications 200 in 231ms
+[2026-02-05T10:53:37.946Z] ✓ Compiled in 250ms (1090 modules)
+[2026-02-05T10:53:38.152Z] ✓ Compiled in 202ms (1090 modules)
+[2026-02-05T10:53:38.289Z] GET /notifications 200 in 226ms
+[2026-02-05T10:53:38.405Z] ✓ Compiled in 247ms (1090 modules)
+[2026-02-05T10:53:38.621Z] ✓ Compiled in 212ms (1090 modules)
+[2026-02-05T10:53:38.767Z] GET /notifications 200 in 246ms
+[2026-02-05T10:53:38.883Z] ✓ Compiled in 257ms (1090 modules)
+[2026-02-05T10:53:39.094Z] ✓ Compiled in 207ms (1090 modules)
+[2026-02-05T10:53:39.226Z] GET /notifications 200 in 224ms
+[2026-02-05T10:53:39.332Z] ✓ Compiled in 233ms (1090 modules)
+[2026-02-05T10:53:39.594Z] ✓ Compiled in 258ms (1090 modules)
+[2026-02-05T10:53:39.601Z] GET /notifications 200 in 141ms
+[2026-02-05T10:53:39.829Z] ✓ Compiled in 229ms (1090 modules)
+[2026-02-05T10:53:39.981Z] GET /notifications 200 in 156ms
+[2026-02-05T10:53:40.073Z] ✓ Compiled in 238ms (1090 modules)
+[2026-02-05T10:53:40.320Z] ✓ Compiled in 241ms (1090 modules)
+[2026-02-05T10:53:40.475Z] GET /notifications 200 in 166ms
+[2026-02-05T10:53:40.557Z] ✓ Compiled in 231ms (1090 modules)
+[2026-02-05T10:53:40.778Z] ✓ Compiled in 215ms (1090 modules)
+[2026-02-05T10:53:40.932Z] GET /notifications 200 in 225ms
+[2026-02-05T10:53:41.023Z] ✓ Compiled in 238ms (1090 modules)
+[2026-02-05T10:53:41.240Z] ✓ Compiled in 213ms (1090 modules)
+[2026-02-05T10:53:41.899Z] GET /notifications 200 in 668ms
+[2026-02-05T10:53:42.063Z] ✓ Compiled in 816ms (1090 modules)
+[2026-02-05T10:53:42.571Z] ✓ Compiled in 501ms (1090 modules)
+[2026-02-05T10:53:42.583Z] GET /notifications 200 in 318ms
+[2026-02-05T10:53:42.903Z] ✓ Compiled in 317ms (1090 modules)
+[2026-02-05T10:53:43.094Z] GET /notifications 200 in 201ms
+[2026-02-05T10:53:43.234Z] ✓ Compiled in 321ms (1090 modules)
+[2026-02-05T10:53:43.518Z] ✓ Compiled in 273ms (1090 modules)
+[2026-02-05T10:53:43.583Z] GET /notifications 200 in 163ms
+[2026-02-05T10:53:43.914Z] ✓ Compiled in 333ms (1090 modules)
+[2026-02-05T10:53:44.343Z] ✓ Compiled in 420ms (1090 modules)
+[2026-02-05T10:53:44.350Z] GET /notifications 200 in 254ms
+[2026-02-05T10:53:44.777Z] ✓ Compiled in 409ms (1090 modules)
+[2026-02-05T10:53:44.975Z] GET /notifications 200 in 209ms
+[2026-02-05T10:53:45.198Z] ✓ Compiled in 408ms (1090 modules)
+[2026-02-05T10:53:45.603Z] ✓ Compiled in 396ms (1090 modules)
+[2026-02-05T10:53:45.613Z] GET /notifications 200 in 247ms
+[2026-02-05T10:53:46.010Z] ✓ Compiled in 395ms (1090 modules)
+[2026-02-05T10:53:46.248Z] GET /notifications 200 in 251ms
+[2026-02-05T10:53:46.416Z] ✓ Compiled in 396ms (1090 modules)
+[2026-02-05T10:53:46.824Z] ✓ Compiled in 400ms (1090 modules)
+[2026-02-05T10:53:47.125Z] GET /notifications 200 in 300ms
+[2026-02-05T10:53:47.297Z] ✓ Compiled in 464ms (1090 modules)
+[2026-02-05T10:53:47.790Z] ✓ Compiled in 488ms (1090 modules)
+[2026-02-05T10:53:48.245Z] ✓ Compiled in 446ms (1090 modules)
+[2026-02-05T10:53:48.252Z] GET /notifications 200 in 261ms
+[2026-02-05T10:53:48.695Z] ✓ Compiled in 441ms (1090 modules)
+[2026-02-05T10:53:48.787Z] GET /notifications 200 in 103ms
+[2026-02-05T10:53:49.253Z] ✓ Compiled in 474ms (1090 modules)
+[2026-02-05T10:53:49.707Z] ✓ Compiled in 446ms (1090 modules)
+[2026-02-05T10:53:50.122Z] GET /notifications 200 in 422ms
+[2026-02-05T10:53:50.321Z] ✓ Compiled in 604ms (1090 modules)
+[2026-02-05T10:53:50.804Z] ✓ Compiled in 474ms (1090 modules)
+[2026-02-05T10:53:51.138Z] GET /notifications 200 in 339ms
+[2026-02-05T10:53:51.321Z] ✓ Compiled in 505ms (1090 modules)
+[2026-02-05T10:53:51.843Z] ✓ Compiled in 514ms (1090 modules)
+[2026-02-05T10:53:52.234Z] GET /notifications 200 in 399ms
+[2026-02-05T10:53:52.438Z] ✓ Compiled in 590ms (1090 modules)
+[2026-02-05T10:53:52.940Z] ✓ Compiled in 457ms (1090 modules)
+[2026-02-05T10:53:53.558Z] ✓ Compiled in 550ms (1090 modules)
+[2026-02-05T10:53:53.577Z] GET /notifications 200 in 325ms
+[2026-02-05T10:53:54.132Z] ✓ Compiled in 559ms (1090 modules)
+[2026-02-05T10:53:54.498Z] GET /notifications 200 in 374ms
+[2026-02-05T10:53:54.635Z] ✓ Compiled in 498ms (1090 modules)
+[2026-02-05T10:53:54.965Z] ✓ Compiled in 320ms (1090 modules)
+[2026-02-05T10:53:55.176Z] GET /notifications 200 in 217ms
+[2026-02-05T10:53:55.294Z] ✓ Compiled in 319ms (1090 modules)
+[2026-02-05T10:53:55.635Z] ✓ Compiled in 330ms (1090 modules)
+[2026-02-05T10:53:56.558Z] GET /notifications 200 in 934ms
+[2026-02-05T10:53:56.777Z] ✓ Compiled in 1129ms (1090 modules)
+[2026-02-05T10:53:57.217Z] ✓ Compiled in 434ms (1090 modules)
+[2026-02-05T10:53:57.224Z] GET /notifications 200 in 279ms
+[2026-02-05T10:53:57.666Z] ✓ Compiled in 442ms (1090 modules)
+[2026-02-05T10:53:58.020Z] GET /notifications 200 in 364ms
+[2026-02-05T10:53:58.211Z] ✓ Compiled in 537ms (1090 modules)
+[2026-02-05T10:53:58.660Z] ✓ Compiled in 443ms (1090 modules)
+[2026-02-05T10:53:59.003Z] GET /notifications 200 in 350ms
+[2026-02-05T10:53:59.149Z] ✓ Compiled in 483ms (1090 modules)
+[2026-02-05T10:53:59.574Z] ✓ Compiled in 416ms (1090 modules)
+[2026-02-05T10:53:59.867Z] GET /notifications 200 in 312ms
+[2026-02-05T10:54:00.086Z] ✓ Compiled in 476ms (1090 modules)
+[2026-02-05T10:54:00.551Z] ✓ Compiled in 460ms (1090 modules)
+[2026-02-05T10:54:00.884Z] GET /notifications 200 in 344ms
+[2026-02-05T10:54:01.071Z] ✓ Compiled in 512ms (1090 modules)
+[2026-02-05T10:54:01.530Z] ✓ Compiled in 451ms (1090 modules)
+[2026-02-05T10:54:01.934Z] GET /notifications 200 in 404ms
+[2026-02-05T10:54:02.130Z] ✓ Compiled in 587ms (1090 modules)
+[2026-02-05T10:54:02.620Z] ✓ Compiled in 480ms (1090 modules)
+[2026-02-05T10:54:02.710Z] GET /notifications 200 in 96ms
+[2026-02-05T10:54:03.113Z] ✓ Compiled in 411ms (1090 modules)
+[2026-02-05T10:54:03.533Z] ✓ Compiled in 412ms (1090 modules)
+[2026-02-05T10:54:03.874Z] GET /notifications 200 in 345ms
+[2026-02-05T10:54:04.143Z] ✓ Compiled in 600ms (1090 modules)
+[2026-02-05T10:54:04.600Z] ✓ Compiled in 442ms (1090 modules)
+[2026-02-05T10:54:05.004Z] GET /notifications 200 in 406ms
+[2026-02-05T10:54:05.244Z] ✓ Compiled in 615ms (1090 modules)
+[2026-02-05T10:54:05.845Z] ✓ Compiled in 596ms (1090 modules)
+[2026-02-05T10:54:06.999Z] ✓ Compiled in 1122ms (1090 modules)
+[2026-02-05T10:54:07.083Z] GET /notifications 200 in 821ms
+[2026-02-05T10:54:08.428Z] ✓ Compiled in 1348ms (1090 modules)
+[2026-02-05T10:54:17.375Z] ✓ Compiled in 8.8s (1090 modules)
+[2026-02-05T10:54:29.963Z] ⚠ Server is approaching the used memory threshold, restarting...
+[2026-02-05T10:54:32.779Z] ▲ Next.js 15.5.12
+[2026-02-05T10:54:32.780Z] - Local:        http://localhost:3000
+[2026-02-05T10:54:32.781Z] - Network:      http://169.254.0.21:3000
+[2026-02-05T10:54:32.781Z] - Environments: .env.local
+[2026-02-05T10:54:32.782Z] 
+[2026-02-05T10:54:32.782Z] ✓ Starting...
+[2026-02-05T10:54:34.866Z] ✓ Ready in 3.4s
+[2026-02-05T10:54:47.872Z] ○ Compiling /middleware ...
+[2026-02-05T10:54:48.668Z] ✓ Compiled /middleware in 1298ms (164 modules)
+[2026-02-05T10:54:49.388Z] ○ Compiling / ...
+[2026-02-05T10:54:49.765Z] <w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (133kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+[2026-02-05T10:54:54.007Z] ✓ Compiled / in 5.1s (590 modules)
+[2026-02-05T10:54:54.804Z] ✓ Compiled in 783ms (236 modules)
+[2026-02-05T10:54:54.808Z] GET / 307 in 5938ms
+[2026-02-05T10:54:55.403Z] ○ Compiling /login ...
+[2026-02-05T10:55:00.355Z] ✓ Compiled /login in 5.5s (1868 modules)
+[2026-02-05T10:55:00.979Z] GET /login?redirectTo=%2Fdashboard 200 in 6152ms
+[2026-02-05T10:55:01.081Z] ✓ Compiled in 716ms (879 modules)
+[2026-02-05T10:55:01.289Z] ✓ Compiled in 201ms (879 modules)
+[2026-02-05T10:55:01.472Z] ✓ Compiled in 176ms (879 modules)
+[2026-02-05T10:55:01.644Z] ✓ Compiled in 168ms (879 modules)
+[2026-02-05T10:55:01.830Z] ✓ Compiled in 176ms (879 modules)
+[2026-02-05T10:55:02.025Z] ✓ Compiled in 191ms (879 modules)
+[2026-02-05T10:55:02.209Z] ✓ Compiled in 179ms (879 modules)
+[2026-02-05T10:55:02.372Z] ✓ Compiled in 157ms (879 modules)
+[2026-02-05T10:55:02.546Z] ⚠ Cross origin request detected from 127.0.0.1 to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+[2026-02-05T10:55:02.547Z] Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+[2026-02-05T10:55:03.059Z] ○ Compiling /favicon.ico ...
+[2026-02-05T10:55:03.067Z] ✓ Compiled /favicon.ico in 691ms (1885 modules)
+[2026-02-05T10:55:03.264Z] GET /favicon.ico 200 in 722ms
+[2026-02-05T10:55:03.577Z] ✓ Compiled in 504ms (879 modules)
+[2026-02-05T10:55:03.584Z] GET /login?redirectTo=%2Fdashboard 200 in 226ms
+[2026-02-05T10:55:03.818Z] ✓ Compiled in 237ms (879 modules)
+[2026-02-05T10:55:03.827Z] GET /login?redirectTo=%2Fdashboard 200 in 134ms
+[2026-02-05T10:55:04.015Z] ✓ Compiled in 192ms (879 modules)
+[2026-02-05T10:55:04.220Z] GET /login?redirectTo=%2Fdashboard 200 in 290ms
+[2026-02-05T10:55:04.228Z] ✓ Compiled in 209ms (879 modules)
+[2026-02-05T10:55:04.513Z] GET /login?redirectTo=%2Fdashboard 200 in 267ms
+[2026-02-05T10:55:04.517Z] ✓ Compiled in 285ms (879 modules)
+[2026-02-05T10:55:04.797Z] ✓ Compiled in 273ms (879 modules)
+[2026-02-05T10:55:04.806Z] GET /login?redirectTo=%2Fdashboard 200 in 249ms
+[2026-02-05T10:55:05.028Z] ✓ Compiled in 224ms (879 modules)
+[2026-02-05T10:55:05.036Z] GET /login?redirectTo=%2Fdashboard 200 in 144ms
+[2026-02-05T10:55:05.256Z] ✓ Compiled in 224ms (879 modules)
+[2026-02-05T10:55:05.266Z] GET /login?redirectTo=%2Fdashboard 200 in 131ms
+[2026-02-05T10:55:05.445Z] ✓ Compiled in 185ms (879 modules)
+[2026-02-05T10:55:05.643Z] ✓ Compiled in 194ms (879 modules)
+[2026-02-05T10:55:05.647Z] GET /login?redirectTo=%2Fdashboard 200 in 291ms
+[2026-02-05T10:55:05.847Z] ✓ Compiled in 197ms (879 modules)
+[2026-02-05T10:55:05.860Z] GET /login?redirectTo=%2Fdashboard 200 in 179ms
+[2026-02-05T10:55:06.056Z] ✓ Compiled in 198ms (879 modules)
+[2026-02-05T10:55:06.061Z] GET /login?redirectTo=%2Fdashboard 200 in 173ms
+[2026-02-05T10:55:06.292Z] ✓ Compiled in 231ms (879 modules)
+[2026-02-05T10:55:06.301Z] GET /login?redirectTo=%2Fdashboard 200 in 196ms
+[2026-02-05T10:55:06.530Z] ✓ Compiled in 231ms (879 modules)
+[2026-02-05T10:55:06.541Z] GET /login?redirectTo=%2Fdashboard 200 in 148ms
+[2026-02-05T10:55:06.742Z] ✓ Compiled in 203ms (879 modules)
+[2026-02-05T10:55:06.750Z] GET /login?redirectTo=%2Fdashboard 200 in 167ms
+[2026-02-05T10:55:06.953Z] ✓ Compiled in 205ms (879 modules)
+[2026-02-05T10:55:06.959Z] GET /login?redirectTo=%2Fdashboard 200 in 127ms
+[2026-02-05T10:55:07.200Z] ⨯ SyntaxError: Unexpected end of JSON input
+[2026-02-05T10:55:07.201Z] at JSON.parse (<anonymous>) {
+[2026-02-05T10:55:07.201Z] page: '/login'
+[2026-02-05T10:55:07.201Z] }
+[2026-02-05T10:55:07.704Z] ○ Compiling /_error ...
+[2026-02-05T10:55:09.392Z] ✓ Compiled /_error in 2.4s (2230 modules)
+[2026-02-05T10:55:09.752Z] ✓ Compiled in 184ms (1030 modules)
+[2026-02-05T10:55:09.946Z] GET /login?redirectTo=%2Fdashboard 500 in 2895ms
+[2026-02-05T10:55:10.431Z] ✓ Compiled in 491ms (1030 modules)
+[2026-02-05T10:55:10.440Z] GET /login?redirectTo=%2Fdashboard 200 in 355ms
+[2026-02-05T10:55:10.688Z] ✓ Compiled in 252ms (1030 modules)
+[2026-02-05T10:55:10.696Z] GET /login?redirectTo=%2Fdashboard 200 in 213ms
+[2026-02-05T10:55:10.932Z] GET /login?redirectTo=%2Fdashboard 200 in 208ms
+[2026-02-05T10:55:10.937Z] ✓ Compiled in 242ms (1030 modules)
+[2026-02-05T10:55:11.168Z] GET /login?redirectTo=%2Fdashboard 200 in 211ms
+[2026-02-05T10:55:11.176Z] ✓ Compiled in 233ms (1030 modules)
+[2026-02-05T10:55:11.418Z] GET /login?redirectTo=%2Fdashboard 200 in 221ms
+[2026-02-05T10:55:11.428Z] ✓ Compiled in 246ms (1030 modules)
+[2026-02-05T10:55:11.647Z] GET /login?redirectTo=%2Fdashboard 200 in 200ms
+[2026-02-05T10:55:11.663Z] ✓ Compiled in 231ms (1030 modules)
+[2026-02-05T10:55:11.896Z] GET /login?redirectTo=%2Fdashboard 200 in 214ms
+[2026-02-05T10:55:11.907Z] ✓ Compiled in 239ms (1030 modules)
+[2026-02-05T10:55:12.145Z] GET /login?redirectTo=%2Fdashboard 200 in 219ms
+[2026-02-05T10:55:12.155Z] ✓ Compiled in 244ms (1030 modules)
+[2026-02-05T10:55:12.375Z] GET /login?redirectTo=%2Fdashboard 200 in 201ms
+[2026-02-05T10:55:12.394Z] ✓ Compiled in 233ms (1030 modules)
+[2026-02-05T10:55:12.619Z] GET /login?redirectTo=%2Fdashboard 200 in 209ms
+[2026-02-05T10:55:12.628Z] ✓ Compiled in 230ms (1030 modules)
+[2026-02-05T10:55:12.866Z] GET /login?redirectTo=%2Fdashboard 200 in 217ms
+[2026-02-05T10:55:12.875Z] ✓ Compiled in 241ms (1030 modules)
+[2026-02-05T10:55:13.104Z] GET /login?redirectTo=%2Fdashboard 200 in 210ms
+[2026-02-05T10:55:13.113Z] ✓ Compiled in 232ms (1030 modules)
+[2026-02-05T10:55:13.343Z] GET /login?redirectTo=%2Fdashboard 200 in 215ms
+[2026-02-05T10:55:13.353Z] ✓ Compiled in 236ms (1030 modules)
+[2026-02-05T10:55:13.565Z] GET /login?redirectTo=%2Fdashboard 200 in 193ms
+[2026-02-05T10:55:13.582Z] ✓ Compiled in 224ms (1030 modules)
+[2026-02-05T10:55:13.815Z] GET /login?redirectTo=%2Fdashboard 200 in 216ms
+[2026-02-05T10:55:13.825Z] ✓ Compiled in 238ms (1030 modules)
+[2026-02-05T10:55:14.047Z] GET /login?redirectTo=%2Fdashboard 200 in 204ms
+[2026-02-05T10:55:14.058Z] ✓ Compiled in 229ms (1030 modules)
+[2026-02-05T10:55:14.290Z] GET /login?redirectTo=%2Fdashboard 200 in 216ms
+[2026-02-05T10:55:14.300Z] ✓ Compiled in 238ms (1030 modules)
+[2026-02-05T10:55:14.393Z] GET /login?redirectTo=%2Fdashboard 200 in 75ms
+[2026-02-05T10:55:14.519Z] ✓ Compiled in 215ms (1030 modules)
+[2026-02-05T10:55:14.681Z] ✓ Compiled in 157ms (1030 modules)
+[2026-02-05T10:55:14.850Z] ✓ Compiled in 162ms (1030 modules)
+[2026-02-05T10:55:15.021Z] ✓ Compiled in 166ms (1030 modules)
+[2026-02-05T10:55:15.202Z] ✓ Compiled in 177ms (1030 modules)
+[2026-02-05T10:55:15.378Z] ✓ Compiled in 171ms (1030 modules)
+[2026-02-05T10:55:15.556Z] ✓ Compiled in 169ms (1030 modules)
+[2026-02-05T10:55:15.725Z] ✓ Compiled in 164ms (1030 modules)
+[2026-02-05T10:55:15.901Z] ✓ Compiled in 170ms (1030 modules)
+[2026-02-05T10:55:16.059Z] ✓ Compiled in 153ms (1030 modules)
+[2026-02-05T10:55:16.223Z] ✓ Compiled in 159ms (1030 modules)
+[2026-02-05T10:55:16.385Z] ✓ Compiled in 158ms (1030 modules)
+[2026-02-05T10:55:16.545Z] ✓ Compiled in 156ms (1030 modules)
+[2026-02-05T10:55:16.713Z] ✓ Compiled in 164ms (1030 modules)
+[2026-02-05T10:55:16.900Z] ✓ Compiled in 179ms (1030 modules)
+[2026-02-05T10:55:17.072Z] ✓ Compiled in 168ms (1030 modules)
+[2026-02-05T10:55:17.243Z] ✓ Compiled in 166ms (1030 modules)
+[2026-02-05T10:55:17.424Z] ✓ Compiled in 176ms (1030 modules)
+[2026-02-05T10:55:17.598Z] ✓ Compiled in 168ms (1030 modules)
+[2026-02-05T10:55:17.763Z] ✓ Compiled in 157ms (1030 modules)
+[2026-02-05T10:55:17.932Z] ✓ Compiled in 164ms (1030 modules)
+[2026-02-05T10:55:18.101Z] ✓ Compiled in 165ms (1030 modules)
+[2026-02-05T10:55:18.263Z] ✓ Compiled in 156ms (1030 modules)
+[2026-02-05T10:55:18.469Z] ✓ Compiled in 202ms (1030 modules)
+[2026-02-05T10:55:18.728Z] ✓ Compiled in 254ms (1030 modules)
+[2026-02-05T10:55:18.909Z] ✓ Compiled in 176ms (1030 modules)
+[2026-02-05T10:55:19.080Z] ✓ Compiled in 164ms (1030 modules)
+[2026-02-05T10:55:19.262Z] ✓ Compiled in 173ms (1030 modules)
+[2026-02-05T10:55:19.446Z] ✓ Compiled in 179ms (1030 modules)
+[2026-02-05T10:55:19.642Z] ✓ Compiled in 191ms (1030 modules)
+[2026-02-05T10:55:19.849Z] ✓ Compiled in 202ms (1030 modules)
+[2026-02-05T10:55:20.036Z] ✓ Compiled in 180ms (1030 modules)
+[2026-02-05T10:55:20.216Z] ✓ Compiled in 176ms (1030 modules)
+[2026-02-05T10:55:20.428Z] ✓ Compiled in 207ms (1030 modules)
+[2026-02-05T10:55:20.595Z] ✓ Compiled in 158ms (1030 modules)
+[2026-02-05T10:55:20.795Z] ✓ Compiled in 193ms (1030 modules)
+[2026-02-05T10:55:21.414Z] ○ Compiling /dashboard ...
+[2026-02-05T10:55:23.067Z] ✓ Compiled /dashboard in 2.3s (2462 modules)
+[2026-02-05T10:55:23.949Z] GET /dashboard 200 in 3071ms
+[2026-02-05T10:55:24.073Z] ✓ Compiled in 988ms (1121 modules)
+[2026-02-05T10:55:24.314Z] ✓ Compiled in 235ms (1121 modules)
+[2026-02-05T10:55:24.552Z] ✓ Compiled in 231ms (1121 modules)
+[2026-02-05T10:55:24.773Z] ✓ Compiled in 214ms (1121 modules)
+[2026-02-05T10:55:25.000Z] ✓ Compiled in 220ms (1121 modules)
+[2026-02-05T10:55:25.204Z] ✓ Compiled in 198ms (1121 modules)
+[2026-02-05T10:55:25.433Z] ✓ Compiled in 219ms (1121 modules)
+[2026-02-05T10:55:25.671Z] ✓ Compiled in 232ms (1121 modules)
+[2026-02-05T10:55:25.702Z] GET /favicon.ico 200 in 47ms
+[2026-02-05T10:55:25.790Z] ⚠ Cross origin request detected from 3000-ir3n4ta3tbgsyxcahqfcb-8eef888e.sg1.manus.computer to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+[2026-02-05T10:55:25.793Z] Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+[2026-02-05T10:55:25.931Z] ✓ Compiled in 254ms (1121 modules)
+[2026-02-05T10:55:26.202Z] ✓ Compiled in 266ms (1121 modules)
+[2026-02-05T10:55:26.567Z] ✓ Compiled in 357ms (1121 modules)
+[2026-02-05T10:55:26.744Z] GET /dashboard 200 in 349ms
+[2026-02-05T10:55:26.862Z] ✓ Compiled in 289ms (1121 modules)
+[2026-02-05T10:55:27.108Z] ✓ Compiled in 240ms (1121 modules)
+[2026-02-05T10:55:27.297Z] GET /dashboard 200 in 182ms
+[2026-02-05T10:55:27.376Z] ✓ Compiled in 261ms (1121 modules)
+[2026-02-05T10:55:27.624Z] ✓ Compiled in 243ms (1121 modules)
+[2026-02-05T10:55:27.817Z] GET /dashboard 200 in 185ms
+[2026-02-05T10:55:27.900Z] ✓ Compiled in 267ms (1121 modules)
+[2026-02-05T10:55:28.132Z] ✓ Compiled in 227ms (1121 modules)
+[2026-02-05T10:55:28.405Z] ✓ Compiled in 268ms (1121 modules)
+[2026-02-05T10:55:28.416Z] GET /dashboard 200 in 269ms
+[2026-02-05T10:55:28.648Z] ✓ Compiled in 230ms (1121 modules)
+[2026-02-05T10:55:28.917Z] GET /dashboard 200 in 260ms
+[2026-02-05T10:55:28.920Z] ✓ Compiled in 265ms (1121 modules)
+[2026-02-05T10:55:29.149Z] ✓ Compiled in 223ms (1121 modules)
+[2026-02-05T10:55:29.935Z] ✓ Compiled in 243ms (1121 modules)
+[2026-02-05T10:55:29.942Z] GET /dashboard 200 in 210ms
+[2026-02-05T10:55:30.160Z] ✓ Compiled in 218ms (1121 modules)
+[2026-02-05T10:55:30.415Z] ✓ Compiled in 246ms (1121 modules)
+[2026-02-05T10:55:30.421Z] GET /dashboard 200 in 239ms
+[2026-02-05T10:55:30.638Z] ✓ Compiled in 218ms (1121 modules)
+[2026-02-05T10:55:30.877Z] GET /dashboard 200 in 228ms
+[2026-02-05T10:55:30.880Z] ✓ Compiled in 234ms (1121 modules)
+[2026-02-05T10:55:31.094Z] ✓ Compiled in 206ms (1121 modules)
+[2026-02-05T10:55:31.337Z] GET /dashboard 200 in 233ms
+[2026-02-05T10:55:31.344Z] ✓ Compiled in 243ms (1121 modules)
+[2026-02-05T10:55:31.558Z] ✓ Compiled in 210ms (1121 modules)
+[2026-02-05T10:55:31.717Z] GET /dashboard 200 in 165ms
+[2026-02-05T10:55:31.804Z] ✓ Compiled in 240ms (1121 modules)
+[2026-02-05T10:55:32.018Z] ✓ Compiled in 208ms (1121 modules)
+[2026-02-05T10:55:32.174Z] GET /dashboard 200 in 162ms
+[2026-02-05T10:55:32.258Z] ✓ Compiled in 230ms (1121 modules)
+[2026-02-05T10:55:32.506Z] ✓ Compiled in 243ms (1121 modules)
+[2026-02-05T10:55:32.648Z] GET /dashboard 200 in 254ms
+[2026-02-05T10:55:32.755Z] ✓ Compiled in 244ms (1121 modules)
+[2026-02-05T10:55:32.963Z] ✓ Compiled in 203ms (1121 modules)
+[2026-02-05T10:55:33.095Z] GET /dashboard 200 in 223ms
+[2026-02-05T10:55:33.206Z] ✓ Compiled in 237ms (1121 modules)
+[2026-02-05T10:55:33.443Z] ✓ Compiled in 232ms (1121 modules)
+[2026-02-05T10:55:33.596Z] GET /dashboard 200 in 254ms
+[2026-02-05T10:55:33.706Z] ✓ Compiled in 258ms (1121 modules)
+[2026-02-05T10:55:33.944Z] ✓ Compiled in 233ms (1121 modules)
+[2026-02-05T10:55:34.008Z] GET /dashboard 200 in 182ms
+[2026-02-05T10:55:34.201Z] ✓ Compiled in 226ms (1121 modules)
+[2026-02-05T10:55:34.434Z] ✓ Compiled in 228ms (1121 modules)
+[2026-02-05T10:55:34.585Z] GET /dashboard 200 in 263ms
+[2026-02-05T10:55:34.712Z] ✓ Compiled in 273ms (1121 modules)
+[2026-02-05T10:55:34.990Z] ✓ Compiled in 273ms (1121 modules)
+[2026-02-05T10:55:34.997Z] GET /dashboard 200 in 196ms
+[2026-02-05T10:55:35.232Z] ✓ Compiled in 236ms (1121 modules)
+[2026-02-05T10:55:35.533Z] ✓ Compiled in 296ms (1121 modules)
+[2026-02-05T10:55:35.539Z] GET /dashboard 200 in 286ms
+[2026-02-05T10:55:36.206Z] ○ Compiling /audit-logs ...
+[2026-02-05T10:55:36.514Z] ✓ Compiled /audit-logs in 976ms (2483 modules)
+[2026-02-05T10:55:36.697Z] GET /audit-logs 200 in 1042ms
+[2026-02-05T10:55:36.910Z] ✓ Compiled in 387ms (1130 modules)
+[2026-02-05T10:55:37.153Z] ✓ Compiled in 238ms (1130 modules)
+[2026-02-05T10:55:37.690Z] ✓ Compiled in 532ms (1130 modules)
+[2026-02-05T10:55:37.697Z] GET /audit-logs 200 in 525ms
+[2026-02-05T10:55:37.948Z] ✓ Compiled in 253ms (1130 modules)
+[2026-02-05T10:55:38.221Z] ✓ Compiled in 268ms (1130 modules)
+[2026-02-05T10:55:38.231Z] GET /audit-logs 200 in 171ms
+[2026-02-05T10:55:38.462Z] ✓ Compiled in 234ms (1130 modules)
+[2026-02-05T10:55:38.702Z] ✓ Compiled in 235ms (1130 modules)
+[2026-02-05T10:55:38.848Z] GET /audit-logs 200 in 245ms
+[2026-02-05T10:55:38.992Z] ✓ Compiled in 282ms (1130 modules)
+[2026-02-05T10:55:39.238Z] ✓ Compiled in 242ms (1130 modules)
+[2026-02-05T10:55:39.419Z] GET /audit-logs 200 in 196ms
+[2026-02-05T10:55:39.504Z] ✓ Compiled in 252ms (1130 modules)
+[2026-02-05T10:55:39.721Z] ✓ Compiled in 211ms (1130 modules)
+[2026-02-05T10:55:39.971Z] ✓ Compiled in 246ms (1130 modules)
+[2026-02-05T10:55:39.978Z] GET /audit-logs 200 in 177ms
+[2026-02-05T10:55:40.219Z] ✓ Compiled in 242ms (1130 modules)
+[2026-02-05T10:55:40.431Z] ✓ Compiled in 207ms (1130 modules)
+[2026-02-05T10:55:40.575Z] GET /audit-logs 200 in 224ms
+[2026-02-05T10:55:40.682Z] ✓ Compiled in 241ms (1130 modules)
+[2026-02-05T10:55:40.892Z] ✓ Compiled in 206ms (1130 modules)
+[2026-02-05T10:55:41.146Z] ✓ Compiled in 248ms (1130 modules)
+[2026-02-05T10:55:41.152Z] GET /audit-logs 200 in 215ms
+[2026-02-05T10:55:41.355Z] ✓ Compiled in 204ms (1130 modules)
+[2026-02-05T10:55:41.571Z] ✓ Compiled in 206ms (1130 modules)
+[2026-02-05T10:55:41.720Z] GET /audit-logs 200 in 159ms
+[2026-02-05T10:55:41.820Z] ✓ Compiled in 244ms (1130 modules)
+[2026-02-05T10:55:42.029Z] ✓ Compiled in 204ms (1130 modules)
+[2026-02-05T10:55:42.278Z] ✓ Compiled in 243ms (1130 modules)
+[2026-02-05T10:55:42.286Z] GET /audit-logs 200 in 180ms
+[2026-02-05T10:55:42.499Z] ✓ Compiled in 216ms (1130 modules)
+[2026-02-05T10:55:42.709Z] ✓ Compiled in 206ms (1130 modules)
+[2026-02-05T10:55:42.886Z] GET /audit-logs 200 in 186ms
+[2026-02-05T10:55:42.981Z] ✓ Compiled in 266ms (1130 modules)
+[2026-02-05T10:55:43.212Z] ✓ Compiled in 227ms (1130 modules)
+[2026-02-05T10:55:43.482Z] ✓ Compiled in 264ms (1130 modules)
+[2026-02-05T10:55:43.489Z] GET /audit-logs 200 in 227ms
+[2026-02-05T10:55:43.716Z] ✓ Compiled in 229ms (1130 modules)
+[2026-02-05T10:55:43.950Z] ✓ Compiled in 225ms (1130 modules)
+[2026-02-05T10:55:44.095Z] GET /audit-logs 200 in 242ms
+[2026-02-05T10:55:44.221Z] ✓ Compiled in 266ms (1130 modules)
+[2026-02-05T10:55:44.448Z] ✓ Compiled in 222ms (1130 modules)
+[2026-02-05T10:55:44.693Z] ✓ Compiled in 240ms (1130 modules)
+[2026-02-05T10:55:44.698Z] GET /audit-logs 200 in 236ms
+[2026-02-05T10:55:44.949Z] ✓ Compiled in 252ms (1130 modules)
+[2026-02-05T10:55:45.188Z] ✓ Compiled in 229ms (1130 modules)
+[2026-02-05T10:55:45.323Z] GET /audit-logs 200 in 258ms
+[2026-02-05T10:55:45.440Z] ✓ Compiled in 247ms (1130 modules)
+[2026-02-05T10:55:45.655Z] ✓ Compiled in 209ms (1130 modules)
+[2026-02-05T10:55:45.911Z] ✓ Compiled in 252ms (1130 modules)
+[2026-02-05T10:55:45.917Z] GET /audit-logs 200 in 233ms
+[2026-02-05T10:55:46.153Z] ✓ Compiled in 237ms (1130 modules)
+[2026-02-05T10:55:46.385Z] ✓ Compiled in 227ms (1130 modules)
+[2026-02-05T10:55:46.538Z] GET /audit-logs 200 in 237ms
+[2026-02-05T10:55:46.671Z] ✓ Compiled in 279ms (1130 modules)
+[2026-02-05T10:55:46.935Z] ✓ Compiled in 258ms (1130 modules)
+[2026-02-05T10:55:47.113Z] GET /audit-logs 200 in 187ms
+[2026-02-05T10:55:47.219Z] ✓ Compiled in 278ms (1130 modules)
+[2026-02-05T10:55:47.466Z] ✓ Compiled in 242ms (1130 modules)
+[2026-02-05T10:55:47.739Z] GET /audit-logs 200 in 264ms
+[2026-02-05T10:55:47.744Z] ✓ Compiled in 269ms (1130 modules)
+[2026-02-05T10:55:47.995Z] ✓ Compiled in 247ms (1130 modules)
+[2026-02-05T10:55:48.270Z] ✓ Compiled in 269ms (1130 modules)
+[2026-02-05T10:55:48.655Z] GET /audit-logs 200 in 538ms
+[2026-02-05T10:55:48.829Z] ✓ Compiled in 522ms (1130 modules)
+[2026-02-05T10:55:49.080Z] ✓ Compiled in 245ms (1130 modules)
+[2026-02-05T10:55:49.276Z] GET /audit-logs 200 in 203ms
+[2026-02-05T10:55:49.376Z] ✓ Compiled in 285ms (1130 modules)
+[2026-02-05T10:55:49.615Z] ✓ Compiled in 235ms (1130 modules)
+[2026-02-05T10:55:49.896Z] GET /audit-logs 200 in 273ms
+[2026-02-05T10:55:49.900Z] ✓ Compiled in 281ms (1130 modules)
+[2026-02-05T10:55:50.160Z] ✓ Compiled in 253ms (1130 modules)
+[2026-02-05T10:55:50.446Z] ✓ Compiled in 281ms (1130 modules)
+[2026-02-05T10:55:50.458Z] GET /audit-logs 200 in 182ms
+[2026-02-05T10:55:51.047Z] ✓ Compiled in 591ms (1130 modules)
+[2026-02-05T10:55:51.112Z] GET /audit-logs 200 in 532ms
+[2026-02-05T10:55:51.384Z] ✓ Compiled in 317ms (1130 modules)
+[2026-02-05T10:55:51.633Z] ✓ Compiled in 244ms (1130 modules)
+[2026-02-05T10:55:51.864Z] ✓ Compiled in 225ms (1130 modules)
+[2026-02-05T10:55:52.076Z] ✓ Compiled in 207ms (1130 modules)
+[2026-02-05T10:55:52.296Z] ✓ Compiled in 214ms (1130 modules)
+[2026-02-05T10:55:52.509Z] ✓ Compiled in 209ms (1130 modules)
+[2026-02-05T10:55:52.715Z] ✓ Compiled in 201ms (1130 modules)
+[2026-02-05T10:55:52.932Z] ✓ Compiled in 212ms (1130 modules)
+[2026-02-05T10:55:53.155Z] ✓ Compiled in 215ms (1130 modules)
+[2026-02-05T10:55:53.395Z] ✓ Compiled in 235ms (1130 modules)
+[2026-02-05T10:55:53.643Z] ✓ Compiled in 241ms (1130 modules)
+[2026-02-05T10:55:53.784Z] GET /audit-logs 200 in 256ms
+[2026-02-05T10:55:53.910Z] ✓ Compiled in 262ms (1130 modules)
+[2026-02-05T10:55:54.165Z] ✓ Compiled in 249ms (1130 modules)
+[2026-02-05T10:55:54.440Z] ✓ Compiled in 269ms (1130 modules)
+[2026-02-05T10:55:54.452Z] GET /audit-logs 200 in 172ms
+[2026-02-05T10:55:54.695Z] ✓ Compiled in 247ms (1130 modules)
+[2026-02-05T10:55:54.959Z] ✓ Compiled in 259ms (1130 modules)
+[2026-02-05T10:55:55.004Z] GET /audit-logs 200 in 167ms
+[2026-02-05T10:55:55.232Z] ✓ Compiled in 234ms (1130 modules)
+[2026-02-05T10:55:55.488Z] ✓ Compiled in 251ms (1130 modules)
+[2026-02-05T10:55:55.758Z] ✓ Compiled in 260ms (1130 modules)
+[2026-02-05T10:55:55.902Z] GET /audit-logs 200 in 281ms
+[2026-02-05T10:55:56.016Z] ✓ Compiled in 253ms (1130 modules)
+[2026-02-05T10:55:56.253Z] ✓ Compiled in 233ms (1130 modules)
+[2026-02-05T10:55:56.517Z] ✓ Compiled in 260ms (1130 modules)
+[2026-02-05T10:55:56.527Z] GET /audit-logs 200 in 239ms
+[2026-02-05T10:55:56.772Z] ✓ Compiled in 243ms (1130 modules)
+[2026-02-05T10:55:57.001Z] ✓ Compiled in 227ms (1130 modules)
+[2026-02-05T10:55:57.142Z] GET /audit-logs 200 in 252ms
+[2026-02-05T10:55:57.271Z] ✓ Compiled in 264ms (1130 modules)
+[2026-02-05T10:55:57.509Z] ✓ Compiled in 234ms (1130 modules)
+[2026-02-05T10:55:57.760Z] GET /audit-logs 200 in 237ms
+[2026-02-05T10:55:57.769Z] ✓ Compiled in 248ms (1130 modules)
+[2026-02-05T10:55:58.007Z] ✓ Compiled in 232ms (1130 modules)
+[2026-02-05T10:55:58.281Z] ✓ Compiled in 267ms (1130 modules)
+[2026-02-05T10:55:58.285Z] GET /audit-logs 200 in 263ms
+[2026-02-05T10:55:58.505Z] ✓ Compiled in 218ms (1130 modules)
+[2026-02-05T10:55:58.738Z] ✓ Compiled in 227ms (1130 modules)
+[2026-02-05T10:55:58.895Z] GET /audit-logs 200 in 258ms
+[2026-02-05T10:55:59.008Z] ✓ Compiled in 256ms (1130 modules)
+[2026-02-05T10:55:59.234Z] ✓ Compiled in 221ms (1130 modules)
+[2026-02-05T10:55:59.488Z] ✓ Compiled in 250ms (1130 modules)
+[2026-02-05T10:55:59.494Z] GET /audit-logs 200 in 211ms
+[2026-02-05T10:55:59.729Z] ✓ Compiled in 236ms (1130 modules)
+[2026-02-05T10:56:00.090Z] ✓ Compiled in 348ms (1130 modules)
+[2026-02-05T10:56:00.347Z] GET /audit-logs 200 in 461ms
+[2026-02-05T10:56:00.475Z] ✓ Compiled in 378ms (1130 modules)
+[2026-02-05T10:56:00.701Z] ✓ Compiled in 222ms (1130 modules)
+[2026-02-05T10:56:00.966Z] GET /audit-logs 200 in 256ms
+[2026-02-05T10:56:00.970Z] ✓ Compiled in 260ms (1130 modules)
+[2026-02-05T10:56:01.206Z] ✓ Compiled in 232ms (1130 modules)
+[2026-02-05T10:56:01.439Z] ✓ Compiled in 222ms (1130 modules)
+[2026-02-05T10:56:01.574Z] GET /audit-logs 200 in 245ms
+[2026-02-05T10:56:01.684Z] ✓ Compiled in 239ms (1130 modules)
+[2026-02-05T10:56:01.897Z] ✓ Compiled in 208ms (1130 modules)
+[2026-02-05T10:56:02.147Z] ✓ Compiled in 246ms (1130 modules)
+[2026-02-05T10:56:02.153Z] GET /audit-logs 200 in 173ms
+[2026-02-05T10:56:02.363Z] ✓ Compiled in 212ms (1130 modules)
+[2026-02-05T10:56:02.575Z] ✓ Compiled in 208ms (1130 modules)
+[2026-02-05T10:56:02.732Z] GET /audit-logs 200 in 165ms
+[2026-02-05T10:56:02.830Z] ✓ Compiled in 249ms (1130 modules)
+[2026-02-05T10:56:03.056Z] ✓ Compiled in 222ms (1130 modules)
+[2026-02-05T10:56:03.322Z] ✓ Compiled in 256ms (1130 modules)
+[2026-02-05T10:56:03.333Z] GET /audit-logs 200 in 259ms
+[2026-02-05T10:56:03.557Z] ✓ Compiled in 223ms (1130 modules)
+[2026-02-05T10:56:03.794Z] ✓ Compiled in 233ms (1130 modules)
+[2026-02-05T10:56:03.853Z] GET /audit-logs 200 in 174ms
+[2026-02-05T10:56:04.059Z] ✓ Compiled in 228ms (1130 modules)
+[2026-02-05T10:56:04.272Z] ✓ Compiled in 209ms (1130 modules)
+[2026-02-05T10:56:04.532Z] ✓ Compiled in 255ms (1130 modules)
+[2026-02-05T10:56:04.562Z] GET /audit-logs 200 in 240ms
+[2026-02-05T10:56:04.764Z] ✓ Compiled in 226ms (1130 modules)
+[2026-02-05T10:56:04.999Z] ✓ Compiled in 231ms (1130 modules)
+[2026-02-05T10:56:05.159Z] GET /audit-logs 200 in 246ms
+[2026-02-05T10:56:05.271Z] ✓ Compiled in 267ms (1130 modules)
+[2026-02-05T10:56:05.509Z] ✓ Compiled in 232ms (1130 modules)
+[2026-02-05T10:56:05.747Z] ✓ Compiled in 227ms (1130 modules)
+[2026-02-05T10:56:05.891Z] GET /audit-logs 200 in 262ms
+[2026-02-05T10:56:06.008Z] ✓ Compiled in 256ms (1130 modules)
+[2026-02-05T10:56:06.226Z] ✓ Compiled in 213ms (1130 modules)
+[2026-02-05T10:56:06.483Z] ✓ Compiled in 252ms (1130 modules)
+[2026-02-05T10:56:06.491Z] GET /audit-logs 200 in 248ms
+[2026-02-05T10:56:06.726Z] ✓ Compiled in 235ms (1130 modules)
+[2026-02-05T10:56:06.987Z] ✓ Compiled in 251ms (1130 modules)
+[2026-02-05T10:56:06.995Z] GET /audit-logs 200 in 157ms
+[2026-02-05T10:56:07.223Z] ✓ Compiled in 230ms (1130 modules)
+[2026-02-05T10:56:07.459Z] ✓ Compiled in 231ms (1130 modules)
+[2026-02-05T10:56:07.633Z] GET /audit-logs 200 in 184ms
+[2026-02-05T10:56:07.723Z] ✓ Compiled in 259ms (1130 modules)
+[2026-02-05T10:56:07.938Z] ✓ Compiled in 210ms (1130 modules)
+[2026-02-05T10:56:08.203Z] ✓ Compiled in 261ms (1130 modules)
+[2026-02-05T10:56:08.209Z] GET /audit-logs 200 in 236ms
+[2026-02-05T10:56:08.445Z] ✓ Compiled in 237ms (1130 modules)
+[2026-02-05T10:56:08.670Z] ✓ Compiled in 218ms (1130 modules)
+[2026-02-05T10:56:08.826Z] GET /audit-logs 200 in 247ms
+[2026-02-05T10:56:08.926Z] ✓ Compiled in 249ms (1130 modules)
+[2026-02-05T10:56:09.141Z] ✓ Compiled in 210ms (1130 modules)
+[2026-02-05T10:56:09.419Z] ✓ Compiled in 274ms (1130 modules)
+[2026-02-05T10:56:09.427Z] GET /audit-logs 200 in 240ms
+[2026-02-05T10:56:09.655Z] ✓ Compiled in 230ms (1130 modules)
+[2026-02-05T10:56:09.877Z] ✓ Compiled in 215ms (1130 modules)
+[2026-02-05T10:56:10.036Z] GET /audit-logs 200 in 168ms
+[2026-02-05T10:56:10.129Z] ✓ Compiled in 247ms (1130 modules)
+[2026-02-05T10:56:10.337Z] ✓ Compiled in 204ms (1130 modules)
+[2026-02-05T10:56:10.592Z] ✓ Compiled in 245ms (1130 modules)
+[2026-02-05T10:56:10.604Z] GET /audit-logs 200 in 229ms
+[2026-02-05T10:56:10.829Z] ✓ Compiled in 227ms (1130 modules)
+[2026-02-05T10:56:11.071Z] ✓ Compiled in 237ms (1130 modules)
+[2026-02-05T10:56:11.451Z] GET /audit-logs 200 in 505ms
+[2026-02-05T10:56:11.603Z] ✓ Compiled in 523ms (1130 modules)
+[2026-02-05T10:56:11.878Z] ✓ Compiled in 270ms (1130 modules)
+[2026-02-05T10:56:12.024Z] GET /audit-logs 200 in 278ms
+[2026-02-05T10:56:12.146Z] ✓ Compiled in 235ms (1130 modules)
+[2026-02-05T10:56:12.393Z] ✓ Compiled in 241ms (1130 modules)
+[2026-02-05T10:56:12.667Z] ✓ Compiled in 269ms (1130 modules)
+[2026-02-05T10:56:12.672Z] GET /audit-logs 200 in 263ms
+[2026-02-05T10:56:12.891Z] ✓ Compiled in 219ms (1130 modules)
+[2026-02-05T10:56:13.146Z] ✓ Compiled in 245ms (1130 modules)
+[2026-02-05T10:56:13.284Z] GET /audit-logs 200 in 233ms
+[2026-02-05T10:56:13.410Z] ✓ Compiled in 260ms (1130 modules)
+[2026-02-05T10:56:13.649Z] ✓ Compiled in 234ms (1130 modules)
+[2026-02-05T10:56:13.924Z] ✓ Compiled in 269ms (1130 modules)
+[2026-02-05T10:56:13.929Z] GET /audit-logs 200 in 259ms
+[2026-02-05T10:56:14.143Z] ✓ Compiled in 214ms (1130 modules)
+[2026-02-05T10:56:14.370Z] ✓ Compiled in 223ms (1130 modules)
+[2026-02-05T10:56:14.530Z] GET /audit-logs 200 in 244ms
+[2026-02-05T10:56:14.642Z] ✓ Compiled in 266ms (1130 modules)
+[2026-02-05T10:56:14.890Z] ✓ Compiled in 243ms (1130 modules)
+[2026-02-05T10:56:15.166Z] GET /audit-logs 200 in 265ms
+[2026-02-05T10:56:15.172Z] ✓ Compiled in 272ms (1130 modules)
+[2026-02-05T10:56:15.392Z] ✓ Compiled in 216ms (1130 modules)
+[2026-02-05T10:56:15.626Z] ✓ Compiled in 229ms (1130 modules)
+[2026-02-05T10:56:15.807Z] GET /audit-logs 200 in 322ms
+[2026-02-05T10:56:15.895Z] ✓ Compiled in 264ms (1130 modules)
+[2026-02-05T10:56:16.119Z] ✓ Compiled in 220ms (1130 modules)
+[2026-02-05T10:56:16.400Z] ✓ Compiled in 276ms (1130 modules)
+[2026-02-05T10:56:16.412Z] GET /audit-logs 200 in 260ms
+[2026-02-05T10:56:16.650Z] ✓ Compiled in 242ms (1130 modules)
+[2026-02-05T10:56:16.901Z] ✓ Compiled in 247ms (1130 modules)
+[2026-02-05T10:56:17.078Z] GET /audit-logs 200 in 187ms
+[2026-02-05T10:56:17.163Z] ✓ Compiled in 257ms (1130 modules)
+[2026-02-05T10:56:17.394Z] ✓ Compiled in 225ms (1130 modules)
+[2026-02-05T10:56:17.682Z] ✓ Compiled in 283ms (1130 modules)
+[2026-02-05T10:56:17.690Z] GET /audit-logs 200 in 261ms
+[2026-02-05T10:56:17.916Z] ✓ Compiled in 229ms (1130 modules)
+[2026-02-05T10:56:18.150Z] ✓ Compiled in 225ms (1130 modules)
+[2026-02-05T10:56:18.307Z] GET /audit-logs 200 in 245ms
+[2026-02-05T10:56:18.408Z] ✓ Compiled in 253ms (1130 modules)
+[2026-02-05T10:56:18.624Z] ✓ Compiled in 211ms (1130 modules)
+[2026-02-05T10:56:18.868Z] ✓ Compiled in 239ms (1130 modules)
+[2026-02-05T10:56:19.019Z] GET /audit-logs 200 in 264ms
+[2026-02-05T10:56:19.140Z] ✓ Compiled in 267ms (1130 modules)
+[2026-02-05T10:56:19.361Z] ✓ Compiled in 216ms (1130 modules)
+[2026-02-05T10:56:19.634Z] ✓ Compiled in 267ms (1130 modules)
+[2026-02-05T10:56:19.640Z] GET /audit-logs 200 in 247ms
+[2026-02-05T10:56:19.878Z] ✓ Compiled in 239ms (1130 modules)
+[2026-02-05T10:56:20.110Z] ✓ Compiled in 218ms (1130 modules)
+[2026-02-05T10:56:20.270Z] GET /audit-logs 200 in 241ms
+[2026-02-05T10:56:20.370Z] ✓ Compiled in 255ms (1130 modules)
+[2026-02-05T10:56:20.615Z] ✓ Compiled in 239ms (1130 modules)
+[2026-02-05T10:56:20.894Z] GET /audit-logs 200 in 262ms
+[2026-02-05T10:56:20.902Z] ✓ Compiled in 270ms (1130 modules)
+[2026-02-05T10:56:21.144Z] ✓ Compiled in 237ms (1130 modules)
+[2026-02-05T10:56:21.418Z] ✓ Compiled in 268ms (1130 modules)
+[2026-02-05T10:56:21.424Z] GET /audit-logs 200 in 222ms
+[2026-02-05T10:56:21.679Z] ✓ Compiled in 255ms (1130 modules)
+[2026-02-05T10:56:21.907Z] ✓ Compiled in 216ms (1130 modules)
+[2026-02-05T10:56:22.068Z] GET /audit-logs 200 in 171ms
+[2026-02-05T10:56:22.176Z] ✓ Compiled in 263ms (1130 modules)
+[2026-02-05T10:56:22.401Z] ✓ Compiled in 220ms (1130 modules)
+[2026-02-05T10:56:22.659Z] ✓ Compiled in 253ms (1130 modules)
+[2026-02-05T10:56:22.902Z] GET /audit-logs 200 in 420ms
+[2026-02-05T10:56:23.235Z] ✓ Compiled in 570ms (1130 modules)
+[2026-02-05T10:56:23.493Z] ✓ Compiled in 251ms (1130 modules)
+[2026-02-05T10:56:23.666Z] GET /audit-logs 200 in 298ms
+[2026-02-05T10:56:23.792Z] ✓ Compiled in 287ms (1130 modules)

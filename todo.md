@@ -33,4 +33,6 @@
 ## Fixes Applied
 - [x] Fixed Suspense boundary issue on login page
 - [x] Added notifications page (was 404)
+- [x] Fixed notifications page data mapping (was showing undefined)
+- [x] Fixed audit-logs page layout (padding/margin consistency)
 - [x] Created fix_rls_policies.sql for RLS issues

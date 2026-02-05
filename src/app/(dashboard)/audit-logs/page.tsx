@@ -2,18 +2,13 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import { DashboardLayout } from '@/components/layout';
-import { Card, Button, Input, Select, Badge, Table } from '@/components/ui';
+import { Header } from '@/components/layout';
+import { Card, Button, Input, Select, Badge } from '@/components/ui';
 import { 
   History, 
   Search, 
-  Filter, 
   Download, 
   RefreshCw,
-  User,
-  Calendar,
-  Clock,
-  FileText,
   Edit,
   Trash2,
   Plus,
@@ -93,6 +88,7 @@ export default function AuditLogsPage() {
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const pageSize = 20;
 
   const fetchLogs = useCallback(async () => {
@@ -136,6 +132,12 @@ export default function AuditLogsPage() {
   useEffect(() => {
     fetchLogs();
   }, [fetchLogs]);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await fetchLogs();
+    setIsRefreshing(false);
+  };
 
   const handleExport = async () => {
     try {
@@ -193,35 +195,26 @@ export default function AuditLogsPage() {
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <History className="w-7 h-7 text-blue-600" />
-              ประวัติการใช้งานระบบ
-            </h1>
-            <p className="text-gray-600 mt-1">ดูประวัติทุกการเปลี่ยนแปลงในระบบ (Audit Log)</p>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={fetchLogs}
-              leftIcon={<RefreshCw className="w-4 h-4" />}
-            >
-              รีเฟรช
-            </Button>
-            <Button
-              variant="outline"
-              onClick={handleExport}
-              leftIcon={<Download className="w-4 h-4" />}
-            >
-              ส่งออก CSV
-            </Button>
-          </div>
-        </div>
+    <div className="min-h-screen">
+      <Header
+        title="ประวัติการใช้งานระบบ"
+        subtitle="ดูประวัติทุกการเปลี่ยนแปลงในระบบ (Audit Log)"
+        onRefresh={handleRefresh}
+        isRefreshing={isRefreshing}
+        actions={
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExport}
+            leftIcon={<Download className="w-4 h-4" />}
+            className="hidden sm:flex"
+          >
+            ส่งออก CSV
+          </Button>
+        }
+      />
 
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">
         {/* Filters */}
         <Card className="p-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -577,6 +570,6 @@ export default function AuditLogsPage() {
           </div>
         )}
       </div>
-    </DashboardLayout>
+    </div>
   );
 }
