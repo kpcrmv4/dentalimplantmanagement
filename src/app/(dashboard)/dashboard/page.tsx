@@ -8,6 +8,8 @@ import {
   CaseDetailPanel,
   LowStockAlert,
   PendingCasesAlert,
+  UrgentCasesAlert,
+  OutOfStockRequests,
 } from '@/components/dashboard';
 import { Calendar } from '@/components/calendar/Calendar';
 import {
@@ -15,6 +17,8 @@ import {
   useLowStockItems,
   useCalendarCases,
   useCases,
+  useUrgentCases48h,
+  usePendingStockRequests,
 } from '@/hooks/useApi';
 import { useAuthStore } from '@/stores/authStore';
 import { formatThaiDate } from '@/lib/utils';
@@ -31,6 +35,10 @@ export default function DashboardPage() {
   const { data: calendarCases, mutate: mutateCalendar } = useCalendarCases(currentMonth);
   // Fetch all cases to filter for pending (red and gray status)
   const { data: allCases, mutate: mutateAllCases } = useCases();
+  // Fetch urgent cases within 48 hours
+  const { data: urgentCases, mutate: mutateUrgent } = useUrgentCases48h();
+  // Fetch out-of-stock requests
+  const { data: outOfStockRequests, mutate: mutateOutOfStock } = usePendingStockRequests();
 
   // Filter pending cases (red = วัสดุไม่พอ, gray = ยังไม่จองวัสดุ)
   const pendingCases = useMemo(() => {
@@ -47,13 +55,19 @@ export default function DashboardPage() {
       mutateLowStock(),
       mutateCalendar(),
       mutateAllCases(),
+      mutateUrgent(),
+      mutateOutOfStock(),
     ]);
     setIsRefreshing(false);
-  }, [mutateSummary, mutateLowStock, mutateCalendar, mutateAllCases]);
+  }, [mutateSummary, mutateLowStock, mutateCalendar, mutateAllCases, mutateUrgent, mutateOutOfStock]);
 
   const handleMonthChange = (date: Date) => {
     setCurrentMonth(date);
   };
+
+  // Count urgent items for summary
+  const urgentCount = urgentCases?.length || 0;
+  const outOfStockCount = outOfStockRequests?.length || 0;
 
   return (
     <div className="min-h-screen">
@@ -74,10 +88,11 @@ export default function DashboardPage() {
             icon={<CalendarIcon className="w-6 h-6" />}
           />
           <SummaryCard
-            title="เคสผ่าตัดที่กำลังจะถึง"
-            value={summary?.upcoming_cases || 0}
-            subtitle="เคสที่รอดำเนินการ"
+            title="เคสด่วน 48 ชม."
+            value={urgentCount}
+            subtitle="ต้องเตรียมด่วน"
             icon={<Clock className="w-6 h-6" />}
+            variant={urgentCount > 0 ? 'danger' : 'default'}
           />
           <SummaryCard
             title="วัสดุยังไม่พร้อม"
@@ -87,13 +102,18 @@ export default function DashboardPage() {
             variant={summary?.cases_not_ready ? 'danger' : 'default'}
           />
           <SummaryCard
-            title="รายการที่ใกล้หมด"
-            value={summary?.low_stock_items || 0}
-            subtitle="ต้องสั่งซื้อ"
+            title="รอสั่งซื้อ"
+            value={outOfStockCount + (summary?.low_stock_items || 0)}
+            subtitle="สินค้าไม่มี/ใกล้หมด"
             icon={<AlertTriangle className="w-6 h-6" />}
-            variant={summary?.low_stock_items ? 'warning' : 'default'}
+            variant={(outOfStockCount + (summary?.low_stock_items || 0)) > 0 ? 'warning' : 'default'}
           />
         </div>
+
+        {/* Urgent Cases Alert - Show prominently if there are urgent cases */}
+        {urgentCount > 0 && (
+          <UrgentCasesAlert cases={urgentCases || []} />
+        )}
 
         {/* Calendar and Case Details */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -118,6 +138,11 @@ export default function DashboardPage() {
           <PendingCasesAlert cases={pendingCases} />
           <LowStockAlert items={lowStockItems || []} />
         </div>
+
+        {/* Out of Stock Requests - Show if there are any */}
+        {outOfStockCount > 0 && (
+          <OutOfStockRequests requests={outOfStockRequests || []} />
+        )}
       </div>
     </div>
   );

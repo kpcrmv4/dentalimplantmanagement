@@ -1,6 +1,7 @@
 // =====================================================
 // DentalStock Management System - TypeScript Types
 // Auto-generated types matching Supabase schema
+// Version: 1.1.0 - Added REF/LOT support and out-of-stock reservations
 // =====================================================
 
 export type UserRole = 'admin' | 'dentist' | 'stock_staff' | 'assistant' | 'cs';
@@ -10,6 +11,7 @@ export type OrderStatus = 'draft' | 'pending' | 'approved' | 'ordered' | 'shippe
 export type TransferType = 'borrow' | 'return' | 'exchange';
 export type TransferStatus = 'pending' | 'approved' | 'completed' | 'rejected';
 export type MovementType = 'receive' | 'use' | 'adjust' | 'transfer_out' | 'transfer_in' | 'expired' | 'damaged';
+export type AlertType = 'out_of_stock' | 'urgent_48h' | 'material_shortage';
 
 export interface User {
   id: string;
@@ -55,12 +57,15 @@ export interface ProductSpecifications {
   length?: string;
   platform?: string;
   surface?: string;
+  material?: string;
+  connection?: string;
   [key: string]: string | undefined;
 }
 
 export interface Product {
   id: string;
   sku: string;
+  ref_number?: string; // REF number from manufacturer
   name: string;
   description?: string;
   category_id?: string;
@@ -75,6 +80,9 @@ export interface Product {
   updated_at: string;
   // Relations
   category?: ProductCategory;
+  // Computed for display
+  total_stock?: number;
+  available_stock?: number;
 }
 
 export interface Supplier {
@@ -163,7 +171,7 @@ export interface Case {
 export interface CaseReservation {
   id: string;
   case_id: string;
-  inventory_id: string;
+  inventory_id?: string; // Can be null for out-of-stock reservations
   product_id: string;
   quantity: number;
   status: ReservationStatus;
@@ -176,6 +184,11 @@ export interface CaseReservation {
   used_by?: string;
   photo_evidence?: string[];
   notes?: string;
+  // Out-of-stock reservation fields
+  is_out_of_stock: boolean;
+  requested_ref?: string;
+  requested_lot?: string;
+  requested_specs?: ProductSpecifications;
   created_at: string;
   updated_at: string;
   // Relations
@@ -299,6 +312,60 @@ export interface Setting {
   updated_at: string;
 }
 
+// Urgent Case Alert
+export interface UrgentCaseAlert {
+  id: string;
+  case_id: string;
+  reservation_id?: string;
+  alert_type: AlertType;
+  message: string;
+  is_resolved: boolean;
+  resolved_by?: string;
+  resolved_at?: string;
+  created_at: string;
+  // Relations
+  case?: Case;
+  reservation?: CaseReservation;
+}
+
+// Pending Stock Request (View)
+export interface PendingStockRequest {
+  reservation_id: string;
+  case_id: string;
+  case_number: string;
+  surgery_date: string;
+  dentist_id: string;
+  dentist_name: string;
+  product_id: string;
+  sku: string;
+  product_name: string;
+  ref_number?: string;
+  requested_ref?: string;
+  requested_lot?: string;
+  requested_specs?: ProductSpecifications;
+  quantity: number;
+  is_out_of_stock: boolean;
+  requested_at: string;
+  urgency: 'urgent' | 'soon' | 'normal';
+  days_until_surgery: number;
+}
+
+// Urgent Case 48h (View)
+export interface UrgentCase48h {
+  id: string;
+  case_number: string;
+  surgery_date: string;
+  surgery_time?: string;
+  status: CaseStatus;
+  dentist_id: string;
+  dentist_name: string;
+  patient_name: string;
+  hn_number: string;
+  days_until_surgery: number;
+  unprepared_items: number;
+  out_of_stock_items: number;
+}
+
 // Dashboard types
 export interface DashboardSummary {
   cases_this_month: number;
@@ -307,11 +374,14 @@ export interface DashboardSummary {
   cases_not_reserved: number;
   low_stock_items: number;
   expiring_soon_items: number;
+  urgent_alerts: number;
+  out_of_stock_requests: number;
 }
 
 export interface LowStockItem {
   product_id: string;
   sku: string;
+  ref_number?: string;
   product_name: string;
   min_stock_level: number;
   current_stock: number;
@@ -321,6 +391,7 @@ export interface LowStockItem {
 export interface ExpiringItem {
   inventory_id: string;
   sku: string;
+  ref_number?: string;
   product_name: string;
   lot_number: string;
   expiry_date: string;
@@ -338,6 +409,32 @@ export interface CalendarCase {
   patient_name: string;
   dentist_name: string;
   procedure_type?: string;
+}
+
+// Search result for products with inventory info
+export interface ProductSearchResult {
+  id: string;
+  sku: string;
+  ref_number?: string;
+  name: string;
+  brand?: string;
+  category_name?: string;
+  specifications?: ProductSpecifications;
+  is_implant: boolean;
+  // Stock info
+  total_stock: number;
+  available_stock: number;
+  // Best lots to use
+  inventory_items: InventorySearchItem[];
+}
+
+export interface InventorySearchItem {
+  id: string;
+  lot_number: string;
+  expiry_date?: string;
+  available_quantity: number;
+  days_until_expiry?: number;
+  recommendation: 'expiring_soon' | 'most_stock' | 'normal';
 }
 
 // Form types
@@ -371,14 +468,19 @@ export interface CreateCaseInput {
 
 export interface CreateReservationInput {
   case_id: string;
-  inventory_id: string;
+  inventory_id?: string; // Optional for out-of-stock
   product_id: string;
   quantity: number;
+  is_out_of_stock?: boolean;
+  requested_ref?: string;
+  requested_lot?: string;
+  requested_specs?: ProductSpecifications;
   notes?: string;
 }
 
 export interface CreateProductInput {
   sku: string;
+  ref_number?: string;
   name: string;
   description?: string;
   category_id?: string;
@@ -412,7 +514,6 @@ export interface CreateOrderInput {
     unit_cost: number;
   }[];
 }
-
 
 // Exchange types
 export type ExchangeType = 'borrow' | 'lend' | 'exchange';

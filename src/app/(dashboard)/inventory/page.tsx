@@ -14,9 +14,13 @@ import {
   Eye,
   Edit,
   MoreVertical,
+  ShoppingCart,
+  Clock,
+  CheckCircle,
+  XCircle,
 } from 'lucide-react';
 import { Header } from '@/components/layout';
-import { Button, Card, Input, Select, Badge } from '@/components/ui';
+import { Button, Card, CardHeader, CardTitle, CardContent, Input, Select, Badge, Modal, ModalFooter } from '@/components/ui';
 import {
   Table,
   TableHeader,
@@ -25,19 +29,30 @@ import {
   TableHead,
   TableCell,
 } from '@/components/ui/Table';
-import { useInventory, useProducts } from '@/hooks/useApi';
+import { useInventory, useProducts, usePendingStockRequests } from '@/hooks/useApi';
+import { useAuthStore } from '@/stores/authStore';
+import { supabase } from '@/lib/supabase';
 import { formatDate, formatCurrency, daysUntil, cn } from '@/lib/utils';
+import toast from 'react-hot-toast';
+import type { PendingStockRequest } from '@/types/database';
 
 export default function InventoryPage() {
   const searchParams = useSearchParams();
   const filterParam = searchParams.get('filter');
+  const { user } = useAuthStore();
 
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [stockFilter, setStockFilter] = useState(filterParam || '');
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<PendingStockRequest | null>(null);
 
   const { data: inventory, isLoading, mutate } = useInventory();
   const { data: products } = useProducts();
+  const { data: pendingRequests, mutate: mutatePendingRequests } = usePendingStockRequests();
+
+  // Check if user can manage stock
+  const canManageStock = user?.role === 'admin' || user?.role === 'stock_staff';
 
   const filteredInventory = useMemo(() => {
     if (!inventory) return [];
@@ -47,6 +62,7 @@ export default function InventoryPage() {
         !search ||
         item.product?.name?.toLowerCase().includes(search.toLowerCase()) ||
         item.product?.sku?.toLowerCase().includes(search.toLowerCase()) ||
+        item.product?.ref_number?.toLowerCase().includes(search.toLowerCase()) ||
         item.lot_number?.toLowerCase().includes(search.toLowerCase());
 
       const matchesCategory =
@@ -59,6 +75,8 @@ export default function InventoryPage() {
       } else if (stockFilter === 'expiring') {
         const days = item.expiry_date ? daysUntil(item.expiry_date) : 999;
         matchesStock = days >= 0 && days <= 30;
+      } else if (stockFilter === 'out_of_stock') {
+        matchesStock = item.available_quantity <= 0;
       }
 
       return matchesSearch && matchesCategory && matchesStock;
@@ -68,6 +86,7 @@ export default function InventoryPage() {
   const stockFilterOptions = [
     { value: '', label: 'ทั้งหมด' },
     { value: 'low-stock', label: 'สต็อกต่ำ' },
+    { value: 'out_of_stock', label: 'หมดสต็อก' },
     { value: 'expiring', label: 'ใกล้หมดอายุ' },
   ];
 
@@ -84,6 +103,38 @@ export default function InventoryPage() {
     if (available <= minLevel) return { variant: 'warning' as const, text: 'ต่ำ' };
     return null;
   };
+
+  const handleViewRequest = (request: PendingStockRequest) => {
+    setSelectedRequest(request);
+    setShowRequestModal(true);
+  };
+
+  const handleResolveRequest = async (request: PendingStockRequest) => {
+    try {
+      // Update reservation status to confirmed (stock has been ordered/received)
+      const { error } = await supabase
+        .from('case_reservations')
+        .update({
+          is_out_of_stock: false,
+          status: 'confirmed',
+        })
+        .eq('id', request.reservation_id);
+
+      if (error) throw error;
+
+      toast.success('อัพเดทสถานะเรียบร้อย');
+      mutatePendingRequests();
+      setShowRequestModal(false);
+    } catch (error) {
+      console.error('Error resolving request:', error);
+      toast.error('เกิดข้อผิดพลาด');
+    }
+  };
+
+  // Count stats
+  const urgentRequestsCount = pendingRequests?.filter(r => r.urgency === 'urgent').length || 0;
+  const soonRequestsCount = pendingRequests?.filter(r => r.urgency === 'soon').length || 0;
+  const totalRequestsCount = pendingRequests?.length || 0;
 
   return (
     <div className="min-h-screen">
@@ -106,9 +157,105 @@ export default function InventoryPage() {
         }
       />
 
-      <div className="p-4 sm:p-6 lg:p-8">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">
+        {/* Out of Stock Requests Alert */}
+        {canManageStock && totalRequestsCount > 0 && (
+          <Card className="border-purple-200 bg-purple-50">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <ShoppingCart className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-purple-900">
+                      คำขอสินค้าที่ไม่มีในสต็อก
+                    </CardTitle>
+                    <p className="text-sm text-purple-700">
+                      สินค้าที่ทันตแพทย์จองแต่ไม่มีในคลัง - ต้องสั่งซื้อเพิ่ม
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {urgentRequestsCount > 0 && (
+                    <Badge variant="danger">{urgentRequestsCount} ด่วนมาก</Badge>
+                  )}
+                  {soonRequestsCount > 0 && (
+                    <Badge variant="warning">{soonRequestsCount} เร็วๆ นี้</Badge>
+                  )}
+                  <Badge variant="gray">{totalRequestsCount} รายการ</Badge>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3 max-h-64 overflow-y-auto">
+                {pendingRequests?.map((request) => (
+                  <div
+                    key={request.reservation_id}
+                    className={cn(
+                      'p-4 rounded-lg border bg-white cursor-pointer hover:shadow-md transition-shadow',
+                      request.urgency === 'urgent' && 'border-red-200',
+                      request.urgency === 'soon' && 'border-yellow-200',
+                      request.urgency === 'normal' && 'border-gray-200'
+                    )}
+                    onClick={() => handleViewRequest(request)}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-gray-900">
+                            {request.product_name}
+                          </span>
+                          {request.urgency === 'urgent' && (
+                            <Badge variant="danger" size="sm">
+                              ด่วน! {request.days_until_surgery <= 0 ? 'วันนี้' : `${request.days_until_surgery} วัน`}
+                            </Badge>
+                          )}
+                          {request.urgency === 'soon' && (
+                            <Badge variant="warning" size="sm">
+                              {request.days_until_surgery} วัน
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
+                          <span>REF: {request.requested_ref || request.ref_number || request.sku}</span>
+                          {request.requested_lot && <span>LOT: {request.requested_lot}</span>}
+                          <span>จำนวน: {request.quantity}</span>
+                        </div>
+                      </div>
+                      <div className="text-right text-sm">
+                        <Link
+                          href={`/cases/${request.case_id}`}
+                          className="text-blue-600 hover:text-blue-700"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          เคส {request.case_number}
+                        </Link>
+                        <p className="text-gray-500">
+                          ผ่าตัด {formatDate(request.surgery_date)}
+                        </p>
+                        <p className="text-gray-500">
+                          ทพ. {request.dentist_name}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 pt-4 border-t border-purple-200 flex items-center justify-between">
+                <Link
+                  href="/orders/new"
+                  className="text-sm font-medium text-purple-600 hover:text-purple-700"
+                >
+                  สร้างใบสั่งซื้อ →
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <Card padding="sm">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -131,7 +278,7 @@ export default function InventoryPage() {
                 <p className="text-sm text-gray-500">สต็อกต่ำ</p>
                 <p className="text-xl font-bold text-yellow-600">
                   {inventory?.filter(
-                    (i) => i.available_quantity <= (i.product?.min_stock_level || 0)
+                    (i) => i.available_quantity <= (i.product?.min_stock_level || 0) && i.available_quantity > 0
                   ).length || 0}
                 </p>
               </div>
@@ -140,11 +287,24 @@ export default function InventoryPage() {
           <Card padding="sm">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                <Calendar className="w-5 h-5 text-red-600" />
+                <XCircle className="w-5 h-5 text-red-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">หมดสต็อก</p>
+                <p className="text-xl font-bold text-red-600">
+                  {inventory?.filter((i) => i.available_quantity <= 0).length || 0}
+                </p>
+              </div>
+            </div>
+          </Card>
+          <Card padding="sm">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-orange-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">ใกล้หมดอายุ</p>
-                <p className="text-xl font-bold text-red-600">
+                <p className="text-xl font-bold text-orange-600">
                   {inventory?.filter((i) => {
                     if (!i.expiry_date) return false;
                     const days = daysUntil(i.expiry_date);
@@ -161,7 +321,7 @@ export default function InventoryPage() {
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
             <div className="flex-1">
               <Input
-                placeholder="ค้นหารหัส, ชื่อสินค้า, Lot..."
+                placeholder="ค้นหารหัส, REF, ชื่อสินค้า, Lot..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 leftIcon={<Search className="w-4 h-4" />}
@@ -191,7 +351,7 @@ export default function InventoryPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>รหัสสินค้า</TableHead>
+                  <TableHead>REF / SKU</TableHead>
                   <TableHead>ชื่อสินค้า</TableHead>
                   <TableHead>Lot Number</TableHead>
                   <TableHead className="text-center">คงเหลือ</TableHead>
@@ -212,9 +372,14 @@ export default function InventoryPage() {
                   return (
                     <TableRow key={item.id}>
                       <TableCell>
-                        <span className="font-medium text-blue-600">
-                          {item.product?.sku}
-                        </span>
+                        <div>
+                          <span className="font-medium text-blue-600">
+                            {item.product?.ref_number || item.product?.sku}
+                          </span>
+                          {item.product?.ref_number && (
+                            <p className="text-xs text-gray-400">{item.product?.sku}</p>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div>
@@ -286,6 +451,121 @@ export default function InventoryPage() {
           )}
         </Card>
       </div>
+
+      {/* Request Detail Modal */}
+      <Modal
+        isOpen={showRequestModal}
+        onClose={() => setShowRequestModal(false)}
+        title="รายละเอียดคำขอสินค้า"
+      >
+        {selectedRequest && (
+          <div className="space-y-4">
+            <div className={cn(
+              'p-4 rounded-lg',
+              selectedRequest.urgency === 'urgent' && 'bg-red-50',
+              selectedRequest.urgency === 'soon' && 'bg-yellow-50',
+              selectedRequest.urgency === 'normal' && 'bg-gray-50'
+            )}>
+              <div className="flex items-center gap-2 mb-2">
+                {selectedRequest.urgency === 'urgent' && (
+                  <>
+                    <AlertTriangle className="w-5 h-5 text-red-600" />
+                    <span className="font-medium text-red-700">ด่วนมาก!</span>
+                    <Badge variant="danger">
+                      ผ่าตัดใน {selectedRequest.days_until_surgery <= 0 ? 'วันนี้' : `${selectedRequest.days_until_surgery} วัน`}
+                    </Badge>
+                  </>
+                )}
+                {selectedRequest.urgency === 'soon' && (
+                  <>
+                    <Clock className="w-5 h-5 text-yellow-600" />
+                    <span className="font-medium text-yellow-700">เร็วๆ นี้</span>
+                    <Badge variant="warning">
+                      ผ่าตัดใน {selectedRequest.days_until_surgery} วัน
+                    </Badge>
+                  </>
+                )}
+              </div>
+              <p className="text-sm text-gray-600">
+                กรุณาสั่งซื้อสินค้านี้โดยเร็วเพื่อให้ทันกับวันผ่าตัด
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="text-gray-500">สินค้า:</span>
+                <p className="font-medium">{selectedRequest.product_name}</p>
+              </div>
+              <div>
+                <span className="text-gray-500">REF ที่ต้องการ:</span>
+                <p className="font-medium">{selectedRequest.requested_ref || selectedRequest.ref_number || selectedRequest.sku}</p>
+              </div>
+              {selectedRequest.requested_lot && (
+                <div>
+                  <span className="text-gray-500">LOT ที่ต้องการ:</span>
+                  <p className="font-medium">{selectedRequest.requested_lot}</p>
+                </div>
+              )}
+              <div>
+                <span className="text-gray-500">จำนวน:</span>
+                <p className="font-medium">{selectedRequest.quantity}</p>
+              </div>
+              <div>
+                <span className="text-gray-500">เคส:</span>
+                <Link href={`/cases/${selectedRequest.case_id}`} className="font-medium text-blue-600 hover:text-blue-700">
+                  {selectedRequest.case_number}
+                </Link>
+              </div>
+              <div>
+                <span className="text-gray-500">วันผ่าตัด:</span>
+                <p className="font-medium">{formatDate(selectedRequest.surgery_date)}</p>
+              </div>
+              <div>
+                <span className="text-gray-500">ทันตแพทย์:</span>
+                <p className="font-medium">ทพ. {selectedRequest.dentist_name}</p>
+              </div>
+              <div>
+                <span className="text-gray-500">วันที่ขอ:</span>
+                <p className="font-medium">{formatDate(selectedRequest.requested_at)}</p>
+              </div>
+            </div>
+
+            {selectedRequest.requested_specs && Object.keys(selectedRequest.requested_specs).length > 0 && (
+              <div>
+                <span className="text-gray-500 text-sm">รายละเอียดเพิ่มเติม:</span>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {Object.entries(selectedRequest.requested_specs).map(([key, value]) => (
+                    value && (
+                      <span key={key} className="text-sm bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                        {key}: {value}
+                      </span>
+                    )
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        <ModalFooter>
+          <Button variant="outline" onClick={() => setShowRequestModal(false)}>
+            ปิด
+          </Button>
+          <Link href="/orders/new">
+            <Button leftIcon={<ShoppingCart className="w-4 h-4" />}>
+              สร้างใบสั่งซื้อ
+            </Button>
+          </Link>
+          {selectedRequest && canManageStock && (
+            <Button
+              variant="primary"
+              onClick={() => handleResolveRequest(selectedRequest)}
+              leftIcon={<CheckCircle className="w-4 h-4" />}
+            >
+              มีสินค้าแล้ว
+            </Button>
+          )}
+        </ModalFooter>
+      </Modal>
     </div>
   );
 }

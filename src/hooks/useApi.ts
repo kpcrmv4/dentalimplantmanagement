@@ -424,3 +424,272 @@ export function useReservations(caseId?: string) {
     return data || [];
   });
 }
+
+
+// =====================================================
+// Urgent Cases and Alerts Hooks
+// =====================================================
+
+import type { UrgentCase48h, PendingStockRequest, UrgentCaseAlert } from '@/types/database';
+
+// Urgent cases within 48 hours
+export function useUrgentCases48h() {
+  return useSWR<UrgentCase48h[]>('urgent_cases_48h', async () => {
+    const today = new Date();
+    const twoDaysLater = new Date(today);
+    twoDaysLater.setDate(today.getDate() + 2);
+
+    const { data, error } = await supabase
+      .from('cases')
+      .select(`
+        id,
+        case_number,
+        surgery_date,
+        surgery_time,
+        status,
+        dentist:users!cases_dentist_id_fkey(id, full_name),
+        patient:patients(first_name, last_name, hn_number),
+        reservations:case_reservations(id, status, is_out_of_stock)
+      `)
+      .gte('surgery_date', today.toISOString().split('T')[0])
+      .lte('surgery_date', twoDaysLater.toISOString().split('T')[0])
+      .not('status', 'in', '("completed","cancelled")')
+      .order('surgery_date', { ascending: true })
+      .order('surgery_time', { ascending: true });
+
+    if (error) throw error;
+
+    return (data || []).map((c: any) => {
+      const surgeryDate = new Date(c.surgery_date);
+      const daysUntil = Math.ceil((surgeryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      
+      const unpreparedItems = (c.reservations || []).filter(
+        (r: any) => r.status !== 'prepared' && r.status !== 'used'
+      ).length;
+      
+      const outOfStockItems = (c.reservations || []).filter(
+        (r: any) => r.is_out_of_stock === true
+      ).length;
+
+      return {
+        id: c.id,
+        case_number: c.case_number,
+        surgery_date: c.surgery_date,
+        surgery_time: c.surgery_time,
+        status: c.status,
+        dentist_id: c.dentist?.id,
+        dentist_name: c.dentist?.full_name || 'ไม่ระบุ',
+        patient_name: c.patient 
+          ? `${c.patient.first_name} ${c.patient.last_name}` 
+          : 'ไม่ระบุ',
+        hn_number: c.patient?.hn_number || '',
+        days_until_surgery: daysUntil,
+        unprepared_items: unpreparedItems,
+        out_of_stock_items: outOfStockItems,
+      };
+    });
+  });
+}
+
+// Pending stock requests (out-of-stock reservations)
+export function usePendingStockRequests() {
+  return useSWR<PendingStockRequest[]>('pending_stock_requests', async () => {
+    const { data, error } = await supabase
+      .from('case_reservations')
+      .select(`
+        id,
+        case_id,
+        product_id,
+        quantity,
+        is_out_of_stock,
+        requested_ref,
+        requested_lot,
+        requested_specs,
+        created_at,
+        case:cases(
+          case_number,
+          surgery_date,
+          dentist_id,
+          dentist:users!cases_dentist_id_fkey(full_name)
+        ),
+        product:products(sku, name, ref_number)
+      `)
+      .eq('is_out_of_stock', true)
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    const today = new Date();
+
+    return (data || []).map((r: any) => {
+      const surgeryDate = new Date(r.case?.surgery_date);
+      const daysUntil = Math.ceil((surgeryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      
+      let urgency: 'urgent' | 'soon' | 'normal' = 'normal';
+      if (daysUntil <= 2) urgency = 'urgent';
+      else if (daysUntil <= 7) urgency = 'soon';
+
+      return {
+        reservation_id: r.id,
+        case_id: r.case_id,
+        case_number: r.case?.case_number || '',
+        surgery_date: r.case?.surgery_date || '',
+        dentist_id: r.case?.dentist_id || '',
+        dentist_name: r.case?.dentist?.full_name || 'ไม่ระบุ',
+        product_id: r.product_id,
+        sku: r.product?.sku || '',
+        product_name: r.product?.name || '',
+        ref_number: r.product?.ref_number,
+        requested_ref: r.requested_ref,
+        requested_lot: r.requested_lot,
+        requested_specs: r.requested_specs,
+        quantity: r.quantity,
+        is_out_of_stock: r.is_out_of_stock,
+        requested_at: r.created_at,
+        urgency,
+        days_until_surgery: daysUntil,
+      };
+    });
+  });
+}
+
+// Urgent case alerts
+export function useUrgentAlerts() {
+  return useSWR<UrgentCaseAlert[]>('urgent_alerts', async () => {
+    const { data, error } = await supabase
+      .from('urgent_case_alerts')
+      .select(`
+        *,
+        case:cases(case_number, surgery_date),
+        reservation:case_reservations(
+          product:products(name, sku)
+        )
+      `)
+      .eq('is_resolved', false)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  });
+}
+
+// Count of urgent alerts for badge
+export function useUrgentAlertCount() {
+  return useSWR<number>('urgent_alert_count', async () => {
+    const { count, error } = await supabase
+      .from('urgent_case_alerts')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_resolved', false);
+
+    if (error) throw error;
+    return count || 0;
+  });
+}
+
+// Product search with inventory info for shopping-like UX
+export function useProductSearch(searchTerm: string) {
+  return useSWR(
+    searchTerm.length >= 2 ? `product_search:${searchTerm}` : null,
+    async () => {
+      // Search products by name, SKU, or REF
+      const { data: products, error: productError } = await supabase
+        .from('products')
+        .select(`
+          id,
+          sku,
+          ref_number,
+          name,
+          brand,
+          is_implant,
+          specifications,
+          category:product_categories(name)
+        `)
+        .eq('is_active', true)
+        .or(`name.ilike.%${searchTerm}%,sku.ilike.%${searchTerm}%,ref_number.ilike.%${searchTerm}%`)
+        .limit(20);
+
+      if (productError) throw productError;
+      if (!products || products.length === 0) return [];
+
+      // Get inventory for these products
+      const productIds = products.map((p) => p.id);
+      const { data: inventory, error: invError } = await supabase
+        .from('inventory')
+        .select('*')
+        .in('product_id', productIds)
+        .gt('available_quantity', 0)
+        .order('expiry_date', { ascending: true, nullsFirst: false });
+
+      if (invError) throw invError;
+
+      const today = new Date();
+
+      // Map products with their inventory
+      return products.map((product: any) => {
+        const productInventory = (inventory || []).filter(
+          (i: any) => i.product_id === product.id
+        );
+
+        const totalStock = productInventory.reduce(
+          (sum: number, i: any) => sum + i.quantity,
+          0
+        );
+        const availableStock = productInventory.reduce(
+          (sum: number, i: any) => sum + i.available_quantity,
+          0
+        );
+
+        // Sort inventory items for recommendations
+        const inventoryItems = productInventory.map((inv: any) => {
+          const expiryDate = inv.expiry_date ? new Date(inv.expiry_date) : null;
+          const daysUntilExpiry = expiryDate
+            ? Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+            : undefined;
+
+          let recommendation: 'expiring_soon' | 'most_stock' | 'normal' = 'normal';
+          if (daysUntilExpiry !== undefined && daysUntilExpiry <= 90) {
+            recommendation = 'expiring_soon';
+          }
+
+          return {
+            id: inv.id,
+            lot_number: inv.lot_number,
+            expiry_date: inv.expiry_date,
+            available_quantity: inv.available_quantity,
+            days_until_expiry: daysUntilExpiry,
+            recommendation,
+          };
+        });
+
+        // Mark the one with most stock
+        if (inventoryItems.length > 0) {
+          const maxStockItem = inventoryItems.reduce((max, item) =>
+            item.available_quantity > max.available_quantity ? item : max
+          );
+          if (maxStockItem.recommendation === 'normal') {
+            (maxStockItem as { recommendation: 'expiring_soon' | 'most_stock' | 'normal' }).recommendation = 'most_stock';
+          }
+        }
+
+        return {
+          id: product.id,
+          sku: product.sku,
+          ref_number: product.ref_number,
+          name: product.name,
+          brand: product.brand,
+          category_name: product.category?.name,
+          specifications: product.specifications,
+          is_implant: product.is_implant,
+          total_stock: totalStock,
+          available_stock: availableStock,
+          inventory_items: inventoryItems,
+        };
+      });
+    },
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 500,
+    }
+  );
+}
