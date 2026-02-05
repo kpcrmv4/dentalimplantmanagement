@@ -393,7 +393,6 @@ SELECT
     c.case_number,
     c.surgery_date,
     c.status,
-    c.tooth_number,
     p.hn_number,
     p.first_name || ' ' || p.last_name as patient_name,
     u.full_name as dentist_name,
