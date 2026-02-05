@@ -18,6 +18,9 @@ import {
   Clock,
   CheckCircle,
   XCircle,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
 } from 'lucide-react';
 import { Header } from '@/components/layout';
 import { Button, Card, CardHeader, CardTitle, CardContent, Input, Select, Badge, Modal, ModalFooter } from '@/components/ui';
@@ -46,6 +49,10 @@ export default function InventoryPage() {
   const [stockFilter, setStockFilter] = useState(filterParam || '');
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<PendingStockRequest | null>(null);
+  
+  // Sort state
+  const [sortField, setSortField] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const { data: inventory, isLoading, mutate } = useInventory();
   const { data: products } = useProducts();
@@ -54,10 +61,30 @@ export default function InventoryPage() {
   // Check if user can manage stock
   const canManageStock = user?.role === 'admin' || user?.role === 'stock_staff';
 
+  // Handle sort toggle
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  // Get sort icon for column header
+  const getSortIcon = (field: string) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="w-4 h-4 ml-1 text-gray-400" />;
+    }
+    return sortDirection === 'asc' 
+      ? <ArrowUp className="w-4 h-4 ml-1 text-blue-600" />
+      : <ArrowDown className="w-4 h-4 ml-1 text-blue-600" />;
+  };
+
   const filteredInventory = useMemo(() => {
     if (!inventory) return [];
 
-    return inventory.filter((item) => {
+    let filtered = inventory.filter((item) => {
       const matchesSearch =
         !search ||
         item.product?.name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -81,7 +108,62 @@ export default function InventoryPage() {
 
       return matchesSearch && matchesCategory && matchesStock;
     });
-  }, [inventory, search, categoryFilter, stockFilter]);
+
+    // Apply sorting
+    if (sortField) {
+      filtered = [...filtered].sort((a, b) => {
+        let aValue: any;
+        let bValue: any;
+
+        switch (sortField) {
+          case 'ref':
+            aValue = a.product?.ref_number || a.product?.sku || '';
+            bValue = b.product?.ref_number || b.product?.sku || '';
+            break;
+          case 'name':
+            aValue = a.product?.name || '';
+            bValue = b.product?.name || '';
+            break;
+          case 'lot':
+            aValue = a.lot_number || '';
+            bValue = b.lot_number || '';
+            break;
+          case 'quantity':
+            aValue = a.available_quantity;
+            bValue = b.available_quantity;
+            break;
+          case 'reserved':
+            aValue = a.reserved_quantity;
+            bValue = b.reserved_quantity;
+            break;
+          case 'expiry':
+            aValue = a.expiry_date ? new Date(a.expiry_date).getTime() : Infinity;
+            bValue = b.expiry_date ? new Date(b.expiry_date).getTime() : Infinity;
+            break;
+          case 'location':
+            aValue = a.location || '';
+            bValue = b.location || '';
+            break;
+          default:
+            return 0;
+        }
+
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          return sortDirection === 'asc'
+            ? aValue.localeCompare(bValue, 'th')
+            : bValue.localeCompare(aValue, 'th');
+        }
+
+        if (sortDirection === 'asc') {
+          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+        } else {
+          return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+        }
+      });
+    }
+
+    return filtered;
+  }, [inventory, search, categoryFilter, stockFilter, sortField, sortDirection]);
 
   const stockFilterOptions = [
     { value: '', label: 'ทั้งหมด' },
@@ -351,13 +433,69 @@ export default function InventoryPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>REF / SKU</TableHead>
-                  <TableHead>ชื่อสินค้า</TableHead>
-                  <TableHead>Lot Number</TableHead>
-                  <TableHead className="text-center">คงเหลือ</TableHead>
-                  <TableHead className="text-center">จอง</TableHead>
-                  <TableHead>วันหมดอายุ</TableHead>
-                  <TableHead>ที่เก็บ</TableHead>
+                  <TableHead>
+                    <button
+                      onClick={() => handleSort('ref')}
+                      className="flex items-center hover:text-blue-600 transition-colors"
+                    >
+                      REF / SKU
+                      {getSortIcon('ref')}
+                    </button>
+                  </TableHead>
+                  <TableHead>
+                    <button
+                      onClick={() => handleSort('name')}
+                      className="flex items-center hover:text-blue-600 transition-colors"
+                    >
+                      ชื่อสินค้า
+                      {getSortIcon('name')}
+                    </button>
+                  </TableHead>
+                  <TableHead>
+                    <button
+                      onClick={() => handleSort('lot')}
+                      className="flex items-center hover:text-blue-600 transition-colors"
+                    >
+                      Lot Number
+                      {getSortIcon('lot')}
+                    </button>
+                  </TableHead>
+                  <TableHead className="text-center">
+                    <button
+                      onClick={() => handleSort('quantity')}
+                      className="flex items-center justify-center hover:text-blue-600 transition-colors w-full"
+                    >
+                      คงเหลือ
+                      {getSortIcon('quantity')}
+                    </button>
+                  </TableHead>
+                  <TableHead className="text-center">
+                    <button
+                      onClick={() => handleSort('reserved')}
+                      className="flex items-center justify-center hover:text-blue-600 transition-colors w-full"
+                    >
+                      จอง
+                      {getSortIcon('reserved')}
+                    </button>
+                  </TableHead>
+                  <TableHead>
+                    <button
+                      onClick={() => handleSort('expiry')}
+                      className="flex items-center hover:text-blue-600 transition-colors"
+                    >
+                      วันหมดอายุ
+                      {getSortIcon('expiry')}
+                    </button>
+                  </TableHead>
+                  <TableHead>
+                    <button
+                      onClick={() => handleSort('location')}
+                      className="flex items-center hover:text-blue-600 transition-colors"
+                    >
+                      ที่เก็บ
+                      {getSortIcon('location')}
+                    </button>
+                  </TableHead>
                   <TableHead>สถานะ</TableHead>
                 </TableRow>
               </TableHeader>

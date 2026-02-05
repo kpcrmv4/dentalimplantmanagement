@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { DashboardLayout } from '@/components/layout';
+import { Header } from '@/components/layout';
 import { Card, Button, Input, Select, Badge } from '@/components/ui';
 import { 
   Package, 
@@ -266,10 +266,11 @@ export default function ReceiveInventoryPage() {
   const totalCost = items.reduce((sum, item) => sum + (item.quantity * item.unit_cost), 0);
 
   return (
-    <DashboardLayout>
-      <div className="max-w-5xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center gap-4">
+    <div className="min-h-screen">
+      <Header
+        title="รับสินค้าเข้าสต็อก"
+        subtitle="บันทึกการรับสินค้าเข้าคลัง พร้อม LOT และวันหมดอายุ"
+        actions={
           <Button
             variant="ghost"
             onClick={() => router.back()}
@@ -277,14 +278,11 @@ export default function ReceiveInventoryPage() {
           >
             กลับ
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <Boxes className="w-7 h-7 text-green-600" />
-              รับสินค้าเข้าสต็อก
-            </h1>
-            <p className="text-gray-600">บันทึกการรับสินค้าเข้าคลัง พร้อม LOT และวันหมดอายุ</p>
-          </div>
-        </div>
+        }
+      />
+
+      <div className="p-4 sm:p-6 lg:p-8">
+        <div className="max-w-5xl mx-auto space-y-6">
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Receipt Info */}
@@ -577,7 +575,8 @@ export default function ReceiveInventoryPage() {
             </Button>
           </div>
         </form>
+        </div>
       </div>
-    </DashboardLayout>
+    </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { DashboardLayout } from '@/components/layout';
+import { Header } from '@/components/layout';
 import { Card, Button, Input, Select, Badge } from '@/components/ui';
 import { 
   Package, 
@@ -224,10 +224,11 @@ export default function NewProductPage() {
   };
 
   return (
-    <DashboardLayout>
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center gap-4">
+    <div className="min-h-screen">
+      <Header
+        title="เพิ่มสินค้าใหม่"
+        subtitle="กรอกข้อมูลสินค้าเพื่อเพิ่มเข้าระบบ"
+        actions={
           <Button
             variant="ghost"
             onClick={() => router.back()}
@@ -235,14 +236,11 @@ export default function NewProductPage() {
           >
             กลับ
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <Package className="w-7 h-7 text-blue-600" />
-              เพิ่มสินค้าใหม่
-            </h1>
-            <p className="text-gray-600">กรอกข้อมูลสินค้าเพื่อเพิ่มเข้าระบบ</p>
-          </div>
-        </div>
+        }
+      />
+
+      <div className="p-4 sm:p-6 lg:p-8">
+        <div className="max-w-4xl mx-auto space-y-6">
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
@@ -613,7 +611,8 @@ export default function NewProductPage() {
             </Card>
           </div>
         )}
+        </div>
       </div>
-    </DashboardLayout>
+    </div>
   );
 }

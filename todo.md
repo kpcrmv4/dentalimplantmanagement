@@ -36,3 +36,6 @@
 - [x] Fixed notifications page data mapping (was showing undefined)
 - [x] Fixed audit-logs page layout (padding/margin consistency)
 - [x] Created fix_rls_policies.sql for RLS issues
+- [x] Fixed inventory/receive page layout (padding/margin consistency)
+- [x] Fixed products/new page layout (padding/margin consistency)
+- [x] Added sort buttons to inventory table headers
