@@ -1,10 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
-import { Bell, RefreshCw, Search, Menu } from 'lucide-react';
+import { Bell, RefreshCw, Search } from 'lucide-react';
 import { Button } from '@/components/ui';
-import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
 
 interface HeaderProps {
@@ -22,20 +20,11 @@ export function Header({
   isRefreshing = false,
   actions,
 }: HeaderProps) {
-  const { user } = useAuthStore();
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
-
   return (
     <header className="sticky top-0 z-30 bg-white border-b border-gray-200">
       <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
         {/* Left section */}
         <div className="flex items-center gap-4">
-          <button
-            className="lg:hidden p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
-            onClick={() => setShowMobileMenu(!showMobileMenu)}
-          >
-            <Menu className="w-5 h-5" />
-          </button>
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{title}</h1>
             {subtitle && (

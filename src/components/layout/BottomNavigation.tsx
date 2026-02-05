@@ -121,7 +121,27 @@ export function BottomNavigation() {
   const router = useRouter();
   const { user } = useAuthStore();
 
-  if (!user) return null;
+  // Show skeleton while loading
+  if (!user) {
+    return (
+      <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+        <div className="absolute inset-0 bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]" />
+        <div className="relative pb-safe">
+          <div className="flex items-end justify-around px-2 pt-2 pb-3">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className={cn("flex flex-col items-center", i === 3 && "-mt-6")}>
+                <div className={cn(
+                  "bg-gray-200 rounded-full animate-pulse",
+                  i === 3 ? "w-14 h-14 ring-4 ring-white" : "w-9 h-9"
+                )} />
+                <div className="w-8 h-2 bg-gray-200 rounded mt-1 animate-pulse" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </nav>
+    );
+  }
 
   const role = user.role as UserRole;
   const config = roleConfigs[role];
