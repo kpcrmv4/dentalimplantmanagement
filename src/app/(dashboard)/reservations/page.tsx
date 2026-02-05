@@ -2,95 +2,77 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import {
   Plus,
-  Search,
-  ClipboardList,
-  Package,
   Calendar,
-  User,
+  Package,
   CheckCircle,
-  XCircle,
-  Eye,
+  AlertCircle,
+  ClipboardList,
 } from 'lucide-react';
 import { Header } from '@/components/layout';
-import { Button, Card, Input, Select, Badge, Modal, ModalFooter } from '@/components/ui';
+import { Button, Card, Modal, ModalFooter } from '@/components/ui';
 import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-} from '@/components/ui/Table';
-import { useCases } from '@/hooks/useApi';
+  DateRangePicker,
+  ViewToggle,
+  CasePreparationTable,
+  CasePreparationTimeline,
+  type ViewMode,
+} from '@/components/preparation';
+import { useCasePreparation } from '@/hooks/useApi';
 import { supabase } from '@/lib/supabase';
-import {
-  formatDate,
-  getCaseStatusText,
-  getReservationStatusText,
-} from '@/lib/utils';
 import toast from 'react-hot-toast';
-import type { ReservationStatus } from '@/types/database';
+import type { DateRangeFilter, CasePreparationItem, CaseReservation } from '@/types/database';
+import { startOfWeek, endOfWeek, format } from 'date-fns';
 
 export default function ReservationsPage() {
-  const router = useRouter();
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [selectedReservation, setSelectedReservation] = useState<any>(null);
+  // Default to this week
+  const now = new Date();
+  const defaultStart = startOfWeek(now, { weekStartsOn: 1 });
+  const defaultEnd = endOfWeek(now, { weekStartsOn: 1 });
+
+  const [dateFilter, setDateFilter] = useState<DateRangeFilter>({
+    type: 'week',
+    startDate: format(defaultStart, 'yyyy-MM-dd'),
+    endDate: format(defaultEnd, 'yyyy-MM-dd'),
+  });
+  const [viewMode, setViewMode] = useState<ViewMode>('table');
+  const [selectedReservation, setSelectedReservation] = useState<CaseReservation | null>(null);
+  const [selectedCase, setSelectedCase] = useState<CasePreparationItem | null>(null);
   const [showPrepareModal, setShowPrepareModal] = useState(false);
+  const [showPrepareAllModal, setShowPrepareAllModal] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const { data: cases, isLoading, mutate } = useCases();
+  const { data: cases, isLoading, mutate } = useCasePreparation(dateFilter);
 
-  // Flatten reservations from all cases
-  const allReservations = useMemo(() => {
-    if (!cases) return [];
+  // Summary calculations
+  const summary = useMemo(() => {
+    if (!cases) return { total: 0, ready: 0, partial: 0, notStarted: 0, blocked: 0 };
 
-    return cases.flatMap((c) =>
-      (c.reservations || []).map((r) => ({
-        ...r,
-        case: c,
-      }))
+    return cases.reduce(
+      (acc, c) => {
+        acc.total++;
+        switch (c.preparation_status) {
+          case 'ready':
+            acc.ready++;
+            break;
+          case 'partial':
+            acc.partial++;
+            break;
+          case 'not_started':
+            acc.notStarted++;
+            break;
+          case 'blocked':
+            acc.blocked++;
+            break;
+        }
+        return acc;
+      },
+      { total: 0, ready: 0, partial: 0, notStarted: 0, blocked: 0 }
     );
   }, [cases]);
 
-  const filteredReservations = useMemo(() => {
-    return allReservations.filter((r) => {
-      const matchesSearch =
-        !search ||
-        r.case?.case_number?.toLowerCase().includes(search.toLowerCase()) ||
-        r.product?.name?.toLowerCase().includes(search.toLowerCase()) ||
-        r.product?.sku?.toLowerCase().includes(search.toLowerCase());
-
-      const matchesStatus = !statusFilter || r.status === statusFilter;
-
-      return matchesSearch && matchesStatus;
-    });
-  }, [allReservations, search, statusFilter]);
-
-  const statusOptions = [
-    { value: '', label: 'ทุกสถานะ' },
-    { value: 'pending', label: 'รอดำเนินการ' },
-    { value: 'confirmed', label: 'ยืนยันแล้ว' },
-    { value: 'prepared', label: 'เตรียมของแล้ว' },
-    { value: 'used', label: 'ใช้แล้ว' },
-    { value: 'cancelled', label: 'ยกเลิก' },
-  ];
-
-  const getStatusVariant = (status: ReservationStatus) => {
-    const variants: Record<ReservationStatus, 'success' | 'warning' | 'danger' | 'gray' | 'info'> = {
-      pending: 'warning',
-      confirmed: 'info',
-      prepared: 'success',
-      used: 'success',
-      cancelled: 'gray',
-    };
-    return variants[status];
-  };
-
-  const handlePrepare = async () => {
+  const handlePrepareItem = async () => {
     if (!selectedReservation) return;
 
     setIsUpdating(true);
@@ -116,222 +98,152 @@ export default function ReservationsPage() {
     }
   };
 
-  const handleMarkUsed = async (reservation: any) => {
+  const handlePrepareAll = async () => {
+    if (!selectedCase) return;
+
+    setIsUpdating(true);
     try {
+      // Get all confirmed reservations for this case
+      const confirmedReservations = selectedCase.reservations?.filter(
+        (r) => r.status === 'confirmed' && !r.is_out_of_stock
+      );
+
+      if (!confirmedReservations || confirmedReservations.length === 0) {
+        toast.error('ไม่มีรายการที่สามารถเตรียมได้');
+        return;
+      }
+
       const { error } = await supabase
         .from('case_reservations')
         .update({
-          status: 'used',
-          used_at: new Date().toISOString(),
-          used_quantity: reservation.quantity,
+          status: 'prepared',
+          prepared_at: new Date().toISOString(),
         })
-        .eq('id', reservation.id);
+        .in(
+          'id',
+          confirmedReservations.map((r) => r.id)
+        );
 
       if (error) throw error;
 
-      // Deduct from inventory
-      await supabase.rpc('use_inventory', {
-        p_inventory_id: reservation.inventory_id,
-        p_quantity: reservation.quantity,
-      });
-
-      toast.success('บันทึกการใช้งานเรียบร้อย');
+      toast.success(`เตรียมของ ${confirmedReservations.length} รายการเรียบร้อยแล้ว`);
       mutate();
+      setShowPrepareAllModal(false);
+      setSelectedCase(null);
     } catch (error) {
       toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่');
+    } finally {
+      setIsUpdating(false);
     }
+  };
+
+  const openPrepareItemModal = (reservation: CaseReservation) => {
+    setSelectedReservation(reservation);
+    setShowPrepareModal(true);
+  };
+
+  const openPrepareAllModal = (caseItem: CasePreparationItem) => {
+    setSelectedCase(caseItem);
+    setShowPrepareAllModal(true);
   };
 
   return (
     <div className="min-h-screen">
       <Header
-        title="การจองของสำหรับเคส"
-        subtitle="จัดการการจองวัสดุสำหรับเคสผ่าตัด"
+        title="เตรียมวัสดุสำหรับเคส"
+        subtitle="จัดเตรียมวัสดุและอุปกรณ์สำหรับเคสผ่าตัด"
         actions={
           <Link href="/reservations/new">
-            <Button leftIcon={<Plus className="w-4 h-4" />}>
-              จองวัสดุใหม่
-            </Button>
+            <Button leftIcon={<Plus className="w-4 h-4" />}>จองวัสดุใหม่</Button>
           </Link>
         }
       />
 
       <div className="p-4 sm:p-6 lg:p-8">
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
-          <Card padding="sm">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <ClipboardList className="w-5 h-5 text-yellow-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">รอดำเนินการ</p>
-                <p className="text-xl font-bold text-yellow-600">
-                  {allReservations.filter((r) => r.status === 'pending').length}
-                </p>
-              </div>
-            </div>
-          </Card>
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-6">
           <Card padding="sm">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <CheckCircle className="w-5 h-5 text-blue-600" />
+                <Calendar className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">ยืนยันแล้ว</p>
-                <p className="text-xl font-bold text-blue-600">
-                  {allReservations.filter((r) => r.status === 'confirmed').length}
-                </p>
+                <p className="text-sm text-gray-500">เคสทั้งหมด</p>
+                <p className="text-xl font-bold text-blue-600">{summary.total}</p>
               </div>
             </div>
           </Card>
           <Card padding="sm">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <Package className="w-5 h-5 text-green-600" />
+                <CheckCircle className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">เตรียมของแล้ว</p>
-                <p className="text-xl font-bold text-green-600">
-                  {allReservations.filter((r) => r.status === 'prepared').length}
-                </p>
+                <p className="text-sm text-gray-500">พร้อมแล้ว</p>
+                <p className="text-xl font-bold text-green-600">{summary.ready}</p>
+              </div>
+            </div>
+          </Card>
+          <Card padding="sm">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <Package className="w-5 h-5 text-yellow-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">เตรียมบางส่วน</p>
+                <p className="text-xl font-bold text-yellow-600">{summary.partial}</p>
               </div>
             </div>
           </Card>
           <Card padding="sm">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                <CheckCircle className="w-5 h-5 text-gray-600" />
+                <ClipboardList className="w-5 h-5 text-gray-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">ใช้แล้ว</p>
-                <p className="text-xl font-bold text-gray-600">
-                  {allReservations.filter((r) => r.status === 'used').length}
-                </p>
+                <p className="text-sm text-gray-500">ยังไม่เริ่ม</p>
+                <p className="text-xl font-bold text-gray-600">{summary.notStarted}</p>
+              </div>
+            </div>
+          </Card>
+          <Card padding="sm">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                <AlertCircle className="w-5 h-5 text-red-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">ติดปัญหา</p>
+                <p className="text-xl font-bold text-red-600">{summary.blocked}</p>
               </div>
             </div>
           </Card>
         </div>
 
-        <Card>
-          {/* Filters */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <div className="flex-1">
-              <Input
-                placeholder="ค้นหาเคส, สินค้า..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                leftIcon={<Search className="w-4 h-4" />}
-              />
-            </div>
-            <Select
-              options={statusOptions}
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-40"
-            />
-          </div>
+        {/* Filters */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+          <DateRangePicker value={dateFilter} onChange={setDateFilter} />
+          <ViewToggle value={viewMode} onChange={setViewMode} />
+        </div>
 
-          {/* Table */}
-          {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-            </div>
-          ) : filteredReservations.length === 0 ? (
-            <div className="text-center py-12">
-              <ClipboardList className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500">ไม่พบรายการจอง</p>
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>เคส</TableHead>
-                  <TableHead>วันผ่าตัด</TableHead>
-                  <TableHead>สินค้า</TableHead>
-                  <TableHead>Lot</TableHead>
-                  <TableHead className="text-center">จำนวน</TableHead>
-                  <TableHead>สถานะ</TableHead>
-                  <TableHead className="text-right">การดำเนินการ</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredReservations.map((reservation) => (
-                  <TableRow key={reservation.id}>
-                    <TableCell>
-                      <Link
-                        href={`/cases/${reservation.case?.id}`}
-                        className="font-medium text-blue-600 hover:text-blue-700"
-                      >
-                        {reservation.case?.case_number}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-gray-400" />
-                        <span>{formatDate(reservation.case?.surgery_date)}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{reservation.product?.name}</p>
-                        <p className="text-xs text-gray-500">
-                          {reservation.product?.sku}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <span className="font-mono text-sm">
-                        {reservation.inventory?.lot_number || '-'}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {reservation.quantity}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={getStatusVariant(reservation.status)}>
-                        {getReservationStatusText(reservation.status)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        {reservation.status === 'confirmed' && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedReservation(reservation);
-                              setShowPrepareModal(true);
-                            }}
-                          >
-                            เตรียมของ
-                          </Button>
-                        )}
-                        {reservation.status === 'prepared' && (
-                          <Button
-                            variant="primary"
-                            size="sm"
-                            onClick={() => handleMarkUsed(reservation)}
-                          >
-                            ใช้แล้ว
-                          </Button>
-                        )}
-                        <Link href={`/cases/${reservation.case?.id}`}>
-                          <Button variant="ghost" size="sm">
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                        </Link>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </Card>
+        {/* Content */}
+        {viewMode === 'table' ? (
+          <CasePreparationTable
+            cases={cases || []}
+            onPrepareItem={openPrepareItemModal}
+            onPrepareAll={openPrepareAllModal}
+            isLoading={isLoading}
+          />
+        ) : (
+          <CasePreparationTimeline
+            cases={cases || []}
+            onPrepareItem={openPrepareItemModal}
+            onPrepareAll={openPrepareAllModal}
+            isLoading={isLoading}
+          />
+        )}
       </div>
 
-      {/* Prepare Modal */}
+      {/* Prepare Single Item Modal */}
       <Modal
         isOpen={showPrepareModal}
         onClose={() => {
@@ -347,14 +259,15 @@ export default function ReservationsPage() {
               <p className="font-medium">{selectedReservation.product?.name}</p>
               <p className="text-sm text-gray-500 mt-2">จำนวน</p>
               <p className="font-medium">{selectedReservation.quantity} ชิ้น</p>
-              <p className="text-sm text-gray-500 mt-2">Lot Number</p>
-              <p className="font-medium">
-                {selectedReservation.inventory?.lot_number || '-'}
-              </p>
+              {selectedReservation.inventory?.lot_number && (
+                <>
+                  <p className="text-sm text-gray-500 mt-2">Lot Number</p>
+                  <p className="font-medium">{selectedReservation.inventory.lot_number}</p>
+                </>
+              )}
             </div>
             <p className="text-gray-600">
-              คุณต้องการยืนยันว่าได้เตรียมของสำหรับเคส{' '}
-              {selectedReservation.case?.case_number} แล้วใช่หรือไม่?
+              คุณต้องการยืนยันว่าได้เตรียมของรายการนี้แล้วใช่หรือไม่?
             </p>
           </div>
         )}
@@ -368,12 +281,53 @@ export default function ReservationsPage() {
           >
             ยกเลิก
           </Button>
-          <Button
-            variant="primary"
-            onClick={handlePrepare}
-            isLoading={isUpdating}
-          >
+          <Button variant="primary" onClick={handlePrepareItem} isLoading={isUpdating}>
             ยืนยันเตรียมของ
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      {/* Prepare All Items Modal */}
+      <Modal
+        isOpen={showPrepareAllModal}
+        onClose={() => {
+          setShowPrepareAllModal(false);
+          setSelectedCase(null);
+        }}
+        title="เตรียมของทั้งหมด"
+      >
+        {selectedCase && (
+          <div className="space-y-4">
+            <div className="bg-gray-50 rounded-lg p-4">
+              <p className="text-sm text-gray-500">เคส</p>
+              <p className="font-medium">{selectedCase.case_number}</p>
+              <p className="text-sm text-gray-500 mt-2">คนไข้</p>
+              <p className="font-medium">{selectedCase.patient_name}</p>
+              <p className="text-sm text-gray-500 mt-2">รายการที่จะเตรียม</p>
+              <p className="font-medium">
+                {selectedCase.reservations?.filter(
+                  (r) => r.status === 'confirmed' && !r.is_out_of_stock
+                ).length || 0}{' '}
+                รายการ
+              </p>
+            </div>
+            <p className="text-gray-600">
+              คุณต้องการเตรียมของทั้งหมดสำหรับเคสนี้ใช่หรือไม่?
+            </p>
+          </div>
+        )}
+        <ModalFooter>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setShowPrepareAllModal(false);
+              setSelectedCase(null);
+            }}
+          >
+            ยกเลิก
+          </Button>
+          <Button variant="primary" onClick={handlePrepareAll} isLoading={isUpdating}>
+            เตรียมทั้งหมด
           </Button>
         </ModalFooter>
       </Modal>

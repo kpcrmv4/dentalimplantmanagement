@@ -548,3 +548,97 @@ export interface Category {
   created_at: string;
   updated_at: string;
 }
+
+// =====================================================
+// Case Preparation Types
+// =====================================================
+
+export type PreparationStatus = 'ready' | 'partial' | 'not_started' | 'blocked';
+
+export interface CasePreparationItem {
+  id: string;
+  case_number: string;
+  surgery_date: string;
+  surgery_time?: string;
+  patient_id: string;
+  patient_name: string;
+  hn_number: string;
+  dentist_id: string;
+  dentist_name: string;
+  procedure_type?: string;
+  status: CaseStatus;
+  reservations: CaseReservation[];
+  preparation_summary: {
+    total: number;
+    prepared: number;
+    pending: number;
+    confirmed: number;
+    out_of_stock: number;
+  };
+  preparation_status: PreparationStatus;
+}
+
+export type DateRangeType = 'today' | 'week' | 'month' | 'custom';
+
+export interface DateRangeFilter {
+  type: DateRangeType;
+  startDate?: string;
+  endDate?: string;
+}
+
+// =====================================================
+// Emergency Popup Types
+// =====================================================
+
+export type UrgencyLevel = 'critical' | 'high' | 'medium';
+
+export interface UrgentCaseForPopup {
+  id: string;
+  case_number: string;
+  surgery_date: string;
+  surgery_time?: string;
+  patient_name: string;
+  hn_number: string;
+  dentist_id: string;
+  dentist_name: string;
+  hours_until_surgery: number;
+  minutes_until_surgery: number;
+  has_no_reservations: boolean;
+  unprepared_count: number;
+  out_of_stock_count: number;
+  urgency_level: UrgencyLevel;
+}
+
+// =====================================================
+// Dentist Dashboard Types
+// =====================================================
+
+export interface DentistDashboardSummary {
+  total_cases: number;
+  pending_reservations: number;
+  ready_cases: number;
+  not_ready_cases: number;
+  cases_today: number;
+  cases_this_week: number;
+  cases_this_month: number;
+}
+
+export interface DentistCaseItem {
+  id: string;
+  case_number: string;
+  surgery_date: string;
+  surgery_time?: string;
+  status: CaseStatus;
+  patient_id: string;
+  patient_name: string;
+  hn_number: string;
+  procedure_type?: string;
+  material_status: 'ready' | 'waiting' | 'not_available' | 'not_reserved';
+  reservation_summary: {
+    total: number;
+    prepared: number;
+    confirmed: number;
+    pending: number;
+    out_of_stock: number;
+  };
+}

@@ -41,6 +41,12 @@ const menuItems: MenuItem[] = [
     roles: ['admin', 'cs', 'stock_staff'],
   },
   {
+    name: 'Dashboard ทันตแพทย์',
+    href: '/dentist-dashboard',
+    icon: Calendar,
+    roles: ['dentist'],
+  },
+  {
     name: 'เคสผ่าตัดรากเทียม',
     href: '/cases',
     icon: Stethoscope,

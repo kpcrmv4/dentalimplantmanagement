@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { Calendar as CalendarIcon, Clock, Package, AlertTriangle } from 'lucide-react';
 import { Header } from '@/components/layout';
 import {
@@ -10,6 +10,8 @@ import {
   PendingCasesAlert,
   UrgentCasesAlert,
   OutOfStockRequests,
+  UrgentCasePopup,
+  UrgentCaseBadge,
 } from '@/components/dashboard';
 import { Calendar } from '@/components/calendar/Calendar';
 import {
@@ -19,8 +21,10 @@ import {
   useCases,
   useUrgentCases48h,
   usePendingStockRequests,
+  useUrgentCasesForPopup,
 } from '@/hooks/useApi';
 import { useAuthStore } from '@/stores/authStore';
+import { useUrgentPopupStore } from '@/stores/urgentPopupStore';
 import { formatThaiDate } from '@/lib/utils';
 
 export default function DashboardPage() {
@@ -28,6 +32,10 @@ export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showUrgentPopup, setShowUrgentPopup] = useState(false);
+
+  // Urgent popup store
+  const { setDismissed, shouldShowPopup } = useUrgentPopupStore();
 
   // Fetch real data from Supabase
   const { data: summary, mutate: mutateSummary } = useDashboardSummary();
@@ -39,6 +47,28 @@ export default function DashboardPage() {
   const { data: urgentCases, mutate: mutateUrgent } = useUrgentCases48h();
   // Fetch out-of-stock requests
   const { data: outOfStockRequests, mutate: mutateOutOfStock } = usePendingStockRequests();
+  // Fetch urgent cases for popup (with material issues)
+  const { data: urgentCasesForPopup } = useUrgentCasesForPopup();
+
+  // Show popup on mount if there are urgent cases with issues
+  useEffect(() => {
+    if (urgentCasesForPopup && urgentCasesForPopup.length > 0) {
+      if (shouldShowPopup(urgentCasesForPopup)) {
+        setShowUrgentPopup(true);
+      }
+    }
+  }, [urgentCasesForPopup, shouldShowPopup]);
+
+  const handleClosePopup = useCallback(() => {
+    if (urgentCasesForPopup) {
+      setDismissed(urgentCasesForPopup.map((c) => c.id));
+    }
+    setShowUrgentPopup(false);
+  }, [urgentCasesForPopup, setDismissed]);
+
+  const handleOpenPopup = useCallback(() => {
+    setShowUrgentPopup(true);
+  }, []);
 
   // Filter pending cases (red = วัสดุไม่พอ, gray = ยังไม่จองวัสดุ)
   const pendingCases = useMemo(() => {
@@ -144,6 +174,21 @@ export default function DashboardPage() {
           <OutOfStockRequests requests={outOfStockRequests || []} />
         )}
       </div>
+
+      {/* Urgent Case Popup */}
+      <UrgentCasePopup
+        cases={urgentCasesForPopup || []}
+        isOpen={showUrgentPopup}
+        onClose={handleClosePopup}
+      />
+
+      {/* Floating badge when popup is dismissed */}
+      {!showUrgentPopup && (urgentCasesForPopup?.length || 0) > 0 && (
+        <UrgentCaseBadge
+          count={urgentCasesForPopup?.length || 0}
+          onClick={handleOpenPopup}
+        />
+      )}
     </div>
   );
 }

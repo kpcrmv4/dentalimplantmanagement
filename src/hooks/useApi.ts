@@ -16,6 +16,13 @@ import type {
   Transfer,
   User,
   Notification,
+  CasePreparationItem,
+  DateRangeFilter,
+  PreparationStatus,
+  UrgentCaseForPopup,
+  UrgencyLevel,
+  DentistDashboardSummary,
+  DentistCaseItem,
 } from '@/types/database';
 
 // Generic fetcher for Supabase
@@ -690,6 +697,324 @@ export function useProductSearch(searchTerm: string) {
     {
       revalidateOnFocus: false,
       dedupingInterval: 500,
+    }
+  );
+}
+
+// =====================================================
+// Case Preparation Hooks
+// =====================================================
+
+export function useCasePreparation(filter: DateRangeFilter) {
+  const filterKey = JSON.stringify(filter);
+
+  return useSWR<CasePreparationItem[]>(`case_preparation:${filterKey}`, async () => {
+    if (!filter.startDate || !filter.endDate) {
+      return [];
+    }
+
+    const { data, error } = await supabase
+      .from('cases')
+      .select(`
+        id,
+        case_number,
+        surgery_date,
+        surgery_time,
+        status,
+        procedure_type,
+        patient:patients(id, first_name, last_name, hn_number),
+        dentist:users!cases_dentist_id_fkey(id, full_name),
+        reservations:case_reservations(
+          id,
+          status,
+          quantity,
+          is_out_of_stock,
+          product:products(id, name, sku, ref_number),
+          inventory:inventory(id, lot_number, expiry_date)
+        )
+      `)
+      .gte('surgery_date', filter.startDate)
+      .lte('surgery_date', filter.endDate)
+      .not('status', 'in', '("completed","cancelled")')
+      .order('surgery_date', { ascending: true })
+      .order('surgery_time', { ascending: true });
+
+    if (error) throw error;
+
+    return (data || []).map((c: any) => {
+      const reservations = c.reservations || [];
+      const total = reservations.length;
+      const prepared = reservations.filter((r: any) => r.status === 'prepared' || r.status === 'used').length;
+      const pending = reservations.filter((r: any) => r.status === 'pending').length;
+      const confirmed = reservations.filter((r: any) => r.status === 'confirmed').length;
+      const out_of_stock = reservations.filter((r: any) => r.is_out_of_stock).length;
+
+      let preparation_status: PreparationStatus = 'not_started';
+      if (total === 0) {
+        preparation_status = 'not_started';
+      } else if (out_of_stock > 0) {
+        preparation_status = 'blocked';
+      } else if (prepared === total) {
+        preparation_status = 'ready';
+      } else if (prepared > 0) {
+        preparation_status = 'partial';
+      }
+
+      return {
+        id: c.id,
+        case_number: c.case_number,
+        surgery_date: c.surgery_date,
+        surgery_time: c.surgery_time,
+        patient_id: c.patient?.id || '',
+        patient_name: c.patient ? `${c.patient.first_name} ${c.patient.last_name}` : 'ไม่ระบุ',
+        hn_number: c.patient?.hn_number || '',
+        dentist_id: c.dentist?.id || '',
+        dentist_name: c.dentist?.full_name || 'ไม่ระบุ',
+        procedure_type: c.procedure_type,
+        status: c.status,
+        reservations: reservations.map((r: any) => ({
+          ...r,
+          product: r.product,
+          inventory: r.inventory,
+        })),
+        preparation_summary: {
+          total,
+          prepared,
+          pending,
+          confirmed,
+          out_of_stock,
+        },
+        preparation_status,
+      };
+    });
+  });
+}
+
+// =====================================================
+// Emergency Popup Hooks
+// =====================================================
+
+export function useUrgentCasesForPopup() {
+  return useSWR<UrgentCaseForPopup[]>('urgent_cases_popup', async () => {
+    const now = new Date();
+    const twoDaysLater = new Date(now);
+    twoDaysLater.setDate(now.getDate() + 2);
+
+    const { data, error } = await supabase
+      .from('cases')
+      .select(`
+        id,
+        case_number,
+        surgery_date,
+        surgery_time,
+        status,
+        dentist:users!cases_dentist_id_fkey(id, full_name),
+        patient:patients(first_name, last_name, hn_number),
+        reservations:case_reservations(id, status, is_out_of_stock)
+      `)
+      .gte('surgery_date', now.toISOString().split('T')[0])
+      .lte('surgery_date', twoDaysLater.toISOString().split('T')[0])
+      .not('status', 'in', '("completed","cancelled")')
+      .order('surgery_date', { ascending: true })
+      .order('surgery_time', { ascending: true });
+
+    if (error) throw error;
+
+    const urgentCases: UrgentCaseForPopup[] = [];
+
+    (data || []).forEach((c: any) => {
+      const reservations = c.reservations || [];
+      const hasNoReservations = reservations.length === 0;
+      const unpreparedCount = reservations.filter(
+        (r: any) => r.status !== 'prepared' && r.status !== 'used'
+      ).length;
+      const outOfStockCount = reservations.filter((r: any) => r.is_out_of_stock).length;
+
+      // Only include cases with issues: no reservations, unprepared items, or out-of-stock items
+      if (hasNoReservations || unpreparedCount > 0 || outOfStockCount > 0) {
+        // Calculate time until surgery
+        const surgeryDateTime = new Date(c.surgery_date);
+        if (c.surgery_time) {
+          const [hours, minutes] = c.surgery_time.split(':').map(Number);
+          surgeryDateTime.setHours(hours, minutes, 0, 0);
+        } else {
+          surgeryDateTime.setHours(8, 0, 0, 0); // Default to 8 AM if no time specified
+        }
+
+        const timeDiff = surgeryDateTime.getTime() - now.getTime();
+        const hoursUntil = Math.floor(timeDiff / (1000 * 60 * 60));
+        const minutesUntil = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+        let urgency_level: UrgencyLevel = 'medium';
+        if (hoursUntil < 6) {
+          urgency_level = 'critical';
+        } else if (hoursUntil < 24) {
+          urgency_level = 'high';
+        }
+
+        urgentCases.push({
+          id: c.id,
+          case_number: c.case_number,
+          surgery_date: c.surgery_date,
+          surgery_time: c.surgery_time,
+          patient_name: c.patient ? `${c.patient.first_name} ${c.patient.last_name}` : 'ไม่ระบุ',
+          hn_number: c.patient?.hn_number || '',
+          dentist_id: c.dentist?.id || '',
+          dentist_name: c.dentist?.full_name || 'ไม่ระบุ',
+          hours_until_surgery: Math.max(0, hoursUntil),
+          minutes_until_surgery: Math.max(0, minutesUntil),
+          has_no_reservations: hasNoReservations,
+          unprepared_count: unpreparedCount,
+          out_of_stock_count: outOfStockCount,
+          urgency_level,
+        });
+      }
+    });
+
+    // Sort by urgency (most urgent first)
+    return urgentCases.sort((a, b) => {
+      const urgencyOrder = { critical: 0, high: 1, medium: 2 };
+      if (urgencyOrder[a.urgency_level] !== urgencyOrder[b.urgency_level]) {
+        return urgencyOrder[a.urgency_level] - urgencyOrder[b.urgency_level];
+      }
+      return a.hours_until_surgery - b.hours_until_surgery;
+    });
+  }, {
+    refreshInterval: 60000, // Refresh every minute for countdown accuracy
+  });
+}
+
+// =====================================================
+// Dentist Dashboard Hooks
+// =====================================================
+
+export function useDentistDashboard(dentistId: string, filter: DateRangeFilter) {
+  const filterKey = JSON.stringify({ dentistId, filter });
+
+  return useSWR<{ summary: DentistDashboardSummary; cases: DentistCaseItem[] }>(
+    dentistId ? `dentist_dashboard:${filterKey}` : null,
+    async () => {
+      if (!filter.startDate || !filter.endDate) {
+        return {
+          summary: {
+            total_cases: 0,
+            pending_reservations: 0,
+            ready_cases: 0,
+            not_ready_cases: 0,
+            cases_today: 0,
+            cases_this_week: 0,
+            cases_this_month: 0,
+          },
+          cases: [],
+        };
+      }
+
+      // Fetch cases for the dentist within date range
+      const { data, error } = await supabase
+        .from('cases')
+        .select(`
+          id,
+          case_number,
+          surgery_date,
+          surgery_time,
+          status,
+          procedure_type,
+          patient:patients(id, first_name, last_name, hn_number),
+          reservations:case_reservations(id, status, is_out_of_stock)
+        `)
+        .eq('dentist_id', dentistId)
+        .gte('surgery_date', filter.startDate)
+        .lte('surgery_date', filter.endDate)
+        .not('status', 'in', '("completed","cancelled")')
+        .order('surgery_date', { ascending: true })
+        .order('surgery_time', { ascending: true });
+
+      if (error) throw error;
+
+      const today = new Date().toISOString().split('T')[0];
+      const weekStart = new Date();
+      weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1);
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekEnd.getDate() + 6);
+      const monthStart = new Date();
+      monthStart.setDate(1);
+      const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0);
+
+      let totalCases = 0;
+      let pendingReservations = 0;
+      let readyCases = 0;
+      let notReadyCases = 0;
+      let casesToday = 0;
+      let casesThisWeek = 0;
+      let casesThisMonth = 0;
+
+      const cases: DentistCaseItem[] = (data || []).map((c: any) => {
+        const reservations = c.reservations || [];
+        const total = reservations.length;
+        const prepared = reservations.filter((r: any) => r.status === 'prepared' || r.status === 'used').length;
+        const confirmed = reservations.filter((r: any) => r.status === 'confirmed').length;
+        const pending = reservations.filter((r: any) => r.status === 'pending').length;
+        const out_of_stock = reservations.filter((r: any) => r.is_out_of_stock).length;
+
+        let material_status: 'ready' | 'waiting' | 'not_available' | 'not_reserved' = 'not_reserved';
+        if (total === 0) {
+          material_status = 'not_reserved';
+        } else if (out_of_stock > 0) {
+          material_status = 'not_available';
+        } else if (prepared === total) {
+          material_status = 'ready';
+        } else {
+          material_status = 'waiting';
+        }
+
+        // Count for summary
+        totalCases++;
+        pendingReservations += pending;
+        if (material_status === 'ready') readyCases++;
+        if (material_status !== 'ready' && material_status !== 'not_reserved') notReadyCases++;
+
+        const caseDate = c.surgery_date;
+        if (caseDate === today) casesToday++;
+        if (caseDate >= weekStart.toISOString().split('T')[0] && caseDate <= weekEnd.toISOString().split('T')[0]) {
+          casesThisWeek++;
+        }
+        if (caseDate >= monthStart.toISOString().split('T')[0] && caseDate <= monthEnd.toISOString().split('T')[0]) {
+          casesThisMonth++;
+        }
+
+        return {
+          id: c.id,
+          case_number: c.case_number,
+          surgery_date: c.surgery_date,
+          surgery_time: c.surgery_time,
+          status: c.status,
+          patient_id: c.patient?.id || '',
+          patient_name: c.patient ? `${c.patient.first_name} ${c.patient.last_name}` : 'ไม่ระบุ',
+          hn_number: c.patient?.hn_number || '',
+          procedure_type: c.procedure_type,
+          material_status,
+          reservation_summary: {
+            total,
+            prepared,
+            confirmed,
+            pending,
+            out_of_stock,
+          },
+        };
+      });
+
+      return {
+        summary: {
+          total_cases: totalCases,
+          pending_reservations: pendingReservations,
+          ready_cases: readyCases,
+          not_ready_cases: notReadyCases,
+          cases_today: casesToday,
+          cases_this_week: casesThisWeek,
+          cases_this_month: casesThisMonth,
+        },
+        cases,
+      };
     }
   );
 }
