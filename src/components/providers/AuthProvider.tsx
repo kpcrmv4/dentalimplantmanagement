@@ -60,7 +60,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           }
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
-          router.push('/login');
+          window.location.href = '/login';
         }
       }
     );

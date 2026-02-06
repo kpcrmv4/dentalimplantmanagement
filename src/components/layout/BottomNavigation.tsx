@@ -163,8 +163,7 @@ export function BottomNavigation() {
     try {
       await supabase.auth.signOut();
       logout();
-      router.push('/login');
-      router.refresh();
+      window.location.href = '/login';
     } catch (error) {
       console.error('Logout error:', error);
     } finally {

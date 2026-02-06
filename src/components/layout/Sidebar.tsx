@@ -140,13 +140,12 @@ export function Sidebar() {
 
       // Sign out from Supabase
       await supabase.auth.signOut();
-      
+
       // Clear local state
       logout();
-      
-      // Redirect to login
-      router.push('/login');
-      router.refresh();
+
+      // Full page redirect to login (avoids middleware caching stale session)
+      window.location.href = '/login';
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
