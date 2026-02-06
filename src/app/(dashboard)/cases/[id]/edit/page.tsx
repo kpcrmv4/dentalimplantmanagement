@@ -24,7 +24,7 @@ interface PageProps {
 export default function EditCasePage({ params }: PageProps) {
   const { id } = use(params);
   const router = useRouter();
-  const { data: caseData, isLoading: isCaseLoading } = useCase(id);
+  const { data: caseData, error: caseError, isLoading: isCaseLoading } = useCase(id);
   const { data: dentists } = useUsers('dentist');
   const { data: assistants } = useUsers('assistant');
   const { data: procedureTypesData } = useProcedureTypes();
@@ -124,7 +124,7 @@ export default function EditCasePage({ params }: PageProps) {
     }
   };
 
-  if (isCaseLoading) {
+  if (isCaseLoading && !caseData) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
@@ -132,11 +132,13 @@ export default function EditCasePage({ params }: PageProps) {
     );
   }
 
-  if (!caseData) {
+  if (caseError || !caseData) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-500 mb-4">ไม่พบข้อมูลเคส</p>
+          <p className="text-gray-500 mb-4">
+            {caseError ? 'ไม่สามารถโหลดข้อมูลเคสได้' : 'ไม่พบข้อมูลเคส'}
+          </p>
           <Link href="/cases">
             <Button variant="outline">กลับไปหน้ารายการเคส</Button>
           </Link>
