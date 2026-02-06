@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -10,29 +9,28 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const router = useRouter();
   const { setUser, setLoading } = useAuthStore();
 
+  // Deduplicated: single function to fetch user profile by auth user ID
+  const fetchUserProfile = useCallback(async (userId: string) => {
+    const { data } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
+    return data;
+  }, []);
+
   useEffect(() => {
-    // Get initial session
     const initAuth = async () => {
       setLoading(true);
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        // Fix #6: Use getUser() instead of getSession() for server validation
+        const { data: { user } } = await supabase.auth.getUser();
 
-        if (session?.user) {
-          // Fetch user data from database
-          const { data: userData } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-
-          if (userData) {
-            setUser(userData);
-          } else {
-            setUser(null);
-          }
+        if (user) {
+          const userData = await fetchUserProfile(user.id);
+          setUser(userData ?? null);
         } else {
           setUser(null);
         }
@@ -48,13 +46,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (event === 'SIGNED_IN' && session?.user) {
-          // Fetch user data from database
-          const { data: userData } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-
+          const userData = await fetchUserProfile(session.user.id);
           if (userData) {
             setUser(userData);
           }
@@ -68,7 +60,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [setUser, setLoading, router]);
+  }, [setUser, setLoading, fetchUserProfile]);
 
   return <>{children}</>;
 }

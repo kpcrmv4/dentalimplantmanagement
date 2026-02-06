@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { User } from '@/types/database';
 
+const STORE_VERSION = 1;
+
 interface AuthState {
   user: User | null;
   isLoading: boolean;
@@ -26,8 +28,29 @@ export const useAuthStore = create<AuthState>()(
       setHasHydrated: (state) => set({ _hasHydrated: state }),
     }),
     {
-      name: 'auth-storage',
-      partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
+      name: `auth-storage:v${STORE_VERSION}`,
+      version: STORE_VERSION,
+      partialize: (state) => ({
+        // Store only the fields UI needs — no tokens, no internal flags
+        user: state.user
+          ? {
+              id: state.user.id,
+              email: state.user.email,
+              full_name: state.user.full_name,
+              role: state.user.role,
+              is_active: state.user.is_active,
+              line_user_id: state.user.line_user_id,
+            }
+          : null,
+        isAuthenticated: state.isAuthenticated,
+      }),
+      migrate: (persisted, version) => {
+        // Clear stale data from old versions
+        if (version < STORE_VERSION) {
+          return { user: null, isAuthenticated: false };
+        }
+        return persisted as { user: User | null; isAuthenticated: boolean };
+      },
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
       },

@@ -26,6 +26,7 @@ import {
   ConfirmModal,
 } from '@/components/ui';
 import { useAuthStore } from '@/stores/authStore';
+import type { User as UserType } from '@/types/database';
 import toast from 'react-hot-toast';
 
 const getRoleLabel = (role: string) => {
@@ -39,61 +40,23 @@ const getRoleLabel = (role: string) => {
   return labels[role] || role;
 };
 
-export default function ProfilePage() {
-  const router = useRouter();
-  const { user, setUser } = useAuthStore();
+// --- Section 1: Personal Info ---
+function PersonalInfoSection({ user, setUser }: { user: UserType; setUser: (u: UserType) => void }) {
+  const [fullName, setFullName] = useState(user.full_name || '');
+  const [isSaving, setIsSaving] = useState(false);
 
-  // Profile state
-  const [fullName, setFullName] = useState(user?.full_name || '');
-  const [isSavingName, setIsSavingName] = useState(false);
-
-  // Password state
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
-
-  // LINE state
-  const [lineConnected, setLineConnected] = useState(false);
-  const [lineUserId, setLineUserId] = useState<string | null>(null);
-  const [linkingCode, setLinkingCode] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [isCheckingLink, setIsCheckingLink] = useState(false);
-  const [isUnlinking, setIsUnlinking] = useState(false);
-  const [showUnlinkConfirm, setShowUnlinkConfirm] = useState(false);
-
-  // Sync fullName when user data changes
   useEffect(() => {
-    if (user?.full_name) {
+    if (user.full_name) {
       setFullName(user.full_name);
     }
-  }, [user?.full_name]);
+  }, [user.full_name]);
 
-  // Check LINE status on mount
-  useEffect(() => {
-    const checkLineStatus = async () => {
-      try {
-        const response = await fetch('/api/profile/link-line');
-        if (response.ok) {
-          const data = await response.json();
-          setLineConnected(data.connected);
-          setLineUserId(data.lineUserId);
-        }
-      } catch {
-        // Ignore errors on initial load
-      }
-    };
-    checkLineStatus();
-  }, []);
-
-  // === Handlers ===
-
-  const handleUpdateName = async () => {
+  const handleSave = async () => {
     if (!fullName.trim()) {
       toast.error('กรุณากรอกชื่อ');
       return;
     }
-    setIsSavingName(true);
+    setIsSaving(true);
     try {
       const response = await fetch('/api/profile/update', {
         method: 'POST',
@@ -103,19 +66,43 @@ export default function ProfilePage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed');
 
-      // Update Zustand auth store so sidebar/nav updates immediately
-      if (user) {
-        setUser({ ...user, full_name: fullName.trim() });
-      }
+      setUser({ ...user, full_name: fullName.trim() });
       toast.success('บันทึกชื่อเรียบร้อย');
     } catch (error: any) {
       toast.error(error.message || 'เกิดข้อผิดพลาด');
     } finally {
-      setIsSavingName(false);
+      setIsSaving(false);
     }
   };
 
-  const handleChangePassword = async () => {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <User className="w-5 h-5" />
+          ข้อมูลส่วนตัว
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Input label="ชื่อ-นามสกุล" value={fullName} onChange={(e) => setFullName(e.target.value)} />
+        <Input label="อีเมล" value={user.email || ''} disabled helperText="ไม่สามารถเปลี่ยนอีเมลได้" />
+        <Input label="บทบาท" value={getRoleLabel(user.role)} disabled />
+        <Button onClick={handleSave} isLoading={isSaving} leftIcon={<Save className="w-4 h-4" />}>
+          บันทึก
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+// --- Section 2: Change Password ---
+function ChangePasswordSection() {
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isChanging, setIsChanging] = useState(false);
+
+  const handleChange = async () => {
     if (!currentPassword || !newPassword) {
       toast.error('กรุณากรอกรหัสผ่านให้ครบ');
       return;
@@ -129,7 +116,7 @@ export default function ProfilePage() {
       return;
     }
 
-    setIsChangingPassword(true);
+    setIsChanging(true);
     try {
       const response = await fetch('/api/profile/change-password', {
         method: 'POST',
@@ -146,9 +133,66 @@ export default function ProfilePage() {
     } catch (error: any) {
       toast.error(error.message || 'เกิดข้อผิดพลาด');
     } finally {
-      setIsChangingPassword(false);
+      setIsChanging(false);
     }
   };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Key className="w-5 h-5" />
+          เปลี่ยนรหัสผ่าน
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Input label="รหัสผ่านปัจจุบัน" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
+        <Input label="รหัสผ่านใหม่" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} helperText="ขั้นต่ำ 6 ตัวอักษร" />
+        <Input
+          label="ยืนยันรหัสผ่านใหม่"
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          error={confirmPassword && newPassword !== confirmPassword ? 'รหัสผ่านไม่ตรงกัน' : ''}
+        />
+        <Button
+          onClick={handleChange}
+          isLoading={isChanging}
+          disabled={!currentPassword || !newPassword || newPassword !== confirmPassword || newPassword.length < 6}
+          leftIcon={<Key className="w-4 h-4" />}
+        >
+          เปลี่ยนรหัสผ่าน
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+// --- Section 3: LINE Connection ---
+function LineConnectionSection({ user, setUser }: { user: UserType; setUser: (u: UserType) => void }) {
+  const [lineConnected, setLineConnected] = useState(false);
+  const [lineUserId, setLineUserId] = useState<string | null>(null);
+  const [linkingCode, setLinkingCode] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isCheckingLink, setIsCheckingLink] = useState(false);
+  const [isUnlinking, setIsUnlinking] = useState(false);
+  const [showUnlinkConfirm, setShowUnlinkConfirm] = useState(false);
+
+  useEffect(() => {
+    const checkLineStatus = async () => {
+      try {
+        const response = await fetch('/api/profile/link-line');
+        if (response.ok) {
+          const data = await response.json();
+          setLineConnected(data.connected);
+          setLineUserId(data.lineUserId);
+        }
+      } catch {
+        // Ignore errors on initial load
+      }
+    };
+    checkLineStatus();
+  }, []);
 
   const handleGenerateLinkCode = async () => {
     setIsGenerating(true);
@@ -173,10 +217,7 @@ export default function ProfilePage() {
         setLineConnected(true);
         setLineUserId(data.lineUserId);
         setLinkingCode(null);
-        // Update auth store
-        if (user) {
-          setUser({ ...user, line_user_id: data.lineUserId });
-        }
+        setUser({ ...user, line_user_id: data.lineUserId });
         toast.success('เชื่อมต่อ LINE สำเร็จ!');
       } else {
         toast('ยังไม่ได้เชื่อมต่อ กรุณาส่งรหัสในแชท LINE Bot', { icon: 'i' });
@@ -188,10 +229,6 @@ export default function ProfilePage() {
     }
   };
 
-  const handleUnlinkLine = async () => {
-    setShowUnlinkConfirm(true);
-  };
-
   const confirmUnlinkLine = async () => {
     setShowUnlinkConfirm(false);
     setIsUnlinking(true);
@@ -200,9 +237,7 @@ export default function ProfilePage() {
       if (!response.ok) throw new Error('Failed');
       setLineConnected(false);
       setLineUserId(null);
-      if (user) {
-        setUser({ ...user, line_user_id: undefined });
-      }
+      setUser({ ...user, line_user_id: undefined });
       toast.success('ยกเลิกการเชื่อมต่อ LINE เรียบร้อย');
     } catch {
       toast.error('เกิดข้อผิดพลาด');
@@ -211,208 +246,90 @@ export default function ProfilePage() {
     }
   };
 
-  if (!user) return null;
-
   return (
-    <div>
-      <Header
-        title="โปรไฟล์"
-        subtitle="จัดการข้อมูลส่วนตัวและการเชื่อมต่อ"
-        actions={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.back()}
-            leftIcon={<ArrowLeft className="w-4 h-4" />}
-          >
-            กลับ
-          </Button>
-        }
-      />
-
-      <div className="p-4 sm:p-6 lg:p-8 max-w-2xl space-y-6">
-        {/* Section 1: Personal Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="w-5 h-5" />
-              ข้อมูลส่วนตัว
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Input
-              label="ชื่อ-นามสกุล"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-            />
-            <Input
-              label="อีเมล"
-              value={user.email || ''}
-              disabled
-              helperText="ไม่สามารถเปลี่ยนอีเมลได้"
-            />
-            <Input
-              label="บทบาท"
-              value={getRoleLabel(user.role)}
-              disabled
-            />
-            <Button
-              onClick={handleUpdateName}
-              isLoading={isSavingName}
-              leftIcon={<Save className="w-4 h-4" />}
-            >
-              บันทึก
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Section 2: Change Password */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Key className="w-5 h-5" />
-              เปลี่ยนรหัสผ่าน
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Input
-              label="รหัสผ่านปัจจุบัน"
-              type="password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-            />
-            <Input
-              label="รหัสผ่านใหม่"
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              helperText="ขั้นต่ำ 6 ตัวอักษร"
-            />
-            <Input
-              label="ยืนยันรหัสผ่านใหม่"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              error={confirmPassword && newPassword !== confirmPassword ? 'รหัสผ่านไม่ตรงกัน' : ''}
-            />
-            <Button
-              onClick={handleChangePassword}
-              isLoading={isChangingPassword}
-              disabled={
-                !currentPassword ||
-                !newPassword ||
-                newPassword !== confirmPassword ||
-                newPassword.length < 6
-              }
-              leftIcon={<Key className="w-4 h-4" />}
-            >
-              เปลี่ยนรหัสผ่าน
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Section 3: LINE Connection */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MessageSquare className="w-5 h-5" />
-              เชื่อมต่อ LINE
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {lineConnected ? (
-              /* Connected state */
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
-                  <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-green-800">เชื่อมต่อแล้ว</p>
-                    <p className="text-sm text-green-600 font-mono">{lineUserId}</p>
-                  </div>
-                  <Badge variant="success" size="sm" className="ml-auto">Active</Badge>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MessageSquare className="w-5 h-5" />
+            เชื่อมต่อ LINE
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {lineConnected ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
+                <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
+                <div>
+                  <p className="font-medium text-green-800">เชื่อมต่อแล้ว</p>
+                  <p className="text-sm text-green-600 font-mono">{lineUserId}</p>
                 </div>
-                <p className="text-sm text-gray-500">
-                  คุณจะได้รับการแจ้งเตือนผ่าน LINE เมื่อมีเหตุการณ์สำคัญ
-                </p>
-                <Button
-                  variant="outline"
-                  onClick={handleUnlinkLine}
-                  isLoading={isUnlinking}
-                  leftIcon={<Link2Off className="w-4 h-4" />}
-                  className="text-red-600 border-red-300 hover:bg-red-50"
-                >
-                  ยกเลิกการเชื่อมต่อ
-                </Button>
+                <Badge variant="success" size="sm" className="ml-auto">Active</Badge>
               </div>
-            ) : linkingCode ? (
-              /* Linking in progress */
-              <div className="space-y-4">
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 space-y-3">
-                  <p className="font-medium text-blue-800">ขั้นตอนการเชื่อมต่อ:</p>
-                  <ol className="list-decimal list-inside text-sm text-blue-700 space-y-1.5">
-                    <li>เพิ่มเพื่อน LINE Bot ของคลินิก</li>
-                    <li>ส่งรหัสด้านล่างในแชท LINE Bot</li>
-                  </ol>
-                  <div className="flex items-center gap-2 p-3 bg-white rounded-lg border border-blue-200">
-                    <code className="text-lg font-mono font-bold text-blue-900 flex-1 text-center">
-                      {linkingCode}
-                    </code>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        navigator.clipboard.writeText(linkingCode);
-                        toast.success('คัดลอกรหัสแล้ว');
-                      }}
-                    >
-                      <Copy className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <p className="text-xs text-blue-600">
-                    รหัสนี้จะหมดอายุใน 15 นาที
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={handleCheckLinkStatus}
-                    isLoading={isCheckingLink}
-                    leftIcon={<RefreshCw className="w-4 h-4" />}
-                  >
-                    ตรวจสอบสถานะ
-                  </Button>
+              <p className="text-sm text-gray-500">
+                คุณจะได้รับการแจ้งเตือนผ่าน LINE เมื่อมีเหตุการณ์สำคัญ
+              </p>
+              <Button
+                variant="outline"
+                onClick={() => setShowUnlinkConfirm(true)}
+                isLoading={isUnlinking}
+                leftIcon={<Link2Off className="w-4 h-4" />}
+                className="text-red-600 border-red-300 hover:bg-red-50"
+              >
+                ยกเลิกการเชื่อมต่อ
+              </Button>
+            </div>
+          ) : linkingCode ? (
+            <div className="space-y-4">
+              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 space-y-3">
+                <p className="font-medium text-blue-800">ขั้นตอนการเชื่อมต่อ:</p>
+                <ol className="list-decimal list-inside text-sm text-blue-700 space-y-1.5">
+                  <li>เพิ่มเพื่อน LINE Bot ของคลินิก</li>
+                  <li>ส่งรหัสด้านล่างในแชท LINE Bot</li>
+                </ol>
+                <div className="flex items-center gap-2 p-3 bg-white rounded-lg border border-blue-200">
+                  <code className="text-lg font-mono font-bold text-blue-900 flex-1 text-center">
+                    {linkingCode}
+                  </code>
                   <Button
                     variant="ghost"
-                    onClick={() => setLinkingCode(null)}
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText(linkingCode);
+                      toast.success('คัดลอกรหัสแล้ว');
+                    }}
                   >
-                    ยกเลิก
+                    <Copy className="w-4 h-4" />
                   </Button>
                 </div>
+                <p className="text-xs text-blue-600">รหัสนี้จะหมดอายุใน 15 นาที</p>
               </div>
-            ) : (
-              /* Not connected */
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <MessageSquare className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                  <div>
-                    <p className="text-gray-700 font-medium">ยังไม่ได้เชื่อมต่อ LINE</p>
-                    <p className="text-sm text-gray-500">เชื่อมต่อเพื่อรับการแจ้งเตือนผ่าน LINE</p>
-                  </div>
-                </div>
-                <Button
-                  onClick={handleGenerateLinkCode}
-                  isLoading={isGenerating}
-                  leftIcon={<Link2 className="w-4 h-4" />}
-                >
-                  เชื่อมต่อ LINE
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={handleCheckLinkStatus} isLoading={isCheckingLink} leftIcon={<RefreshCw className="w-4 h-4" />}>
+                  ตรวจสอบสถานะ
+                </Button>
+                <Button variant="ghost" onClick={() => setLinkingCode(null)}>
+                  ยกเลิก
                 </Button>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <MessageSquare className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                <div>
+                  <p className="text-gray-700 font-medium">ยังไม่ได้เชื่อมต่อ LINE</p>
+                  <p className="text-sm text-gray-500">เชื่อมต่อเพื่อรับการแจ้งเตือนผ่าน LINE</p>
+                </div>
+              </div>
+              <Button onClick={handleGenerateLinkCode} isLoading={isGenerating} leftIcon={<Link2 className="w-4 h-4" />}>
+                เชื่อมต่อ LINE
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
-      {/* Unlink LINE Confirmation */}
       <ConfirmModal
         isOpen={showUnlinkConfirm}
         onClose={() => setShowUnlinkConfirm(false)}
@@ -422,6 +339,34 @@ export default function ProfilePage() {
         variant="warning"
         confirmText="ยกเลิกการเชื่อมต่อ"
       />
+    </>
+  );
+}
+
+// --- Main Profile Page ---
+export default function ProfilePage() {
+  const router = useRouter();
+  const { user, setUser } = useAuthStore();
+
+  if (!user) return null;
+
+  return (
+    <div>
+      <Header
+        title="โปรไฟล์"
+        subtitle="จัดการข้อมูลส่วนตัวและการเชื่อมต่อ"
+        actions={
+          <Button variant="outline" size="sm" onClick={() => router.back()} leftIcon={<ArrowLeft className="w-4 h-4" />}>
+            กลับ
+          </Button>
+        }
+      />
+
+      <div className="p-4 sm:p-6 lg:p-8 max-w-2xl space-y-6">
+        <PersonalInfoSection user={user} setUser={setUser} />
+        <ChangePasswordSection />
+        <LineConnectionSection user={user} setUser={setUser} />
+      </div>
     </div>
   );
 }

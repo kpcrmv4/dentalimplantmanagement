@@ -1,6 +1,12 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+const getRoleHomePage = (role: string) => {
+  if (role === 'dentist') return '/dentist-dashboard';
+  if (role === 'assistant') return '/assistant-dashboard';
+  return '/dashboard';
+};
+
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -32,6 +38,8 @@ export async function middleware(request: NextRequest) {
   // Refresh session if expired
   const { data: { user } } = await supabase.auth.getUser();
 
+  const pathname = request.nextUrl.pathname;
+
   // Protected routes - require authentication
   const protectedPaths = [
     '/dashboard',
@@ -49,88 +57,77 @@ export async function middleware(request: NextRequest) {
     '/profile',
   ];
 
-  const isProtectedPath = protectedPaths.some(path => 
-    request.nextUrl.pathname.startsWith(path)
+  const isProtectedPath = protectedPaths.some(path =>
+    pathname.startsWith(path)
   );
 
   // If accessing protected route without auth, redirect to login
   if (isProtectedPath && !user) {
     const redirectUrl = new URL('/login', request.url);
-    redirectUrl.searchParams.set('redirectTo', request.nextUrl.pathname);
+    redirectUrl.searchParams.set('redirectTo', pathname);
     return NextResponse.redirect(redirectUrl);
   }
 
-  // Role-based redirect helper
-  const getRoleHomePage = (role: string) => {
-    if (role === 'dentist') return '/dentist-dashboard';
-    if (role === 'assistant') return '/assistant-dashboard';
-    return '/dashboard';
-  };
+  // For authenticated users, fetch role ONCE for all checks below
+  if (user) {
+    const needsRoleCheck =
+      pathname === '/login' ||
+      pathname.startsWith('/audit-logs') ||
+      pathname.startsWith('/settings') ||
+      pathname.startsWith('/orders') ||
+      pathname.startsWith('/exchanges') ||
+      pathname.startsWith('/dentist-dashboard') ||
+      pathname.startsWith('/assistant-dashboard') ||
+      pathname.startsWith('/dashboard') ||
+      pathname.startsWith('/inventory') ||
+      pathname.startsWith('/reservations') ||
+      pathname.startsWith('/reports');
 
-  // If logged in and trying to access login page, redirect to role-specific home
-  if (user && request.nextUrl.pathname === '/login') {
-    const { data: profile } = await supabase
-      .from('users')
-      .select('role')
-      .eq('id', user.id)
-      .single();
+    if (needsRoleCheck) {
+      // Single DB query for all role-based checks
+      const { data: profile } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .single();
 
-    const homePage = getRoleHomePage(profile?.role || 'admin');
-    return NextResponse.redirect(new URL(homePage, request.url));
-  }
+      const role = profile?.role;
+      const homePage = getRoleHomePage(role || 'admin');
 
-  // Role-based route restrictions (only check once per request)
-  const pathname = request.nextUrl.pathname;
-  const needsRoleCheck =
-    pathname.startsWith('/audit-logs') ||
-    pathname.startsWith('/settings') ||
-    pathname.startsWith('/orders') ||
-    pathname.startsWith('/exchanges') ||
-    pathname.startsWith('/dentist-dashboard') ||
-    pathname.startsWith('/assistant-dashboard') ||
-    pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/inventory') ||
-    pathname.startsWith('/reservations') ||
-    pathname.startsWith('/reports');
+      // Logged-in user visiting /login → redirect to their home
+      if (pathname === '/login') {
+        return NextResponse.redirect(new URL(homePage, request.url));
+      }
 
-  if (needsRoleCheck && user) {
-    const { data: profile } = await supabase
-      .from('users')
-      .select('role')
-      .eq('id', user.id)
-      .single();
+      // Admin-only routes
+      if ((pathname.startsWith('/audit-logs') || pathname.startsWith('/settings/users') || pathname.startsWith('/reports')) && role !== 'admin') {
+        return NextResponse.redirect(new URL(`${homePage}?error=unauthorized`, request.url));
+      }
 
-    const role = profile?.role;
-    const homePage = getRoleHomePage(role || 'admin');
+      // Admin and stock_staff only
+      if ((pathname.startsWith('/orders') || pathname.startsWith('/exchanges') || pathname.startsWith('/inventory')) && !['admin', 'stock_staff'].includes(role || '')) {
+        return NextResponse.redirect(new URL(`${homePage}?error=unauthorized`, request.url));
+      }
 
-    // Admin-only routes
-    if ((pathname.startsWith('/audit-logs') || pathname.startsWith('/settings/users') || pathname.startsWith('/reports')) && role !== 'admin') {
-      return NextResponse.redirect(new URL(`${homePage}?error=unauthorized`, request.url));
-    }
+      // Reservations - not for dentist
+      if (pathname.startsWith('/reservations') && role === 'dentist') {
+        return NextResponse.redirect(new URL(`${homePage}?error=unauthorized`, request.url));
+      }
 
-    // Admin and stock_staff only
-    if ((pathname.startsWith('/orders') || pathname.startsWith('/exchanges') || pathname.startsWith('/inventory')) && !['admin', 'stock_staff'].includes(role || '')) {
-      return NextResponse.redirect(new URL(`${homePage}?error=unauthorized`, request.url));
-    }
+      // Dashboard (main) - not for dentist or assistant
+      if (pathname === '/dashboard' && (role === 'dentist' || role === 'assistant')) {
+        return NextResponse.redirect(new URL(homePage, request.url));
+      }
 
-    // Reservations - not for dentist (dentists use the ReservationModal in case detail page instead)
-    if (pathname.startsWith('/reservations') && role === 'dentist') {
-      return NextResponse.redirect(new URL(`${homePage}?error=unauthorized`, request.url));
-    }
+      // Dentist-only routes
+      if (pathname.startsWith('/dentist-dashboard') && role !== 'dentist') {
+        return NextResponse.redirect(new URL(`${homePage}?error=unauthorized`, request.url));
+      }
 
-    // Dashboard (main) - not for dentist or assistant
-    if (pathname === '/dashboard' && (role === 'dentist' || role === 'assistant')) {
-      return NextResponse.redirect(new URL(homePage, request.url));
-    }
-
-    // Dentist-only routes
-    if (pathname.startsWith('/dentist-dashboard') && role !== 'dentist') {
-      return NextResponse.redirect(new URL(`${homePage}?error=unauthorized`, request.url));
-    }
-
-    // Assistant-only routes
-    if (pathname.startsWith('/assistant-dashboard') && role !== 'assistant') {
-      return NextResponse.redirect(new URL(`${homePage}?error=unauthorized`, request.url));
+      // Assistant-only routes
+      if (pathname.startsWith('/assistant-dashboard') && role !== 'assistant') {
+        return NextResponse.redirect(new URL(`${homePage}?error=unauthorized`, request.url));
+      }
     }
   }
 
@@ -139,14 +136,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     * - api routes that don't need auth
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
