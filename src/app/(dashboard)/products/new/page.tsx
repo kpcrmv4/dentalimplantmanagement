@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Header } from '@/components/layout';
 import { Card, Button, Input, Select, Badge } from '@/components/ui';
-import { 
-  Package, 
-  Save, 
-  ArrowLeft, 
-  Plus, 
+import {
+  Package,
+  Save,
+  ArrowLeft,
+  Plus,
   X,
   Info,
   AlertCircle,
@@ -21,6 +21,9 @@ import {
   FileText,
   Calendar,
   Layers,
+  Pencil,
+  Edit,
+  Trash2,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import type { Category, Supplier } from '@/types/database';
@@ -60,10 +63,10 @@ export default function NewProductPage() {
   const [newSpecKey, setNewSpecKey] = useState('');
   const [newSpecValue, setNewSpecValue] = useState('');
   
-  // New category modal
-  const [showNewCategory, setShowNewCategory] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState('');
-  const [newCategoryDescription, setNewCategoryDescription] = useState('');
+  // Category management modal
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [categoryForm, setCategoryForm] = useState({ name: '', description: '' });
   const [savingCategory, setSavingCategory] = useState(false);
 
   // Predefined specification keys for dental products
@@ -137,35 +140,70 @@ export default function NewProductPage() {
     }
   };
 
-  const handleCreateCategory = async () => {
-    if (!newCategoryName.trim()) {
+  const handleSaveCategory = async () => {
+    if (!categoryForm.name.trim()) {
       toast.error('กรุณากรอกชื่อหมวดหมู่');
       return;
     }
 
     setSavingCategory(true);
     try {
-      const { data, error } = await supabase
-        .from('product_categories')
-        .insert({
-          name: newCategoryName.trim(),
-          description: newCategoryDescription.trim() || null,
-        })
-        .select()
-        .single();
+      if (editingCategory) {
+        // Update existing category
+        const { error } = await supabase
+          .from('product_categories')
+          .update({
+            name: categoryForm.name.trim(),
+            description: categoryForm.description.trim() || null,
+          })
+          .eq('id', editingCategory.id);
 
-      if (error) throw error;
+        if (error) throw error;
+        toast.success('แก้ไขหมวดหมู่เรียบร้อย');
+        setCategories(prev =>
+          prev.map(c =>
+            c.id === editingCategory.id
+              ? { ...c, name: categoryForm.name.trim(), description: categoryForm.description.trim() || undefined }
+              : c
+          )
+        );
+      } else {
+        // Create new category
+        const { data, error } = await supabase
+          .from('product_categories')
+          .insert({
+            name: categoryForm.name.trim(),
+            description: categoryForm.description.trim() || null,
+          })
+          .select()
+          .single();
 
-      toast.success('สร้างหมวดหมู่สำเร็จ');
-      setCategories(prev => [...prev, data]);
-      setFormData(prev => ({ ...prev, category_id: data.id }));
-      setShowNewCategory(false);
-      setNewCategoryName('');
-      setNewCategoryDescription('');
+        if (error) throw error;
+        toast.success('เพิ่มหมวดหมู่เรียบร้อย');
+        setCategories(prev => [...prev, data]);
+        setFormData(prev => ({ ...prev, category_id: data.id }));
+      }
+      setEditingCategory(null);
+      setCategoryForm({ name: '', description: '' });
     } catch (error: any) {
-      toast.error(error.message || 'ไม่สามารถสร้างหมวดหมู่ได้');
+      toast.error(error.message || 'เกิดข้อผิดพลาด');
     } finally {
       setSavingCategory(false);
+    }
+  };
+
+  const handleDeleteCategory = async (id: string) => {
+    if (!confirm('ต้องการลบหมวดหมู่นี้?')) return;
+    try {
+      const { error } = await supabase.from('product_categories').delete().eq('id', id);
+      if (error) throw error;
+      toast.success('ลบหมวดหมู่เรียบร้อย');
+      setCategories(prev => prev.filter(c => c.id !== id));
+      if (formData.category_id === id) {
+        setFormData(prev => ({ ...prev, category_id: '' }));
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'ไม่สามารถลบหมวดหมู่ได้ (อาจมีสินค้าอยู่ในหมวดหมู่นี้)');
     }
   };
 
@@ -365,10 +403,14 @@ export default function NewProductPage() {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => setShowNewCategory(true)}
-                    title="เพิ่มหมวดหมู่ใหม่"
+                    onClick={() => {
+                      setEditingCategory(null);
+                      setCategoryForm({ name: '', description: '' });
+                      setShowCategoryModal(true);
+                    }}
+                    title="จัดการหมวดหมู่"
                   >
-                    <Plus className="w-4 h-4" />
+                    <Pencil className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
@@ -559,53 +601,106 @@ export default function NewProductPage() {
           </div>
         </form>
 
-        {/* New Category Modal */}
-        {showNewCategory && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-            <Card className="w-full max-w-md p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                เพิ่มหมวดหมู่ใหม่
-              </h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    ชื่อหมวดหมู่ <span className="text-red-500">*</span>
-                  </label>
-                  <Input
-                    value={newCategoryName}
-                    onChange={(e) => setNewCategoryName(e.target.value)}
-                    placeholder="เช่น Implant, Abutment, Bone Graft"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    คำอธิบาย
-                  </label>
-                  <Input
-                    value={newCategoryDescription}
-                    onChange={(e) => setNewCategoryDescription(e.target.value)}
-                    placeholder="คำอธิบายหมวดหมู่ (ถ้ามี)"
-                  />
-                </div>
+        {/* Category Management Modal */}
+        {showCategoryModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={() => setShowCategoryModal(false)}>
+            <Card className="w-full max-w-lg p-6" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  จัดการหมวดหมู่
+                </h3>
+                <button
+                  onClick={() => setShowCategoryModal(false)}
+                  className="p-1 hover:bg-gray-100 rounded"
+                >
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
               </div>
-              <div className="flex justify-end gap-3 mt-6">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setShowNewCategory(false);
-                    setNewCategoryName('');
-                    setNewCategoryDescription('');
-                  }}
-                >
-                  ยกเลิก
-                </Button>
-                <Button
-                  onClick={handleCreateCategory}
-                  disabled={savingCategory || !newCategoryName.trim()}
-                  leftIcon={savingCategory ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                >
-                  {savingCategory ? 'กำลังบันทึก...' : 'สร้างหมวดหมู่'}
-                </Button>
+
+              {/* Category List */}
+              <div className="mb-4 max-h-60 overflow-y-auto">
+                {categories.length > 0 ? (
+                  <div className="space-y-2">
+                    {categories.map((cat) => (
+                      <div
+                        key={cat.id}
+                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg group"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-900 truncate">{cat.name}</p>
+                          {cat.description && (
+                            <p className="text-sm text-gray-500 truncate">{cat.description}</p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1 ml-2">
+                          <button
+                            onClick={() => {
+                              setEditingCategory(cat);
+                              setCategoryForm({
+                                name: cat.name,
+                                description: cat.description || '',
+                              });
+                            }}
+                            className="p-1.5 hover:bg-gray-200 rounded transition-colors"
+                            title="แก้ไข"
+                          >
+                            <Edit className="w-3.5 h-3.5 text-gray-500" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteCategory(cat.id)}
+                            className="p-1.5 hover:bg-red-100 rounded transition-colors"
+                            title="ลบ"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 text-red-500" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-sm text-center py-4">ยังไม่มีหมวดหมู่</p>
+                )}
+              </div>
+
+              {/* Add/Edit Form */}
+              <div className="border-t pt-4">
+                <p className="text-sm font-medium text-gray-700 mb-3">
+                  {editingCategory ? 'แก้ไขหมวดหมู่' : 'เพิ่มหมวดหมู่ใหม่'}
+                </p>
+                <div className="space-y-3">
+                  <Input
+                    value={categoryForm.name}
+                    onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
+                    placeholder="ชื่อหมวดหมู่ *"
+                  />
+                  <Input
+                    value={categoryForm.description}
+                    onChange={(e) => setCategoryForm({ ...categoryForm, description: e.target.value })}
+                    placeholder="คำอธิบาย (ถ้ามี)"
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={handleSaveCategory}
+                      disabled={savingCategory || !categoryForm.name.trim()}
+                      leftIcon={savingCategory ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                      size="sm"
+                    >
+                      {savingCategory ? 'กำลังบันทึก...' : editingCategory ? 'บันทึก' : 'เพิ่ม'}
+                    </Button>
+                    {editingCategory && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setEditingCategory(null);
+                          setCategoryForm({ name: '', description: '' });
+                        }}
+                      >
+                        ยกเลิกแก้ไข
+                      </Button>
+                    )}
+                  </div>
+                </div>
               </div>
             </Card>
           </div>

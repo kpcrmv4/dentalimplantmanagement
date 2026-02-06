@@ -21,8 +21,6 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
-  Database,
-  Trash2,
 } from 'lucide-react';
 import { Header } from '@/components/layout';
 import { Button, Card, CardHeader, CardTitle, CardContent, Input, Select, Badge, Modal, ModalFooter } from '@/components/ui';
@@ -56,60 +54,13 @@ export default function InventoryPage() {
   const [sortField, setSortField] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
-  // Category management state
-  const [showCategoryModal, setShowCategoryModal] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<any>(null);
-  const [categoryForm, setCategoryForm] = useState({ name: '', description: '' });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const { data: inventory, isLoading, mutate } = useInventory();
   const { data: products } = useProducts();
   const { data: pendingRequests, mutate: mutatePendingRequests } = usePendingStockRequests();
-  const { data: categories, mutate: mutateCategories } = useCategories();
+  const { data: categories } = useCategories();
 
   // Check if user can manage stock
   const canManageStock = user?.role === 'admin' || user?.role === 'stock_staff';
-
-  // Category CRUD functions
-  const handleSaveCategory = async () => {
-    setIsSubmitting(true);
-    try {
-      if (editingCategory) {
-        const { error } = await supabase
-          .from('product_categories')
-          .update(categoryForm)
-          .eq('id', editingCategory.id);
-        if (error) throw error;
-        toast.success('แก้ไขหมวดหมู่เรียบร้อย');
-      } else {
-        const { error } = await supabase
-          .from('product_categories')
-          .insert(categoryForm);
-        if (error) throw error;
-        toast.success('เพิ่มหมวดหมู่เรียบร้อย');
-      }
-      mutateCategories();
-      setShowCategoryModal(false);
-      setEditingCategory(null);
-      setCategoryForm({ name: '', description: '' });
-    } catch (error) {
-      toast.error('เกิดข้อผิดพลาด');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleDeleteCategory = async (id: string) => {
-    if (!confirm('ต้องการลบหมวดหมู่นี้?')) return;
-    try {
-      const { error } = await supabase.from('product_categories').delete().eq('id', id);
-      if (error) throw error;
-      toast.success('ลบหมวดหมู่เรียบร้อย');
-      mutateCategories();
-    } catch (error) {
-      toast.error('เกิดข้อผิดพลาด');
-    }
-  };
 
   // Handle sort toggle
   const handleSort = (field: string) => {
@@ -450,66 +401,6 @@ export default function InventoryPage() {
           </Card>
         </div>
 
-        {/* Category Management Section */}
-        {canManageStock && (
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <Database className="w-5 h-5" />
-                หมวดหมู่สินค้า
-              </CardTitle>
-              <Button
-                size="sm"
-                leftIcon={<Plus className="w-4 h-4" />}
-                onClick={() => {
-                  setEditingCategory(null);
-                  setCategoryForm({ name: '', description: '' });
-                  setShowCategoryModal(true);
-                }}
-              >
-                เพิ่มหมวดหมู่
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {categories?.map((category) => (
-                  <div
-                    key={category.id}
-                    className="flex items-center gap-2 bg-gray-100 rounded-lg px-3 py-2"
-                  >
-                    <span className="font-medium">{category.name}</span>
-                    {category.description && (
-                      <span className="text-sm text-gray-500">({category.description})</span>
-                    )}
-                    <button
-                      onClick={() => {
-                        setEditingCategory(category);
-                        setCategoryForm({
-                          name: category.name,
-                          description: category.description || '',
-                        });
-                        setShowCategoryModal(true);
-                      }}
-                      className="p-1 hover:bg-gray-200 rounded"
-                    >
-                      <Edit className="w-3 h-3 text-gray-500" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteCategory(category.id)}
-                      className="p-1 hover:bg-red-100 rounded"
-                    >
-                      <Trash2 className="w-3 h-3 text-red-500" />
-                    </button>
-                  </div>
-                ))}
-                {(!categories || categories.length === 0) && (
-                  <p className="text-gray-500 text-sm">ยังไม่มีหมวดหมู่</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         <Card>
           {/* Filters */}
           <div className="space-y-3 sm:space-y-0 sm:flex sm:flex-row sm:gap-4 mb-6">
@@ -815,37 +706,6 @@ export default function InventoryPage() {
         </ModalFooter>
       </Modal>
 
-      {/* Category Modal */}
-      <Modal
-        isOpen={showCategoryModal}
-        onClose={() => setShowCategoryModal(false)}
-        title={editingCategory ? 'แก้ไขหมวดหมู่' : 'เพิ่มหมวดหมู่'}
-      >
-        <div className="space-y-4">
-          <Input
-            label="ชื่อหมวดหมู่ *"
-            value={categoryForm.name}
-            onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
-          />
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">คำอธิบาย</label>
-            <textarea
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
-              rows={2}
-              value={categoryForm.description}
-              onChange={(e) => setCategoryForm({ ...categoryForm, description: e.target.value })}
-            />
-          </div>
-        </div>
-        <ModalFooter>
-          <Button variant="outline" onClick={() => setShowCategoryModal(false)}>
-            ยกเลิก
-          </Button>
-          <Button onClick={handleSaveCategory} isLoading={isSubmitting}>
-            บันทึก
-          </Button>
-        </ModalFooter>
-      </Modal>
     </div>
   );
 }
