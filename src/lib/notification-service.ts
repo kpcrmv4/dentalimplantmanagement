@@ -560,7 +560,8 @@ export async function sendDailyNotification(
     const dentistMap = new Map<string, string[]>();
     dentistCases?.forEach((c) => {
       const existing = dentistMap.get(c.dentist_id) || [];
-      const patientName = c.patient ? `${(c.patient as { first_name: string }).first_name} ${(c.patient as { last_name: string }).last_name}` : 'Unknown';
+      const patient = c.patient as unknown as { first_name: string; last_name: string } | null;
+      const patientName = patient ? `${patient.first_name} ${patient.last_name}` : 'Unknown';
       existing.push(patientName);
       dentistMap.set(c.dentist_id, existing);
     });
