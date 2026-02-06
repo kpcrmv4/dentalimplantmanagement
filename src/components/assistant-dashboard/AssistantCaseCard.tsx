@@ -1,6 +1,7 @@
 'use client';
 
-import { Calendar, Clock, User, Stethoscope, Package, CheckCircle } from 'lucide-react';
+import { useMemo } from 'react';
+import { Calendar, Clock, User, Stethoscope, Package, CheckCircle, AlertTriangle } from 'lucide-react';
 import { Card, Badge, Button } from '@/components/ui';
 import { PickingList } from './PickingList';
 import { formatDate, getCaseStatusText } from '@/lib/utils';
@@ -24,6 +25,32 @@ export function AssistantCaseCard({
   const allUsed = used === total && total > 0;
   const progressPercent = total > 0 ? Math.round((used / total) * 100) : 0;
   const isCompleted = caseItem.status === 'completed';
+
+  // Check if all materials are ready to close the case:
+  // 1. All reservations must be 'used' or 'cancelled' (no pending/prepared/confirmed left)
+  // 2. Every 'used' reservation must have at least 1 photo evidence
+  const closeCaseCheck = useMemo(() => {
+    const activeReservations = caseItem.reservations.filter((r) => r.status !== 'cancelled');
+    const notUsedItems = activeReservations.filter((r) => r.status !== 'used');
+    const usedWithoutPhoto = activeReservations.filter(
+      (r) => r.status === 'used' && (!r.photo_evidence || r.photo_evidence.length === 0)
+    );
+
+    const canClose = activeReservations.length > 0 && notUsedItems.length === 0 && usedWithoutPhoto.length === 0;
+
+    const reasons: string[] = [];
+    if (activeReservations.length === 0) {
+      reasons.push('ไม่มีวัสดุในเคส');
+    }
+    if (notUsedItems.length > 0) {
+      reasons.push(`วัสดุยังไม่ได้ใช้ ${notUsedItems.length} รายการ`);
+    }
+    if (usedWithoutPhoto.length > 0) {
+      reasons.push(`ยังไม่ได้ถ่ายรูปยืนยันการตัดวัสดุ ${usedWithoutPhoto.length} รายการ`);
+    }
+
+    return { canClose, reasons };
+  }, [caseItem.reservations]);
 
   return (
     <div className="space-y-3">
@@ -119,25 +146,47 @@ export function AssistantCaseCard({
 
       {/* Action Buttons */}
       {!isCompleted && (
-        <div className="flex gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            className="flex-1"
-            onClick={() => onAddMaterial(caseItem.id)}
-          >
-            <Package className="w-4 h-4 mr-1.5" />
-            เพิ่มวัสดุ
-          </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            className="flex-1"
-            onClick={() => onCloseCase(caseItem.id)}
-          >
-            <CheckCircle className="w-4 h-4 mr-1.5" />
-            ปิดเคส
-          </Button>
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              className="flex-1"
+              onClick={() => onAddMaterial(caseItem.id)}
+            >
+              <Package className="w-4 h-4 mr-1.5" />
+              เพิ่มวัสดุ
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              className="flex-1"
+              onClick={() => {
+                if (closeCaseCheck.canClose) {
+                  if (window.confirm('ยืนยันการปิดเคสนี้หรือไม่?\n\nเมื่อปิดแล้วจะไม่สามารถแก้ไขข้อมูลวัสดุได้อีก')) {
+                    onCloseCase(caseItem.id);
+                  }
+                }
+              }}
+              disabled={!closeCaseCheck.canClose}
+            >
+              <CheckCircle className="w-4 h-4 mr-1.5" />
+              ปิดเคส
+            </Button>
+          </div>
+
+          {/* Show reasons why close case is disabled */}
+          {!closeCaseCheck.canClose && closeCaseCheck.reasons.length > 0 && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2.5 flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 text-yellow-600 shrink-0 mt-0.5" />
+              <div className="text-xs text-yellow-800 space-y-0.5">
+                <p className="font-medium">ยังไม่สามารถปิดเคสได้:</p>
+                {closeCaseCheck.reasons.map((reason, idx) => (
+                  <p key={idx}>- {reason}</p>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
