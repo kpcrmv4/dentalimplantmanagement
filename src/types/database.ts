@@ -735,3 +735,119 @@ export interface AuditLogEntry {
   details: Record<string, unknown>;
   created_at: string;
 }
+
+// =====================================================
+// Push Notification Types
+// =====================================================
+
+export interface PushSubscription {
+  id: string;
+  user_id: string;
+  endpoint: string;
+  p256dh_key: string;
+  auth_key: string;
+  user_agent?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreatePushSubscriptionInput {
+  endpoint: string;
+  p256dh_key: string;
+  auth_key: string;
+  user_agent?: string;
+}
+
+// =====================================================
+// Notification Log Types
+// =====================================================
+
+export type NotificationChannel = 'push' | 'line' | 'in_app' | 'email' | 'cron';
+export type NotificationStatus = 'pending' | 'sent' | 'failed' | 'read';
+export type RecipientType = 'user' | 'role' | 'supplier' | 'system';
+
+export interface NotificationLog {
+  id: string;
+  recipient_type: RecipientType;
+  recipient_id?: string;
+  channel: NotificationChannel;
+  notification_type: string;
+  title: string;
+  message: string;
+  status: NotificationStatus;
+  sent_at?: string;
+  read_at?: string;
+  error_message?: string;
+  retry_count: number;
+  metadata?: Record<string, unknown>;
+  created_at: string;
+}
+
+// =====================================================
+// Scheduled Notification Types
+// =====================================================
+
+export interface ScheduledNotificationSettings {
+  enabled: boolean;
+  morningTime: string;
+  eveningTime: string;
+  notifyStock: boolean;
+  notifyCs: boolean;
+  notifyDentist: boolean;
+}
+
+export interface ScheduledNotificationQueue {
+  id: string;
+  notification_type: string;
+  scheduled_for: string;
+  recipient_type: RecipientType;
+  recipient_id?: string;
+  payload: Record<string, unknown>;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  processed_at?: string;
+  error_message?: string;
+  created_at: string;
+}
+
+// =====================================================
+// LINE Integration Types
+// =====================================================
+
+export interface LineBotInfo {
+  userId: string;
+  basicId: string;
+  displayName: string;
+  pictureUrl?: string;
+  chatMode?: string;
+  markAsReadMode?: string;
+}
+
+export interface LineWebhookEvent {
+  type: 'follow' | 'unfollow' | 'message' | 'postback';
+  timestamp: number;
+  source: {
+    type: 'user' | 'group' | 'room';
+    userId?: string;
+    groupId?: string;
+    roomId?: string;
+  };
+  message?: {
+    id: string;
+    type: string;
+    text?: string;
+  };
+  postback?: {
+    data: string;
+  };
+}
+
+// Extend existing User interface
+export interface UserWithLine extends User {
+  line_user_id?: string;
+}
+
+// Extend existing Supplier interface
+export interface SupplierWithLine extends Supplier {
+  line_user_id?: string;
+}

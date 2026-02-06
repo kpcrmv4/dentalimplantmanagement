@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Noto_Sans_Thai } from "next/font/google";
 import "./globals.css";
 import { ToasterProvider } from "@/components/providers/ToasterProvider";
+import { ServiceWorkerProvider } from "@/components/providers/ServiceWorkerProvider";
 
 const notoSansThai = Noto_Sans_Thai({
   weight: ['300', '400', '500', '600', '700'],
@@ -12,15 +13,27 @@ const notoSansThai = Noto_Sans_Thai({
 export const metadata: Metadata = {
   title: "DentalStock Management System",
   description: "ระบบจัดการสต็อกวัสดุและรากเทียมสำหรับคลินิกทันตกรรม",
+  manifest: '/manifest.json',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/icons/icon.svg',
+    apple: '/icons/icon-192x192.png',
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'DentalStock',
+  },
+  formatDetection: {
+    telephone: false,
   },
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  maximumScale: 1,
   viewportFit: 'cover',
+  themeColor: '#3b82f6',
 };
 
 export default function RootLayout({
@@ -33,6 +46,7 @@ export default function RootLayout({
       <body className={`${notoSansThai.variable} font-sans antialiased`}>
         {children}
         <ToasterProvider />
+        <ServiceWorkerProvider />
       </body>
     </html>
   );
