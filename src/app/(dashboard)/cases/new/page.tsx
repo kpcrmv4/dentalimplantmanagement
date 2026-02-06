@@ -6,19 +6,10 @@ import Link from 'next/link';
 import { ArrowLeft, Save, Calendar, Clock, User, Stethoscope, UserPlus } from 'lucide-react';
 import { Header } from '@/components/layout';
 import { Button, Card, CardHeader, CardTitle, CardContent, Input, Select, Modal, ModalFooter } from '@/components/ui';
-import { usePatients, useUsers } from '@/hooks/useApi';
+import { usePatients, useUsers, useProcedureTypes } from '@/hooks/useApi';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 import type { CreateCaseInput, CreatePatientInput } from '@/types/database';
-
-const procedureTypes = [
-  { value: 'single_implant', label: 'Single Implant' },
-  { value: 'multiple_implants', label: 'Multiple Implants' },
-  { value: 'full_arch', label: 'Full Arch Implant' },
-  { value: 'bone_graft', label: 'Bone Graft' },
-  { value: 'sinus_lift', label: 'Sinus Lift' },
-  { value: 'implant_with_bone_graft', label: 'Implant with Bone Graft' },
-];
 
 const toothPositions = [
   '11', '12', '13', '14', '15', '16', '17', '18',
@@ -67,6 +58,12 @@ export default function NewCasePage() {
   const { data: patients, mutate: mutatePatients } = usePatients(patientSearch);
   const { data: dentists } = useUsers('dentist');
   const { data: assistants } = useUsers('assistant');
+  const { data: procedureTypesData } = useProcedureTypes();
+
+  const procedureTypeOptions = [
+    { value: '', label: 'เลือกประเภท' },
+    ...(procedureTypesData || []).map((pt) => ({ value: pt.value, label: pt.name })),
+  ];
 
   const patientOptions = [
     { value: '', label: 'เลือกคนไข้' },
@@ -329,10 +326,7 @@ export default function NewCasePage() {
                   </div>
                   <Select
                     label="ประเภทการรักษา"
-                    options={[
-                      { value: '', label: 'เลือกประเภท' },
-                      ...procedureTypes,
-                    ]}
+                    options={procedureTypeOptions}
                     value={formData.procedure_type || ''}
                     onChange={(e) =>
                       setFormData({ ...formData, procedure_type: e.target.value })

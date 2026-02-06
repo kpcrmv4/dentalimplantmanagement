@@ -25,6 +25,8 @@ import type {
   DentistCaseItem,
   AssistantCaseItem,
   AssistantReservationItem,
+  ProcedureType,
+  MaterialTemplate,
 } from '@/types/database';
 
 // Generic fetcher for Supabase
@@ -381,6 +383,78 @@ export function useCategories() {
     if (error) throw error;
     return data || [];
   });
+}
+
+// Procedure Types hooks
+export function useProcedureTypes() {
+  return useSWR<ProcedureType[]>('procedure_types_active', async () => {
+    const { data, error } = await supabase
+      .from('procedure_types')
+      .select('*')
+      .eq('is_active', true)
+      .order('sort_order');
+    if (error) throw error;
+    return data || [];
+  });
+}
+
+export function useProcedureTypesAll() {
+  return useSWR<ProcedureType[]>('procedure_types_all', async () => {
+    const { data, error } = await supabase
+      .from('procedure_types')
+      .select('*')
+      .order('sort_order');
+    if (error) throw error;
+    return data || [];
+  });
+}
+
+// Material Templates hooks
+export function useMaterialTemplates(procedureTypeId?: string) {
+  return useSWR<MaterialTemplate[]>(
+    procedureTypeId ? `material_templates:${procedureTypeId}` : null,
+    async () => {
+      const { data, error } = await supabase
+        .from('material_templates')
+        .select(`
+          *,
+          items:material_template_items(
+            *,
+            product:products(id, name, sku, ref_number, brand, is_implant, specifications, min_stock_level)
+          )
+        `)
+        .eq('procedure_type_id', procedureTypeId!)
+        .eq('is_active', true)
+        .order('sort_order');
+      if (error) throw error;
+      return data || [];
+    }
+  );
+}
+
+export function useMaterialTemplatesAll(procedureTypeId?: string) {
+  return useSWR<MaterialTemplate[]>(
+    procedureTypeId ? `material_templates_all:${procedureTypeId}` : 'material_templates_all',
+    async () => {
+      let query = supabase
+        .from('material_templates')
+        .select(`
+          *,
+          procedure_type:procedure_types(id, name, value),
+          items:material_template_items(
+            *,
+            product:products(id, name, sku, ref_number, brand)
+          )
+        `)
+        .order('sort_order');
+      if (procedureTypeId) {
+        query = query.eq('procedure_type_id', procedureTypeId);
+      }
+      const { data, error } = await query;
+      if (error) throw error;
+      return data || [];
+    }
+  );
 }
 
 // Exchanges hooks

@@ -16,6 +16,9 @@ import {
   Info,
   ShoppingCart,
   X,
+  FileText,
+  Sparkles,
+  Loader2,
 } from 'lucide-react';
 import { Header } from '@/components/layout';
 import {
@@ -35,7 +38,8 @@ import { useAuthStore } from '@/stores/authStore';
 import { supabase } from '@/lib/supabase';
 import { formatDate, daysUntil, cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
-import type { ProductSearchResult, InventorySearchItem, ProductSpecifications } from '@/types/database';
+import type { ProductSearchResult, InventorySearchItem, ProductSpecifications, MaterialTemplate, MaterialTemplateItem } from '@/types/database';
+import { triggerOutOfStock } from '@/lib/notification-triggers';
 
 interface CartItem {
   id: string; // unique cart item id
@@ -55,6 +59,16 @@ interface CartItem {
   specifications?: ProductSpecifications;
 }
 
+interface TemplateWithScore {
+  template: MaterialTemplate;
+  score: number;
+  inStockCount: number;
+  totalCount: number;
+  allInStock: boolean;
+  cartItems: CartItem[];
+  oosItems: CartItem[];
+}
+
 export default function NewReservationPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -71,6 +85,13 @@ export default function NewReservationPage() {
   const [outOfStockRef, setOutOfStockRef] = useState('');
   const [outOfStockLot, setOutOfStockLot] = useState('');
   const [outOfStockQty, setOutOfStockQty] = useState(1);
+
+  // Template recommendation state
+  const [scoredTemplates, setScoredTemplates] = useState<TemplateWithScore[]>([]);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
+  const [showTemplatePanel, setShowTemplatePanel] = useState(false);
+  const [showOosConfirmModal, setShowOosConfirmModal] = useState(false);
+  const [pendingTemplateLoad, setPendingTemplateLoad] = useState<TemplateWithScore | null>(null);
 
   const { data: cases } = useCases();
   const { data: searchResults, isLoading: isSearching } = useProductSearch(searchTerm);
@@ -106,6 +127,188 @@ export default function NewReservationPage() {
     if (!selectedCase) return null;
     return daysUntil(selectedCase.surgery_date);
   }, [selectedCase]);
+
+  // Fetch and score templates when case is selected
+  useEffect(() => {
+    if (!selectedCase?.procedure_type) {
+      setScoredTemplates([]);
+      setShowTemplatePanel(false);
+      return;
+    }
+
+    const fetchTemplates = async () => {
+      setLoadingTemplates(true);
+      try {
+        // 1. Find procedure_type id by value
+        const { data: ptData } = await supabase
+          .from('procedure_types')
+          .select('id')
+          .eq('value', selectedCase.procedure_type!)
+          .eq('is_active', true)
+          .single();
+
+        if (!ptData) {
+          setScoredTemplates([]);
+          setShowTemplatePanel(false);
+          return;
+        }
+
+        // 2. Fetch templates with items and products
+        const { data: templates } = await supabase
+          .from('material_templates')
+          .select(`
+            *,
+            items:material_template_items(
+              *,
+              product:products(id, name, sku, ref_number, brand, is_implant, specifications)
+            )
+          `)
+          .eq('procedure_type_id', ptData.id)
+          .eq('is_active', true)
+          .order('sort_order');
+
+        if (!templates || templates.length === 0) {
+          setScoredTemplates([]);
+          setShowTemplatePanel(false);
+          return;
+        }
+
+        // 3. Score each template
+        const scored: TemplateWithScore[] = [];
+
+        for (const template of templates) {
+          const items = (template.items || []) as (MaterialTemplateItem & { product: any })[];
+          let score = 0;
+          let inStockCount = 0;
+          const cartItems: CartItem[] = [];
+          const oosItems: CartItem[] = [];
+
+          for (const item of items) {
+            if (!item.product) continue;
+
+            // Fetch inventory for this product
+            const { data: inventory } = await supabase
+              .from('inventory')
+              .select('id, lot_number, expiry_date, available_quantity')
+              .eq('product_id', item.product_id)
+              .gt('available_quantity', 0)
+              .order('expiry_date', { ascending: true, nullsFirst: false });
+
+            if (inventory && inventory.length > 0) {
+              // Pick best LOT: nearest expiry with enough qty, fallback to most stock
+              let bestLot = inventory[0]; // FEFO first
+
+              // If FEFO lot doesn't have enough, try most stock
+              if (bestLot.available_quantity < item.quantity) {
+                const mostStock = [...inventory].sort((a, b) => b.available_quantity - a.available_quantity)[0];
+                if (mostStock.available_quantity >= item.quantity) {
+                  bestLot = mostStock;
+                }
+              }
+
+              const daysUntilExp = bestLot.expiry_date
+                ? Math.ceil((new Date(bestLot.expiry_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                : null;
+
+              inStockCount++;
+              score += 100; // In stock
+              if (daysUntilExp !== null && daysUntilExp <= 90) score += 50; // Expiring soon bonus
+              if (bestLot.available_quantity >= item.quantity * 2) score += 25; // Plenty of stock
+
+              cartItems.push({
+                id: `${item.product_id}-${bestLot.id}`,
+                product_id: item.product_id,
+                product_name: item.product.name,
+                product_sku: item.product.sku,
+                ref_number: item.product.ref_number,
+                inventory_id: bestLot.id,
+                lot_number: bestLot.lot_number,
+                expiry_date: bestLot.expiry_date,
+                quantity: item.quantity,
+                available: bestLot.available_quantity,
+                is_out_of_stock: false,
+                specifications: item.product.specifications,
+              });
+            } else {
+              // Out of stock
+              const oosItem: CartItem = {
+                id: `oos-${item.product_id}-${Date.now()}-${Math.random()}`,
+                product_id: item.product_id,
+                product_name: item.product.name,
+                product_sku: item.product.sku,
+                ref_number: item.product.ref_number,
+                quantity: item.quantity,
+                is_out_of_stock: true,
+                requested_ref: item.product.ref_number || item.product.sku || '',
+                specifications: item.product.specifications,
+              };
+              oosItems.push(oosItem);
+            }
+          }
+
+          scored.push({
+            template,
+            score,
+            inStockCount,
+            totalCount: items.length,
+            allInStock: oosItems.length === 0,
+            cartItems,
+            oosItems,
+          });
+        }
+
+        // Sort: highest score first
+        scored.sort((a, b) => b.score - a.score);
+        setScoredTemplates(scored);
+        setShowTemplatePanel(scored.length > 0);
+      } catch (error) {
+        console.error('Error fetching templates:', error);
+      } finally {
+        setLoadingTemplates(false);
+      }
+    };
+
+    fetchTemplates();
+  }, [selectedCase?.procedure_type, selectedCase?.id]);
+
+  // Load template into cart
+  const handleSelectTemplate = (scored: TemplateWithScore) => {
+    if (cart.length > 0) {
+      if (!confirm('ต้องการเปลี่ยนรายการในตะกร้า? รายการเดิมจะถูกลบ')) return;
+    }
+
+    if (scored.oosItems.length > 0) {
+      // Has OOS items - show confirmation
+      setPendingTemplateLoad(scored);
+      setShowOosConfirmModal(true);
+    } else {
+      // All in stock - load directly
+      setCart(scored.cartItems);
+      toast.success(`โหลดเทมเพลท "${scored.template.name}" เรียบร้อย (${scored.cartItems.length} รายการ)`);
+    }
+  };
+
+  const confirmTemplateWithOos = () => {
+    if (!pendingTemplateLoad) return;
+    // Load both in-stock and OOS items
+    setCart([...pendingTemplateLoad.cartItems, ...pendingTemplateLoad.oosItems]);
+    toast.success(
+      `โหลดเทมเพลท "${pendingTemplateLoad.template.name}" เรียบร้อย (${pendingTemplateLoad.cartItems.length} ในสต็อก, ${pendingTemplateLoad.oosItems.length} ไม่มีในสต็อก)`
+    );
+    setShowOosConfirmModal(false);
+    setPendingTemplateLoad(null);
+  };
+
+  const confirmTemplateWithoutOos = () => {
+    if (!pendingTemplateLoad) return;
+    // Load only in-stock items
+    setCart(pendingTemplateLoad.cartItems);
+    toast.success(
+      `โหลดเทมเพลท "${pendingTemplateLoad.template.name}" เรียบร้อย (เฉพาะรายการที่มีในสต็อก ${pendingTemplateLoad.cartItems.length} รายการ)`
+    );
+    setShowOosConfirmModal(false);
+    setPendingTemplateLoad(null);
+  };
 
   const handleAddToCart = (product: ProductSearchResult, inventoryItem: InventorySearchItem) => {
     const existingIndex = cart.findIndex(
@@ -253,6 +456,24 @@ export default function NewReservationPage() {
         .update({ status: newStatus })
         .eq('id', selectedCaseId);
 
+      // Send out-of-stock notifications to stock staff
+      if (hasOutOfStock && selectedCase) {
+        const oosItems = cart.filter((item) => item.is_out_of_stock);
+        for (const item of oosItems) {
+          try {
+            await triggerOutOfStock({
+              reservationId: selectedCaseId,
+              caseNumber: selectedCase.case_number,
+              productName: item.product_name,
+              quantity: item.quantity,
+              surgeryDate: selectedCase.surgery_date,
+            });
+          } catch (notifError) {
+            console.error('Error sending OOS notification:', notifError);
+          }
+        }
+      }
+
       toast.success('จองวัสดุเรียบร้อยแล้ว');
       router.push(`/cases/${selectedCaseId}`);
     } catch (error) {
@@ -355,6 +576,75 @@ export default function NewReservationPage() {
                   )}
                 </CardContent>
               </Card>
+
+              {/* Template Recommendations */}
+              {showTemplatePanel && selectedCase && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-purple-600" />
+                      เทมเพลทวัสดุแนะนำ
+                      <Badge variant="info" size="sm">
+                        {selectedCase.procedure_type}
+                      </Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {loadingTemplates ? (
+                      <div className="flex items-center justify-center py-8">
+                        <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
+                        <span className="ml-2 text-gray-500">กำลังโหลดเทมเพลท...</span>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {scoredTemplates.map((scored, idx) => (
+                          <div
+                            key={scored.template.id}
+                            className={cn(
+                              'p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md',
+                              scored.allInStock
+                                ? 'border-green-200 bg-green-50 hover:border-green-400'
+                                : 'border-orange-200 bg-orange-50 hover:border-orange-400'
+                            )}
+                            onClick={() => handleSelectTemplate(scored)}
+                          >
+                            <div className="flex items-start justify-between mb-2">
+                              <h4 className="font-medium text-gray-900">{scored.template.name}</h4>
+                              {idx === 0 && (
+                                <Badge variant="info" size="sm">แนะนำ</Badge>
+                              )}
+                            </div>
+                            {scored.template.description && (
+                              <p className="text-xs text-gray-500 mb-2">{scored.template.description}</p>
+                            )}
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                {scored.allInStock ? (
+                                  <Badge variant="success" size="sm">
+                                    <CheckCircle className="w-3 h-3 mr-1 inline" />
+                                    มีของครบ {scored.inStockCount}/{scored.totalCount}
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="warning" size="sm">
+                                    <AlertTriangle className="w-3 h-3 mr-1 inline" />
+                                    มี {scored.inStockCount}/{scored.totalCount}
+                                  </Badge>
+                                )}
+                              </div>
+                              <Button size="sm" variant="outline">
+                                เลือก
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <p className="text-xs text-gray-400 mt-3">
+                      คลิกเลือกเทมเพลทเพื่อโหลดรายการวัสดุเข้าตะกร้า สามารถแก้ไขได้ก่อนยืนยัน
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Product Search - Shopping Style */}
               <Card>
@@ -772,6 +1062,67 @@ export default function NewReservationPage() {
         <ModalFooter>
           <Button variant="outline" onClick={() => setShowProductDetail(null)}>
             ปิด
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      {/* Template OOS Confirmation Modal */}
+      <Modal
+        isOpen={showOosConfirmModal}
+        onClose={() => { setShowOosConfirmModal(false); setPendingTemplateLoad(null); }}
+        title="วัสดุบางรายการไม่มีในสต็อก"
+      >
+        {pendingTemplateLoad && (
+          <div className="space-y-4">
+            <div className="p-4 bg-yellow-50 rounded-lg">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-medium text-yellow-800">
+                    เทมเพลท &quot;{pendingTemplateLoad.template.name}&quot; มีวัสดุบางรายการไม่มีในสต็อก
+                  </p>
+                  <p className="text-yellow-700 mt-1">
+                    ระบบจะแจ้งเตือนเจ้าหน้าที่สต็อกให้จัดหาสินค้า
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <p className="font-medium text-gray-900 text-sm">รายการที่ไม่มีในสต็อก:</p>
+              {pendingTemplateLoad.oosItems.map((item) => (
+                <div key={item.id} className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
+                  <div>
+                    <p className="font-medium text-sm text-gray-900">{item.product_name}</p>
+                    <p className="text-xs text-gray-500">REF: {item.requested_ref || item.ref_number}</p>
+                  </div>
+                  <span className="text-sm text-red-600 font-medium">x {item.quantity}</span>
+                </div>
+              ))}
+            </div>
+
+            {pendingTemplateLoad.cartItems.length > 0 && (
+              <div className="text-sm text-gray-500">
+                <p>รายการที่มีในสต็อก: {pendingTemplateLoad.cartItems.length} รายการ</p>
+              </div>
+            )}
+          </div>
+        )}
+        <ModalFooter>
+          <Button
+            variant="outline"
+            onClick={() => { setShowOosConfirmModal(false); setPendingTemplateLoad(null); }}
+          >
+            ยกเลิก
+          </Button>
+          <Button
+            variant="outline"
+            onClick={confirmTemplateWithoutOos}
+          >
+            เฉพาะที่มีในสต็อก
+          </Button>
+          <Button onClick={confirmTemplateWithOos}>
+            จองทั้งหมด (รวม OOS)
           </Button>
         </ModalFooter>
       </Modal>

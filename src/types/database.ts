@@ -314,6 +314,47 @@ export interface Setting {
   updated_at: string;
 }
 
+// =====================================================
+// Procedure Type & Material Template Types
+// =====================================================
+
+export interface ProcedureType {
+  id: string;
+  name: string;
+  value: string;
+  description?: string;
+  is_active: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MaterialTemplate {
+  id: string;
+  procedure_type_id: string;
+  name: string;
+  description?: string;
+  is_active: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+  // Relations
+  procedure_type?: ProcedureType;
+  items?: MaterialTemplateItem[];
+}
+
+export interface MaterialTemplateItem {
+  id: string;
+  template_id: string;
+  product_id: string;
+  quantity: number;
+  sort_order: number;
+  notes?: string;
+  created_at: string;
+  // Relations
+  product?: Product;
+}
+
 // Urgent Case Alert
 export interface UrgentCaseAlert {
   id: string;
