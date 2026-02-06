@@ -12,6 +12,12 @@ import {
   Link2Off,
   Copy,
   ArrowLeft,
+  Download,
+  Smartphone,
+  Monitor,
+  Share,
+  MoreVertical,
+  PlusSquare,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Header } from '@/components/layout';
@@ -25,6 +31,7 @@ import {
   Badge,
   ConfirmModal,
 } from '@/components/ui';
+import { PushSettings } from '@/components/settings/PushSettings';
 import { useAuthStore } from '@/stores/authStore';
 import { getRoleText } from '@/lib/utils';
 import type { User as UserType } from '@/types/database';
@@ -333,6 +340,144 @@ function LineConnectionSection({ user, setUser }: { user: UserType; setUser: (u:
   );
 }
 
+// --- Section 4: PWA Installation Guide ---
+function PWAInstallGuideSection() {
+  const [showAndroid, setShowAndroid] = useState(true);
+  const [showIOS, setShowIOS] = useState(true);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Download className="w-5 h-5" />
+          ติดตั้งแอปบนมือถือ (PWA)
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <p className="text-sm text-gray-600">
+          ติดตั้งแอปบนหน้าจอมือถือเพื่อเข้าใช้งานได้รวดเร็วขึ้น รองรับการแจ้งเตือนแบบ Push
+          และใช้งานได้แม้ไม่มีอินเทอร์เน็ต (บางฟีเจอร์)
+        </p>
+
+        {/* Android */}
+        <div className="border border-gray-200 rounded-lg overflow-hidden">
+          <button
+            onClick={() => setShowAndroid(!showAndroid)}
+            className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                <Smartphone className="w-4 h-4 text-green-600" />
+              </div>
+              <span className="font-medium text-gray-900">Android (Chrome)</span>
+            </div>
+            <ChevronIcon isOpen={showAndroid} />
+          </button>
+          {showAndroid && (
+            <div className="p-4 space-y-3">
+              <ol className="space-y-3 text-sm text-gray-700">
+                <li className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                  <span>เปิดเว็บไซต์นี้ด้วย <strong>Google Chrome</strong></span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                  <span>กดปุ่ม <strong>เมนู</strong> (จุด 3 จุดมุมขวาบน) <MoreVertical className="inline w-4 h-4 text-gray-500" /></span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                  <span>เลือก <strong>&quot;เพิ่มไปยังหน้าจอหลัก&quot;</strong> หรือ <strong>&quot;Install app&quot;</strong></span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">4</span>
+                  <span>กด <strong>&quot;ติดตั้ง&quot;</strong> หรือ <strong>&quot;Install&quot;</strong> เพื่อยืนยัน</span>
+                </li>
+              </ol>
+              <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-200">
+                <p className="text-xs text-green-700">
+                  💡 หลังติดตั้ง ไอคอนแอปจะปรากฏบนหน้าจอมือถือ สามารถเปิดใช้งานได้เหมือนแอปทั่วไป
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* iOS */}
+        <div className="border border-gray-200 rounded-lg overflow-hidden">
+          <button
+            onClick={() => setShowIOS(!showIOS)}
+            className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Monitor className="w-4 h-4 text-blue-600" />
+              </div>
+              <span className="font-medium text-gray-900">iPhone / iPad (Safari)</span>
+            </div>
+            <ChevronIcon isOpen={showIOS} />
+          </button>
+          {showIOS && (
+            <div className="p-4 space-y-3">
+              <ol className="space-y-3 text-sm text-gray-700">
+                <li className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                  <span>เปิดเว็บไซต์นี้ด้วย <strong>Safari</strong> (ต้องเป็น Safari เท่านั้น)</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                  <span>กดปุ่ม <strong>แชร์</strong> (ไอคอนสี่เหลี่ยมมีลูกศรชี้ขึ้น) <Share className="inline w-4 h-4 text-gray-500" /> ที่แถบด้านล่าง</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                  <span>เลื่อนลงแล้วเลือก <strong>&quot;เพิ่มไปยังหน้าจอหลัก&quot;</strong> <PlusSquare className="inline w-4 h-4 text-gray-500" /></span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">4</span>
+                  <span>กด <strong>&quot;เพิ่ม&quot;</strong> ที่มุมขวาบนเพื่อยืนยัน</span>
+                </li>
+              </ol>
+              <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="text-xs text-blue-700">
+                  ⚠️ iOS รองรับ Push Notification ตั้งแต่ iOS 16.4 ขึ้นไป — ต้องติดตั้งแอปผ่าน Safari ก่อนจึงจะรับ Push ได้
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Desktop */}
+        <div className="border border-gray-200 rounded-lg overflow-hidden">
+          <div className="p-4 bg-gray-50">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                <Monitor className="w-4 h-4 text-purple-600" />
+              </div>
+              <div>
+                <span className="font-medium text-gray-900">คอมพิวเตอร์ (Chrome / Edge)</span>
+                <p className="text-xs text-gray-500 mt-0.5">กดไอคอนติดตั้ง <Download className="inline w-3 h-3" /> ใน Address Bar หรือเลือก &quot;Install app&quot; จากเมนู</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ChevronIcon({ isOpen }: { isOpen: boolean }) {
+  return (
+    <svg
+      className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+    </svg>
+  );
+}
+
 // --- Main Profile Page ---
 export default function ProfilePage() {
   const router = useRouter();
@@ -356,6 +501,8 @@ export default function ProfilePage() {
         <PersonalInfoSection user={user} setUser={setUser} />
         <ChangePasswordSection />
         <LineConnectionSection user={user} setUser={setUser} />
+        <PushSettings userId={user.id} />
+        <PWAInstallGuideSection />
       </div>
     </div>
   );
