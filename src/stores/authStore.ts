@@ -30,17 +30,17 @@ export const useAuthStore = create<AuthState>()(
     {
       name: `auth-storage:v${STORE_VERSION}`,
       version: STORE_VERSION,
-      partialize: (state) => ({
+      partialize: (state): { user: User | null; isAuthenticated: boolean } => ({
         // Store only the fields UI needs — no tokens, no internal flags
         user: state.user
-          ? {
+          ? ({
               id: state.user.id,
               email: state.user.email,
               full_name: state.user.full_name,
               role: state.user.role,
               is_active: state.user.is_active,
               line_user_id: state.user.line_user_id,
-            }
+            } as User)
           : null,
         isAuthenticated: state.isAuthenticated,
       }),
