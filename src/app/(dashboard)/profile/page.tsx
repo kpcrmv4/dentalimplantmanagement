@@ -18,6 +18,9 @@ import {
   Share,
   MoreVertical,
   PlusSquare,
+  Bell,
+  Shield,
+  Wifi,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Header } from '@/components/layout';
@@ -37,7 +40,9 @@ import { getRoleText } from '@/lib/utils';
 import type { User as UserType } from '@/types/database';
 import toast from 'react-hot-toast';
 
-// --- Section 1: Personal Info ---
+// =============================================
+// Section 1: Personal Info
+// =============================================
 function PersonalInfoSection({ user, setUser }: { user: UserType; setUser: (u: UserType) => void }) {
   const [fullName, setFullName] = useState(user.full_name || '');
   const [isSaving, setIsSaving] = useState(false);
@@ -72,32 +77,70 @@ function PersonalInfoSection({ user, setUser }: { user: UserType; setUser: (u: U
     }
   };
 
+  const roleColor = {
+    admin: 'bg-purple-100 text-purple-700',
+    dentist: 'bg-blue-100 text-blue-700',
+    assistant: 'bg-teal-100 text-teal-700',
+    cs: 'bg-orange-100 text-orange-700',
+    stock_staff: 'bg-emerald-100 text-emerald-700',
+  }[user.role] || 'bg-gray-100 text-gray-700';
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <User className="w-5 h-5" />
-          ข้อมูลส่วนตัว
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <Input label="ชื่อ-นามสกุล" value={fullName} onChange={(e) => setFullName(e.target.value)} />
-        <Input label="อีเมล" value={user.email || ''} disabled helperText="ไม่สามารถเปลี่ยนอีเมลได้" />
-        <Input label="บทบาท" value={getRoleText(user.role)} disabled />
-        <Button onClick={handleSave} isLoading={isSaving} leftIcon={<Save className="w-4 h-4" />}>
-          บันทึก
-        </Button>
-      </CardContent>
-    </Card>
+    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 p-5 sm:p-6 text-white">
+      {/* Background decoration */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+      <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+
+      <div className="relative space-y-4">
+        {/* Avatar + Role */}
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-bold">
+            {user.full_name?.charAt(0)?.toUpperCase() || 'U'}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="text-lg sm:text-xl font-bold truncate">{user.full_name || 'ผู้ใช้งาน'}</h2>
+            <p className="text-sm text-blue-200 truncate">{user.email}</p>
+            <span className={`inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${roleColor}`}>
+              {getRoleText(user.role)}
+            </span>
+          </div>
+        </div>
+
+        {/* Edit name */}
+        <div className="space-y-2">
+          <label className="text-sm text-blue-200">ชื่อ-นามสกุล</label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="flex-1 px-3 py-2 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 text-white placeholder-blue-300 text-sm focus:outline-none focus:ring-2 focus:ring-white/30"
+              placeholder="กรอกชื่อ-นามสกุล"
+            />
+            <Button
+              onClick={handleSave}
+              isLoading={isSaving}
+              className="!bg-white/20 hover:!bg-white/30 !border-white/20 !text-white rounded-xl"
+              size="sm"
+            >
+              <Save className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
-// --- Section 2: Change Password ---
+// =============================================
+// Section 2: Change Password
+// =============================================
 function ChangePasswordSection() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isChanging, setIsChanging] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const handleChange = async () => {
     if (!currentPassword || !newPassword) {
@@ -127,6 +170,7 @@ function ChangePasswordSection() {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
+      setIsExpanded(false);
     } catch (error: any) {
       toast.error(error.message || 'เกิดข้อผิดพลาด');
     } finally {
@@ -135,37 +179,51 @@ function ChangePasswordSection() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Key className="w-5 h-5" />
-          เปลี่ยนรหัสผ่าน
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <Input label="รหัสผ่านปัจจุบัน" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
-        <Input label="รหัสผ่านใหม่" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} helperText="ขั้นต่ำ 6 ตัวอักษร" />
-        <Input
-          label="ยืนยันรหัสผ่านใหม่"
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          error={confirmPassword && newPassword !== confirmPassword ? 'รหัสผ่านไม่ตรงกัน' : ''}
-        />
-        <Button
-          onClick={handleChange}
-          isLoading={isChanging}
-          disabled={!currentPassword || !newPassword || newPassword !== confirmPassword || newPassword.length < 6}
-          leftIcon={<Key className="w-4 h-4" />}
-        >
-          เปลี่ยนรหัสผ่าน
-        </Button>
-      </CardContent>
-    </Card>
+    <div className="rounded-2xl border border-gray-200 bg-white overflow-hidden">
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
+            <Shield className="w-5 h-5 text-amber-600" />
+          </div>
+          <div className="text-left">
+            <p className="font-semibold text-gray-900">เปลี่ยนรหัสผ่าน</p>
+            <p className="text-xs text-gray-500">เปลี่ยนรหัสผ่านเพื่อความปลอดภัย</p>
+          </div>
+        </div>
+        <ChevronIcon isOpen={isExpanded} />
+      </button>
+      {isExpanded && (
+        <div className="px-4 pb-4 space-y-3 border-t border-gray-100 pt-4">
+          <Input label="รหัสผ่านปัจจุบัน" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
+          <Input label="รหัสผ่านใหม่" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} helperText="ขั้นต่ำ 6 ตัวอักษร" />
+          <Input
+            label="ยืนยันรหัสผ่านใหม่"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            error={confirmPassword && newPassword !== confirmPassword ? 'รหัสผ่านไม่ตรงกัน' : ''}
+          />
+          <Button
+            onClick={handleChange}
+            isLoading={isChanging}
+            disabled={!currentPassword || !newPassword || newPassword !== confirmPassword || newPassword.length < 6}
+            leftIcon={<Key className="w-4 h-4" />}
+            className="w-full"
+          >
+            เปลี่ยนรหัสผ่าน
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }
 
-// --- Section 3: LINE Connection ---
+// =============================================
+// Section 3: LINE Connection
+// =============================================
 function LineConnectionSection({ user, setUser }: { user: UserType; setUser: (u: UserType) => void }) {
   const [lineConnected, setLineConnected] = useState(false);
   const [lineUserId, setLineUserId] = useState<string | null>(null);
@@ -245,47 +303,84 @@ function LineConnectionSection({ user, setUser }: { user: UserType; setUser: (u:
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MessageSquare className="w-5 h-5" />
-            เชื่อมต่อ LINE
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="rounded-2xl border border-gray-200 bg-white overflow-hidden">
+        {/* Header with LINE green accent */}
+        <div className="bg-gradient-to-r from-green-500 to-green-600 px-4 py-3 flex items-center gap-3">
+          <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+            <MessageSquare className="w-4 h-4 text-white" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-white text-sm">LINE Notify</h3>
+            <p className="text-xs text-green-100">เชื่อมต่อเพื่อรับแจ้งเตือนผ่าน LINE</p>
+          </div>
+          {lineConnected && (
+            <Badge variant="success" size="sm" className="ml-auto !bg-white/20 !text-white !border-white/30">
+              เชื่อมต่อแล้ว
+            </Badge>
+          )}
+        </div>
+
+        <div className="p-4">
           {lineConnected ? (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 p-3 bg-green-50 rounded-xl border border-green-100">
                 <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
-                <div>
-                  <p className="font-medium text-green-800">เชื่อมต่อแล้ว</p>
-                  <p className="text-sm text-green-600 font-mono">{lineUserId}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-green-800">เชื่อมต่อสำเร็จ</p>
+                  <p className="text-xs text-green-600 font-mono truncate">{lineUserId}</p>
                 </div>
-                <Badge variant="success" size="sm" className="ml-auto">Active</Badge>
               </div>
-              <p className="text-sm text-gray-500">
-                คุณจะได้รับการแจ้งเตือนผ่าน LINE เมื่อมีเหตุการณ์สำคัญ
-              </p>
+
+              {/* Description of what LINE does */}
+              <div className="p-3 bg-gray-50 rounded-xl space-y-1.5">
+                <p className="text-xs font-medium text-gray-700">การแจ้งเตือนที่จะได้รับผ่าน LINE:</p>
+                <ul className="text-xs text-gray-500 space-y-1">
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1 h-1 bg-green-400 rounded-full flex-shrink-0" />
+                    เคสผ่าตัดที่กำลังจะถึง
+                  </li>
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1 h-1 bg-green-400 rounded-full flex-shrink-0" />
+                    สถานะการเตรียมวัสดุสำหรับเคส
+                  </li>
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1 h-1 bg-green-400 rounded-full flex-shrink-0" />
+                    แจ้งเตือนสต็อกต่ำและสินค้าใกล้หมดอายุ
+                  </li>
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1 h-1 bg-green-400 rounded-full flex-shrink-0" />
+                    สรุปรายวันตามเวลาที่ตั้งค่า
+                  </li>
+                </ul>
+              </div>
+
               <Button
                 variant="outline"
+                size="sm"
                 onClick={() => setShowUnlinkConfirm(true)}
                 isLoading={isUnlinking}
                 leftIcon={<Link2Off className="w-4 h-4" />}
-                className="text-red-600 border-red-300 hover:bg-red-50"
+                className="text-red-600 border-red-200 hover:bg-red-50 w-full"
               >
                 ยกเลิกการเชื่อมต่อ
               </Button>
             </div>
           ) : linkingCode ? (
-            <div className="space-y-4">
-              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 space-y-3">
-                <p className="font-medium text-blue-800">ขั้นตอนการเชื่อมต่อ:</p>
-                <ol className="list-decimal list-inside text-sm text-blue-700 space-y-1.5">
-                  <li>เพิ่มเพื่อน LINE Bot ของคลินิก</li>
-                  <li>ส่งรหัสด้านล่างในแชท LINE Bot</li>
+            <div className="space-y-3">
+              <div className="p-4 bg-green-50 rounded-xl border border-green-100 space-y-3">
+                <p className="text-sm font-medium text-green-800">ขั้นตอนการเชื่อมต่อ:</p>
+                <ol className="space-y-2 text-sm text-green-700">
+                  <li className="flex items-start gap-2">
+                    <span className="flex-shrink-0 w-5 h-5 bg-green-200 text-green-800 rounded-full flex items-center justify-center text-xs font-bold mt-0.5">1</span>
+                    <span>เพิ่มเพื่อน LINE Bot ของคลินิก</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="flex-shrink-0 w-5 h-5 bg-green-200 text-green-800 rounded-full flex items-center justify-center text-xs font-bold mt-0.5">2</span>
+                    <span>ส่งรหัสด้านล่างในแชท LINE Bot</span>
+                  </li>
                 </ol>
-                <div className="flex items-center gap-2 p-3 bg-white rounded-lg border border-blue-200">
-                  <code className="text-lg font-mono font-bold text-blue-900 flex-1 text-center">
+                <div className="flex items-center gap-2 p-3 bg-white rounded-xl border border-green-200">
+                  <code className="text-xl font-mono font-bold text-green-900 flex-1 text-center tracking-widest">
                     {linkingCode}
                   </code>
                   <Button
@@ -299,10 +394,10 @@ function LineConnectionSection({ user, setUser }: { user: UserType; setUser: (u:
                     <Copy className="w-4 h-4" />
                   </Button>
                 </div>
-                <p className="text-xs text-blue-600">รหัสนี้จะหมดอายุใน 15 นาที</p>
+                <p className="text-xs text-green-600 text-center">รหัสนี้จะหมดอายุใน 15 นาที</p>
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" onClick={handleCheckLinkStatus} isLoading={isCheckingLink} leftIcon={<RefreshCw className="w-4 h-4" />}>
+                <Button variant="outline" onClick={handleCheckLinkStatus} isLoading={isCheckingLink} leftIcon={<RefreshCw className="w-4 h-4" />} className="flex-1">
                   ตรวจสอบสถานะ
                 </Button>
                 <Button variant="ghost" onClick={() => setLinkingCode(null)}>
@@ -311,21 +406,36 @@ function LineConnectionSection({ user, setUser }: { user: UserType; setUser: (u:
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <MessageSquare className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                <div>
-                  <p className="text-gray-700 font-medium">ยังไม่ได้เชื่อมต่อ LINE</p>
-                  <p className="text-sm text-gray-500">เชื่อมต่อเพื่อรับการแจ้งเตือนผ่าน LINE</p>
-                </div>
+            <div className="space-y-3">
+              {/* Description of LINE when not connected */}
+              <div className="p-3 bg-gray-50 rounded-xl space-y-1.5">
+                <p className="text-xs font-medium text-gray-700">เชื่อมต่อ LINE เพื่อรับแจ้งเตือนอัตโนมัติ:</p>
+                <ul className="text-xs text-gray-500 space-y-1">
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1 h-1 bg-gray-400 rounded-full flex-shrink-0" />
+                    เคสผ่าตัดที่กำลังจะถึง
+                  </li>
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1 h-1 bg-gray-400 rounded-full flex-shrink-0" />
+                    สถานะการเตรียมวัสดุสำหรับเคส
+                  </li>
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1 h-1 bg-gray-400 rounded-full flex-shrink-0" />
+                    แจ้งเตือนสต็อกต่ำและสินค้าใกล้หมดอายุ
+                  </li>
+                  <li className="flex items-center gap-1.5">
+                    <span className="w-1 h-1 bg-gray-400 rounded-full flex-shrink-0" />
+                    สรุปรายวันตามเวลาที่ตั้งค่า
+                  </li>
+                </ul>
               </div>
-              <Button onClick={handleGenerateLinkCode} isLoading={isGenerating} leftIcon={<Link2 className="w-4 h-4" />}>
+              <Button onClick={handleGenerateLinkCode} isLoading={isGenerating} leftIcon={<Link2 className="w-4 h-4" />} className="w-full !bg-green-600 hover:!bg-green-700 !text-white">
                 เชื่อมต่อ LINE
               </Button>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <ConfirmModal
         isOpen={showUnlinkConfirm}
@@ -340,105 +450,112 @@ function LineConnectionSection({ user, setUser }: { user: UserType; setUser: (u:
   );
 }
 
-// --- Section 4: PWA Installation Guide ---
+// =============================================
+// Section 4: PWA Installation Guide
+// =============================================
 function PWAInstallGuideSection() {
-  const [showAndroid, setShowAndroid] = useState(true);
-  const [showIOS, setShowIOS] = useState(true);
+  const [showAndroid, setShowAndroid] = useState(false);
+  const [showIOS, setShowIOS] = useState(false);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Download className="w-5 h-5" />
-          ติดตั้งแอปบนมือถือ (PWA)
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-sm text-gray-600">
-          ติดตั้งแอปบนหน้าจอมือถือเพื่อเข้าใช้งานได้รวดเร็วขึ้น รองรับการแจ้งเตือนแบบ Push
-          และใช้งานได้แม้ไม่มีอินเทอร์เน็ต (บางฟีเจอร์)
+    <div className="rounded-2xl border border-gray-200 bg-white overflow-hidden">
+      {/* Header with gradient */}
+      <div className="bg-gradient-to-r from-violet-500 to-purple-600 px-4 py-3 flex items-center gap-3">
+        <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+          <Download className="w-4 h-4 text-white" />
+        </div>
+        <div>
+          <h3 className="font-semibold text-white text-sm">ติดตั้งแอป (PWA)</h3>
+          <p className="text-xs text-purple-100">เข้าถึงได้เร็วขึ้นเหมือนแอปมือถือ</p>
+        </div>
+      </div>
+
+      <div className="p-4 space-y-3">
+        <p className="text-xs text-gray-500">
+          ติดตั้งแอปบนหน้าจอเพื่อเข้าใช้งานได้ทันที รองรับ Push Notification และใช้งานออฟไลน์ได้บางส่วน
         </p>
 
         {/* Android */}
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
+        <div className="border border-gray-100 rounded-xl overflow-hidden">
           <button
             onClick={() => setShowAndroid(!showAndroid)}
-            className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
+            className="w-full flex items-center justify-between p-3 hover:bg-gray-50 transition-colors"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+              <div className="w-9 h-9 bg-green-100 rounded-xl flex items-center justify-center">
                 <Smartphone className="w-4 h-4 text-green-600" />
               </div>
-              <span className="font-medium text-gray-900">Android (Chrome)</span>
+              <div className="text-left">
+                <p className="text-sm font-medium text-gray-900">Android</p>
+                <p className="text-xs text-gray-400">Chrome</p>
+              </div>
             </div>
             <ChevronIcon isOpen={showAndroid} />
           </button>
           {showAndroid && (
-            <div className="p-4 space-y-3">
-              <ol className="space-y-3 text-sm text-gray-700">
-                <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">1</span>
-                  <span>เปิดเว็บไซต์นี้ด้วย <strong>Google Chrome</strong></span>
+            <div className="px-3 pb-3 border-t border-gray-50">
+              <ol className="space-y-2.5 text-sm text-gray-700 pt-3">
+                <li className="flex gap-2.5">
+                  <span className="flex-shrink-0 w-5 h-5 bg-green-100 text-green-700 rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                  <span className="text-xs">เปิดเว็บไซต์นี้ด้วย <strong>Google Chrome</strong></span>
                 </li>
-                <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">2</span>
-                  <span>กดปุ่ม <strong>เมนู</strong> (จุด 3 จุดมุมขวาบน) <MoreVertical className="inline w-4 h-4 text-gray-500" /></span>
+                <li className="flex gap-2.5">
+                  <span className="flex-shrink-0 w-5 h-5 bg-green-100 text-green-700 rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                  <span className="text-xs">กดปุ่ม <strong>เมนู</strong> <MoreVertical className="inline w-3.5 h-3.5 text-gray-400" /> มุมขวาบน</span>
                 </li>
-                <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">3</span>
-                  <span>เลือก <strong>&quot;เพิ่มไปยังหน้าจอหลัก&quot;</strong> หรือ <strong>&quot;Install app&quot;</strong></span>
+                <li className="flex gap-2.5">
+                  <span className="flex-shrink-0 w-5 h-5 bg-green-100 text-green-700 rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                  <span className="text-xs">เลือก <strong>&quot;เพิ่มไปยังหน้าจอหลัก&quot;</strong> หรือ <strong>&quot;Install app&quot;</strong></span>
                 </li>
-                <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">4</span>
-                  <span>กด <strong>&quot;ติดตั้ง&quot;</strong> หรือ <strong>&quot;Install&quot;</strong> เพื่อยืนยัน</span>
+                <li className="flex gap-2.5">
+                  <span className="flex-shrink-0 w-5 h-5 bg-green-100 text-green-700 rounded-full flex items-center justify-center text-xs font-bold">4</span>
+                  <span className="text-xs">กด <strong>&quot;ติดตั้ง&quot;</strong> เพื่อยืนยัน</span>
                 </li>
               </ol>
-              <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                <p className="text-xs text-green-700">
-                  💡 หลังติดตั้ง ไอคอนแอปจะปรากฏบนหน้าจอมือถือ สามารถเปิดใช้งานได้เหมือนแอปทั่วไป
-                </p>
-              </div>
             </div>
           )}
         </div>
 
         {/* iOS */}
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
+        <div className="border border-gray-100 rounded-xl overflow-hidden">
           <button
             onClick={() => setShowIOS(!showIOS)}
-            className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
+            className="w-full flex items-center justify-between p-3 hover:bg-gray-50 transition-colors"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+              <div className="w-9 h-9 bg-blue-100 rounded-xl flex items-center justify-center">
                 <Monitor className="w-4 h-4 text-blue-600" />
               </div>
-              <span className="font-medium text-gray-900">iPhone / iPad (Safari)</span>
+              <div className="text-left">
+                <p className="text-sm font-medium text-gray-900">iPhone / iPad</p>
+                <p className="text-xs text-gray-400">Safari</p>
+              </div>
             </div>
             <ChevronIcon isOpen={showIOS} />
           </button>
           {showIOS && (
-            <div className="p-4 space-y-3">
-              <ol className="space-y-3 text-sm text-gray-700">
-                <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">1</span>
-                  <span>เปิดเว็บไซต์นี้ด้วย <strong>Safari</strong> (ต้องเป็น Safari เท่านั้น)</span>
+            <div className="px-3 pb-3 border-t border-gray-50">
+              <ol className="space-y-2.5 text-sm text-gray-700 pt-3">
+                <li className="flex gap-2.5">
+                  <span className="flex-shrink-0 w-5 h-5 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                  <span className="text-xs">เปิดเว็บไซต์นี้ด้วย <strong>Safari</strong> เท่านั้น</span>
                 </li>
-                <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">2</span>
-                  <span>กดปุ่ม <strong>แชร์</strong> (ไอคอนสี่เหลี่ยมมีลูกศรชี้ขึ้น) <Share className="inline w-4 h-4 text-gray-500" /> ที่แถบด้านล่าง</span>
+                <li className="flex gap-2.5">
+                  <span className="flex-shrink-0 w-5 h-5 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                  <span className="text-xs">กดปุ่ม <strong>แชร์</strong> <Share className="inline w-3.5 h-3.5 text-gray-400" /> ที่แถบด้านล่าง</span>
                 </li>
-                <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">3</span>
-                  <span>เลื่อนลงแล้วเลือก <strong>&quot;เพิ่มไปยังหน้าจอหลัก&quot;</strong> <PlusSquare className="inline w-4 h-4 text-gray-500" /></span>
+                <li className="flex gap-2.5">
+                  <span className="flex-shrink-0 w-5 h-5 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                  <span className="text-xs">เลื่อนลงแล้วเลือก <strong>&quot;เพิ่มไปยังหน้าจอหลัก&quot;</strong> <PlusSquare className="inline w-3.5 h-3.5 text-gray-400" /></span>
                 </li>
-                <li className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">4</span>
-                  <span>กด <strong>&quot;เพิ่ม&quot;</strong> ที่มุมขวาบนเพื่อยืนยัน</span>
+                <li className="flex gap-2.5">
+                  <span className="flex-shrink-0 w-5 h-5 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">4</span>
+                  <span className="text-xs">กด <strong>&quot;เพิ่ม&quot;</strong> ที่มุมขวาบนเพื่อยืนยัน</span>
                 </li>
               </ol>
-              <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <p className="text-xs text-blue-700">
-                  ⚠️ iOS รองรับ Push Notification ตั้งแต่ iOS 16.4 ขึ้นไป — ต้องติดตั้งแอปผ่าน Safari ก่อนจึงจะรับ Push ได้
+              <div className="mt-2.5 p-2.5 bg-blue-50 rounded-lg">
+                <p className="text-xs text-blue-600">
+                  iOS 16.4+ เท่านั้นที่รับ Push Notification ได้ ต้องติดตั้งผ่าน Safari ก่อน
                 </p>
               </div>
             </div>
@@ -446,28 +563,29 @@ function PWAInstallGuideSection() {
         </div>
 
         {/* Desktop */}
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
-          <div className="p-4 bg-gray-50">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Monitor className="w-4 h-4 text-purple-600" />
-              </div>
-              <div>
-                <span className="font-medium text-gray-900">คอมพิวเตอร์ (Chrome / Edge)</span>
-                <p className="text-xs text-gray-500 mt-0.5">กดไอคอนติดตั้ง <Download className="inline w-3 h-3" /> ใน Address Bar หรือเลือก &quot;Install app&quot; จากเมนู</p>
-              </div>
+        <div className="border border-gray-100 rounded-xl p-3">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-purple-100 rounded-xl flex items-center justify-center">
+              <Monitor className="w-4 h-4 text-purple-600" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-900">คอมพิวเตอร์</p>
+              <p className="text-xs text-gray-400">กดไอคอนติดตั้ง <Download className="inline w-3 h-3" /> ใน Address Bar (Chrome / Edge)</p>
             </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
+// =============================================
+// Helper: Chevron Icon
+// =============================================
 function ChevronIcon({ isOpen }: { isOpen: boolean }) {
   return (
     <svg
-      className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+      className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -478,7 +596,21 @@ function ChevronIcon({ isOpen }: { isOpen: boolean }) {
   );
 }
 
-// --- Main Profile Page ---
+// =============================================
+// Section Group Label
+// =============================================
+function SectionLabel({ icon: Icon, label }: { icon: React.ElementType; label: string }) {
+  return (
+    <div className="flex items-center gap-2 pt-2">
+      <Icon className="w-4 h-4 text-gray-400" />
+      <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{label}</h3>
+    </div>
+  );
+}
+
+// =============================================
+// Main Profile Page
+// =============================================
 export default function ProfilePage() {
   const router = useRouter();
   const { user, setUser } = useAuthStore();
@@ -486,7 +618,7 @@ export default function ProfilePage() {
   if (!user) return null;
 
   return (
-    <div>
+    <div className="bg-gray-50 min-h-screen">
       <Header
         title="โปรไฟล์"
         subtitle="จัดการข้อมูลส่วนตัวและการเชื่อมต่อ"
@@ -497,11 +629,21 @@ export default function ProfilePage() {
         }
       />
 
-      <div className="p-4 sm:p-6 lg:p-8 max-w-2xl space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8 max-w-lg mx-auto space-y-4">
+        {/* Profile Hero Card */}
         <PersonalInfoSection user={user} setUser={setUser} />
+
+        {/* Security Group */}
+        <SectionLabel icon={Shield} label="ความปลอดภัย" />
         <ChangePasswordSection />
+
+        {/* Notification Group */}
+        <SectionLabel icon={Bell} label="การแจ้งเตือน" />
         <LineConnectionSection user={user} setUser={setUser} />
         <PushSettings userId={user.id} />
+
+        {/* App Setup Group */}
+        <SectionLabel icon={Wifi} label="ตั้งค่าแอป" />
         <PWAInstallGuideSection />
       </div>
     </div>
