@@ -33,7 +33,6 @@ import {
   formatDate,
   formatTime,
   getCaseStatusText,
-  getReservationStatusText,
 } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import type { ReservationStatus } from '@/types/database';
@@ -62,15 +61,22 @@ export default function CaseDetailPage({ params }: PageProps) {
     }
   }, [searchParams, isDentist, caseData]);
 
-  const getReservationVariant = (status: ReservationStatus) => {
-    const variants: Record<ReservationStatus, 'success' | 'warning' | 'danger' | 'gray' | 'info'> = {
-      pending: 'warning',
-      confirmed: 'info',
-      prepared: 'success',
-      used: 'success',
-      cancelled: 'gray',
+  const getReservationDisplay = (status: ReservationStatus, isOutOfStock: boolean) => {
+    if (isOutOfStock && status === 'pending') {
+      return { variant: 'danger' as const, text: 'รอสั่งซื้อ' };
+    }
+    if (isOutOfStock && status === 'confirmed') {
+      return { variant: 'warning' as const, text: 'กำลังสั่งซื้อ' };
+    }
+
+    const configs: Record<ReservationStatus, { variant: 'success' | 'warning' | 'danger' | 'gray' | 'info'; text: string }> = {
+      pending: { variant: 'warning', text: 'รอดำเนินการ' },
+      confirmed: { variant: 'info', text: 'ยืนยันแล้ว' },
+      prepared: { variant: 'success', text: 'เตรียมของแล้ว' },
+      used: { variant: 'success', text: 'ใช้แล้ว' },
+      cancelled: { variant: 'gray', text: 'ยกเลิก' },
     };
-    return variants[status];
+    return configs[status];
   };
 
   const handleCancelCase = async () => {
@@ -315,53 +321,59 @@ export default function CaseDetailPage({ params }: PageProps) {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {caseData.reservations.map((res) => (
-                            <TableRow key={res.id}>
-                              <TableCell className="font-medium">
-                                {res.product?.sku}
-                              </TableCell>
-                              <TableCell>{res.product?.name}</TableCell>
-                              <TableCell>{res.inventory?.lot_number || '-'}</TableCell>
-                              <TableCell className="text-center">
-                                {res.quantity}
-                              </TableCell>
-                              <TableCell>
-                                <Badge variant={getReservationVariant(res.status)}>
-                                  {getReservationStatusText(res.status)}
-                                </Badge>
-                              </TableCell>
-                            </TableRow>
-                          ))}
+                          {caseData.reservations.map((res) => {
+                            const display = getReservationDisplay(res.status, res.is_out_of_stock);
+                            return (
+                              <TableRow key={res.id}>
+                                <TableCell className="font-medium">
+                                  {res.product?.sku}
+                                </TableCell>
+                                <TableCell>{res.product?.name}</TableCell>
+                                <TableCell>{res.inventory?.lot_number || '-'}</TableCell>
+                                <TableCell className="text-center">
+                                  {res.quantity}
+                                </TableCell>
+                                <TableCell>
+                                  <Badge variant={display.variant}>
+                                    {display.text}
+                                  </Badge>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
                         </TableBody>
                       </Table>
                     </div>
 
                     {/* Mobile: Card-based list */}
                     <div className="sm:hidden space-y-2">
-                      {caseData.reservations.map((res) => (
-                        <div key={res.id} className="border rounded-lg p-3">
-                          <div className="flex items-start justify-between gap-2 mb-1.5">
-                            <p className="font-medium text-sm leading-tight flex-1">{res.product?.name}</p>
-                            <Badge variant={getReservationVariant(res.status)} size="sm">
-                              {getReservationStatusText(res.status)}
-                            </Badge>
+                      {caseData.reservations.map((res) => {
+                        const display = getReservationDisplay(res.status, res.is_out_of_stock);
+                        return (
+                          <div key={res.id} className="border rounded-lg p-3">
+                            <div className="flex items-start justify-between gap-2 mb-1.5">
+                              <p className="font-medium text-sm leading-tight flex-1">{res.product?.name}</p>
+                              <Badge variant={display.variant} size="sm">
+                                {display.text}
+                              </Badge>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2 text-xs text-gray-500">
+                              <div>
+                                <span className="text-gray-400">SKU: </span>
+                                <span className="font-mono">{res.product?.sku || '-'}</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-400">Lot: </span>
+                                <span>{res.inventory?.lot_number || '-'}</span>
+                              </div>
+                              <div className="text-right">
+                                <span className="text-gray-400">จำนวน: </span>
+                                <span className="font-semibold text-gray-700">{res.quantity}</span>
+                              </div>
+                            </div>
                           </div>
-                          <div className="grid grid-cols-3 gap-2 text-xs text-gray-500">
-                            <div>
-                              <span className="text-gray-400">SKU: </span>
-                              <span className="font-mono">{res.product?.sku || '-'}</span>
-                            </div>
-                            <div>
-                              <span className="text-gray-400">Lot: </span>
-                              <span>{res.inventory?.lot_number || '-'}</span>
-                            </div>
-                            <div className="text-right">
-                              <span className="text-gray-400">จำนวน: </span>
-                              <span className="font-semibold text-gray-700">{res.quantity}</span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </>
                 ) : (
