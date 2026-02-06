@@ -340,10 +340,13 @@ export default function SettingsPage() {
       setEditingProcedure(null);
       setProcedureForm({ name: '', value: '', description: '' });
     } catch (error: any) {
+      console.error('Save procedure type error:', error);
       if (error?.code === '23505') {
         toast.error('รหัสนี้มีอยู่แล้ว กรุณาใช้รหัสอื่น');
+      } else if (error?.code === '42P01') {
+        toast.error('ตาราง procedure_types ยังไม่ได้สร้าง กรุณา run migration ก่อน');
       } else {
-        toast.error('เกิดข้อผิดพลาด');
+        toast.error(error?.message || 'เกิดข้อผิดพลาด');
       }
     } finally {
       setIsSubmitting(false);
