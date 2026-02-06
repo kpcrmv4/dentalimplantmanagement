@@ -14,6 +14,9 @@ export async function performLogout(user: { id: string; email: string } | null) 
     }).catch(() => {});
   }
 
-  // Sign out from Supabase
-  await supabase.auth.signOut();
+  // Sign out with timeout — don't hang forever on slow mobile networks
+  await Promise.race([
+    supabase.auth.signOut(),
+    new Promise((resolve) => setTimeout(resolve, 5000)),
+  ]);
 }

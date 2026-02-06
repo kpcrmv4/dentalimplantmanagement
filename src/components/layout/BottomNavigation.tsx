@@ -81,7 +81,7 @@ const roleConfigs: Record<UserRole, RoleConfig> = {
       { id: 'cases', label: 'เคส', icon: FileText, href: '/cases' },
       { id: 'inventory', label: 'สต็อก', icon: Package, href: '/inventory' }, // Center - main action
       { id: 'orders', label: 'สั่งซื้อ', icon: ShoppingCart, href: '/orders' },
-      { id: 'reservations', label: 'จองของ', icon: CalendarCheck, href: '/reservations' },
+      { id: 'reservations', label: 'เตรียมของ', icon: CalendarCheck, href: '/reservations' },
     ],
   },
   assistant: {
@@ -94,7 +94,7 @@ const roleConfigs: Record<UserRole, RoleConfig> = {
       { id: 'cases', label: 'เคส', icon: FileText, href: '/cases' },
       { id: 'patients', label: 'คนไข้', icon: Users, href: '/patients' },
       { id: 'assistant-dashboard', label: 'งานวันนี้', icon: ClipboardList, href: '/assistant-dashboard' }, // Center - main action
-      { id: 'reservations', label: 'จองของ', icon: CalendarCheck, href: '/reservations' },
+      { id: 'reservations', label: 'เตรียมของ', icon: CalendarCheck, href: '/reservations' },
       { id: 'dashboard', label: 'ภาพรวม', icon: LayoutDashboard, href: '/dashboard' },
     ],
   },
@@ -108,7 +108,7 @@ const roleConfigs: Record<UserRole, RoleConfig> = {
       { id: 'cases', label: 'เคส', icon: FileText, href: '/cases' },
       { id: 'patients', label: 'คนไข้', icon: Users, href: '/patients' },
       { id: 'dashboard', label: 'ภาพรวม', icon: LayoutDashboard, href: '/dashboard' }, // Center - main action
-      { id: 'reservations', label: 'จองของ', icon: CalendarCheck, href: '/reservations' },
+      { id: 'reservations', label: 'เตรียมของ', icon: CalendarCheck, href: '/reservations' },
       { id: 'notifications', label: 'แจ้งเตือน', icon: Bell, href: '/notifications' },
     ],
   },

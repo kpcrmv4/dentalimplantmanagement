@@ -11,7 +11,6 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const { setUser, setLoading } = useAuthStore();
 
-  // Deduplicated: single function to fetch user profile by auth user ID
   const fetchUserProfile = useCallback(async (userId: string) => {
     const { data } = await supabase
       .from('users')
@@ -25,7 +24,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const initAuth = async () => {
       setLoading(true);
       try {
-        // Fix #6: Use getUser() instead of getSession() for server validation
         const { data: { user } } = await supabase.auth.getUser();
 
         if (user) {
@@ -37,12 +35,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } catch (error) {
         console.error('Auth init error:', error);
         setUser(null);
+      } finally {
+        setLoading(false);
       }
     };
 
     initAuth();
 
-    // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (event === 'SIGNED_IN' && session?.user) {
@@ -52,7 +51,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
           }
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
-          window.location.href = '/login';
         }
       }
     );
