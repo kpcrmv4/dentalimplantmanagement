@@ -1,7 +1,16 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
-import { Calendar, Package, CheckCircle, AlertCircle, RefreshCw, Plus } from 'lucide-react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
+import {
+  Calendar,
+  Package,
+  CheckCircle,
+  RefreshCw,
+  Clock,
+  ChevronRight,
+  Stethoscope,
+  User,
+} from 'lucide-react';
 import { Header } from '@/components/layout';
 import { Card, Badge, Button } from '@/components/ui';
 import {
@@ -12,14 +21,15 @@ import {
 import { useAssistantTodayCases } from '@/hooks/useApi';
 import { useAuthStore } from '@/stores/authStore';
 import { supabase } from '@/lib/supabase';
-import { formatDate } from '@/lib/utils';
-import type { AssistantCaseItem } from '@/types/database';
+import { formatDate, getCaseStatusText } from '@/lib/utils';
+import type { AssistantCaseItem, CaseStatus } from '@/types/database';
 
 export default function AssistantDashboardPage() {
   const { user } = useAuthStore();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [addMaterialCaseId, setAddMaterialCaseId] = useState<string | null>(null);
   const [closeCaseItem, setCloseCaseItem] = useState<AssistantCaseItem | null>(null);
+  const [expandedCaseId, setExpandedCaseId] = useState<string | null>(null);
 
   const { data: cases, mutate: mutateCases } = useAssistantTodayCases(user?.id || null);
 
@@ -91,7 +101,7 @@ export default function AssistantDashboardPage() {
           product_id: productId,
           inventory_id: inventoryId,
           quantity: quantity,
-          status: 'used', // Directly mark as used since it's an additional material during surgery
+          status: 'used',
           used_quantity: quantity,
           used_at: new Date().toISOString(),
           used_by: user?.id,
@@ -106,7 +116,6 @@ export default function AssistantDashboardPage() {
 
       // If we have inventory, deduct the stock
       if (inventoryId) {
-        // Get current inventory
         const { data: inv, error: invError } = await supabase
           .from('inventory')
           .select('quantity, reserved_quantity, available_quantity')
@@ -115,7 +124,6 @@ export default function AssistantDashboardPage() {
 
         if (invError) throw invError;
 
-        // Update inventory (deduct from available)
         const { error: updateError } = await supabase
           .from('inventory')
           .update({
@@ -126,7 +134,6 @@ export default function AssistantDashboardPage() {
 
         if (updateError) throw updateError;
 
-        // Log stock movement
         await supabase.from('stock_movements').insert({
           inventory_id: inventoryId,
           product_id: productId,
@@ -139,7 +146,6 @@ export default function AssistantDashboardPage() {
         });
       }
 
-      // Log the action
       await supabase.from('audit_logs').insert({
         action: 'MATERIAL_ADDED_DURING_SURGERY',
         entity_type: 'case_reservations',
@@ -156,7 +162,6 @@ export default function AssistantDashboardPage() {
         },
       });
 
-      // Refresh data
       await mutateCases();
       setAddMaterialCaseId(null);
     },
@@ -168,12 +173,10 @@ export default function AssistantDashboardPage() {
     async (unusedReservationIds: string[], notes?: string) => {
       if (!closeCaseItem) return;
 
-      // Cancel unused reservations and release stock
       for (const reservationId of unusedReservationIds) {
         const reservation = closeCaseItem.reservations.find((r) => r.id === reservationId);
         if (!reservation) continue;
 
-        // Update reservation status
         await supabase
           .from('case_reservations')
           .update({
@@ -184,7 +187,6 @@ export default function AssistantDashboardPage() {
           })
           .eq('id', reservationId);
 
-        // Release reserved stock back to inventory
         if (reservation.inventory_id) {
           const { data: inv } = await supabase
             .from('inventory')
@@ -204,7 +206,6 @@ export default function AssistantDashboardPage() {
         }
       }
 
-      // Update case status to completed
       await supabase
         .from('cases')
         .update({
@@ -214,7 +215,6 @@ export default function AssistantDashboardPage() {
         })
         .eq('id', closeCaseItem.id);
 
-      // Log the case closure
       await supabase.from('audit_logs').insert({
         action: 'CASE_CLOSED',
         entity_type: 'cases',
@@ -229,7 +229,6 @@ export default function AssistantDashboardPage() {
         },
       });
 
-      // Refresh data
       await mutateCases();
       setCloseCaseItem(null);
     },
@@ -256,6 +255,54 @@ export default function AssistantDashboardPage() {
     setTodayStr(formatDate(new Date()));
   }, []);
 
+  // Group cases by time slots for timeline
+  const timelineSlots = useMemo(() => {
+    if (!cases) return [];
+
+    const slots: { time: string; cases: AssistantCaseItem[] }[] = [];
+    const sortedCases = [...cases].sort((a, b) => {
+      const timeA = a.surgery_time || '99:99';
+      const timeB = b.surgery_time || '99:99';
+      return timeA.localeCompare(timeB);
+    });
+
+    for (const c of sortedCases) {
+      const time = c.surgery_time ? c.surgery_time.slice(0, 5) : 'ไม่ระบุเวลา';
+      const existingSlot = slots.find((s) => s.time === time);
+      if (existingSlot) {
+        existingSlot.cases.push(c);
+      } else {
+        slots.push({ time, cases: [c] });
+      }
+    }
+
+    return slots;
+  }, [cases]);
+
+  const getStatusColor = (status: CaseStatus) => {
+    const colors: Record<CaseStatus, string> = {
+      green: 'bg-green-500',
+      yellow: 'bg-yellow-500',
+      red: 'bg-red-500',
+      gray: 'bg-gray-400',
+      completed: 'bg-green-500',
+      cancelled: 'bg-gray-400',
+    };
+    return colors[status];
+  };
+
+  const getStatusBorder = (status: CaseStatus) => {
+    const colors: Record<CaseStatus, string> = {
+      green: 'border-green-200 bg-green-50',
+      yellow: 'border-yellow-200 bg-yellow-50',
+      red: 'border-red-200 bg-red-50',
+      gray: 'border-gray-200 bg-gray-50',
+      completed: 'border-green-200 bg-green-50',
+      cancelled: 'border-gray-200 bg-gray-50',
+    };
+    return colors[status];
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header
@@ -265,94 +312,180 @@ export default function AssistantDashboardPage() {
         isRefreshing={isRefreshing}
       />
 
-      <div className="p-4 space-y-4 pb-20">
-        {/* Summary Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <Card padding="sm">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Calendar className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-500">เคสทั้งหมด</p>
-                <p className="text-xl font-bold text-blue-600">{summary.total}</p>
-              </div>
+      <div className="p-4 space-y-5 pb-20 max-w-2xl mx-auto">
+        {/* Summary Stats - Compact horizontal */}
+        <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-hide">
+          <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 border border-gray-200 shrink-0">
+            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+              <Calendar className="w-4 h-4 text-blue-600" />
             </div>
-          </Card>
+            <div>
+              <p className="text-xs text-gray-500 leading-none">เคส</p>
+              <p className="text-lg font-bold text-blue-600 leading-tight">{summary.total}</p>
+            </div>
+          </div>
 
-          <Card padding="sm">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <CheckCircle className="w-5 h-5 text-green-600" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-500">วัสดุพร้อม</p>
-                <p className="text-xl font-bold text-green-600">{summary.ready}</p>
-              </div>
+          <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 border border-gray-200 shrink-0">
+            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+              <CheckCircle className="w-4 h-4 text-green-600" />
             </div>
-          </Card>
+            <div>
+              <p className="text-xs text-gray-500 leading-none">พร้อม</p>
+              <p className="text-lg font-bold text-green-600 leading-tight">{summary.ready}</p>
+            </div>
+          </div>
 
-          <Card padding="sm">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <Package className="w-5 h-5 text-yellow-600" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-500">รอเตรียม</p>
-                <p className="text-xl font-bold text-yellow-600">{summary.pending}</p>
-              </div>
+          <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 border border-gray-200 shrink-0">
+            <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+              <Package className="w-4 h-4 text-yellow-600" />
             </div>
-          </Card>
+            <div>
+              <p className="text-xs text-gray-500 leading-none">รอเตรียม</p>
+              <p className="text-lg font-bold text-yellow-600 leading-tight">{summary.pending}</p>
+            </div>
+          </div>
 
-          <Card padding="sm">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                <CheckCircle className="w-5 h-5 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-500">เสร็จแล้ว</p>
-                <p className="text-xl font-bold text-purple-600">{summary.completed}</p>
-              </div>
+          <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 border border-gray-200 shrink-0">
+            <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+              <CheckCircle className="w-4 h-4 text-purple-600" />
             </div>
-          </Card>
+            <div>
+              <p className="text-xs text-gray-500 leading-none">เสร็จ</p>
+              <p className="text-lg font-bold text-purple-600 leading-tight">{summary.completed}</p>
+            </div>
+          </div>
         </div>
 
-        {/* Case List */}
-        <div className="space-y-3">
-          <h2 className="font-semibold text-gray-900">รายการเคส</h2>
+        {/* Timeline Section */}
+        {!cases && (
+          <div className="flex items-center justify-center py-12">
+            <RefreshCw className="w-6 h-6 animate-spin text-gray-400" />
+          </div>
+        )}
 
-          {!cases && (
-            <Card>
-              <div className="flex items-center justify-center py-8">
-                <RefreshCw className="w-6 h-6 animate-spin text-gray-400" />
-              </div>
-            </Card>
-          )}
+        {cases && cases.length === 0 && (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <Calendar className="w-8 h-8 text-gray-300" />
+            </div>
+            <p className="text-gray-500 font-medium">ไม่มีเคสสำหรับวันนี้</p>
+            <p className="text-gray-400 text-sm mt-1">ดึงข้อมูลใหม่ได้ที่ปุ่มรีเฟรช</p>
+          </div>
+        )}
 
-          {cases && cases.length === 0 && (
-            <Card>
-              <div className="text-center py-8">
-                <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">ไม่มีเคสสำหรับวันนี้</p>
-              </div>
-            </Card>
-          )}
+        {cases && cases.length > 0 && (
+          <div className="space-y-0">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">ตารางเคสวันนี้</h2>
 
-          {cases &&
-            cases.map((caseItem, index) => (
-              <AssistantCaseCard
-                key={caseItem.id}
-                caseItem={caseItem}
-                onMarkUsed={handleMarkUsed}
-                onAddMaterial={(caseId) => setAddMaterialCaseId(caseId)}
-                onCloseCase={(caseId) => {
-                  const item = cases.find((c) => c.id === caseId);
-                  if (item) setCloseCaseItem(item);
-                }}
-                isExpanded={index === 0} // Expand first case by default
-              />
-            ))}
-        </div>
+            {/* Timeline */}
+            <div className="relative">
+              {/* Timeline line */}
+              <div className="absolute left-[23px] top-0 bottom-0 w-0.5 bg-gray-200" />
+
+              {timelineSlots.map((slot, slotIndex) => (
+                <div key={slot.time} className="relative">
+                  {/* Time marker */}
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="relative z-10 w-[47px] flex justify-center">
+                      <div className="w-3 h-3 rounded-full bg-blue-500 ring-4 ring-blue-100" />
+                    </div>
+                    <span className="text-sm font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-full">
+                      {slot.time === 'ไม่ระบุเวลา' ? slot.time : `${slot.time} น.`}
+                    </span>
+                  </div>
+
+                  {/* Cases in this slot */}
+                  <div className={`ml-[47px] space-y-2 ${slotIndex < timelineSlots.length - 1 ? 'pb-4' : 'pb-2'}`}>
+                    {slot.cases.map((caseItem) => {
+                      const isCompleted = caseItem.status === 'completed';
+                      const { used, total } = caseItem.material_summary;
+                      const progressPercent = total > 0 ? Math.round((used / total) * 100) : 0;
+
+                      return (
+                        <div
+                          key={caseItem.id}
+                          className={`border rounded-xl p-3 cursor-pointer transition-all active:scale-[0.98] ${getStatusBorder(caseItem.status)} ${
+                            expandedCaseId === caseItem.id ? 'ring-2 ring-blue-300' : ''
+                          }`}
+                          onClick={() => setExpandedCaseId(expandedCaseId === caseItem.id ? null : caseItem.id)}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <div className={`w-2 h-2 rounded-full shrink-0 ${getStatusColor(caseItem.status)}`} />
+                                <span className="font-semibold text-sm text-gray-900 truncate">
+                                  {caseItem.case_number}
+                                </span>
+                                <Badge
+                                  variant={
+                                    caseItem.status === 'completed' ? 'success' :
+                                    caseItem.status === 'green' ? 'success' :
+                                    caseItem.status === 'yellow' ? 'warning' :
+                                    caseItem.status === 'red' ? 'danger' : 'gray'
+                                  }
+                                  size="sm"
+                                >
+                                  {getCaseStatusText(caseItem.status)}
+                                </Badge>
+                              </div>
+                              <div className="flex items-center gap-3 text-xs text-gray-600">
+                                <span className="flex items-center gap-1">
+                                  <User className="w-3 h-3" />
+                                  {caseItem.patient_name}
+                                </span>
+                                <span className="flex items-center gap-1">
+                                  <Stethoscope className="w-3 h-3" />
+                                  {caseItem.dentist_name}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <div className="text-right">
+                                <p className="text-xs font-semibold text-gray-700">{used}/{total}</p>
+                                <p className="text-[10px] text-gray-400">วัสดุ</p>
+                              </div>
+                              <ChevronRight className={`w-4 h-4 text-gray-400 transition-transform ${expandedCaseId === caseItem.id ? 'rotate-90' : ''}`} />
+                            </div>
+                          </div>
+
+                          {/* Mini progress bar */}
+                          <div className="mt-2 h-1.5 bg-white/60 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all ${
+                                isCompleted || (used === total && total > 0) ? 'bg-green-500' : 'bg-blue-500'
+                              }`}
+                              style={{ width: `${progressPercent}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Expanded Case Detail */}
+        {expandedCaseId && cases && (
+          <>
+            {cases
+              .filter((c) => c.id === expandedCaseId)
+              .map((caseItem) => (
+                <AssistantCaseCard
+                  key={caseItem.id}
+                  caseItem={caseItem}
+                  onMarkUsed={handleMarkUsed}
+                  onAddMaterial={(caseId) => setAddMaterialCaseId(caseId)}
+                  onCloseCase={(caseId) => {
+                    const item = cases.find((c) => c.id === caseId);
+                    if (item) setCloseCaseItem(item);
+                  }}
+                />
+              ))}
+          </>
+        )}
       </div>
 
       {/* Add Material Modal */}

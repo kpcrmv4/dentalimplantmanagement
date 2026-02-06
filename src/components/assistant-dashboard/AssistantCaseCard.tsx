@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { Calendar, Clock, User, Stethoscope, Package, ChevronDown, ChevronUp } from 'lucide-react';
+import { Calendar, Clock, User, Stethoscope, Package, CheckCircle } from 'lucide-react';
 import { Card, Badge, Button } from '@/components/ui';
 import { PickingList } from './PickingList';
 import { formatDate, getCaseStatusText } from '@/lib/utils';
@@ -12,7 +11,6 @@ interface AssistantCaseCardProps {
   onMarkUsed: (reservationId: string, photoUrls: string[]) => Promise<void>;
   onAddMaterial: (caseId: string) => void;
   onCloseCase: (caseId: string) => void;
-  isExpanded?: boolean;
 }
 
 export function AssistantCaseCard({
@@ -20,10 +18,7 @@ export function AssistantCaseCard({
   onMarkUsed,
   onAddMaterial,
   onCloseCase,
-  isExpanded: initialExpanded = false,
 }: AssistantCaseCardProps) {
-  const [isExpanded, setIsExpanded] = useState(initialExpanded);
-
   const getStatusVariant = (status: CaseStatus): 'success' | 'warning' | 'danger' | 'gray' => {
     const variants: Record<CaseStatus, 'success' | 'warning' | 'danger' | 'gray'> = {
       green: 'success',
@@ -39,116 +34,123 @@ export function AssistantCaseCard({
   const { total, prepared, used, pending } = caseItem.material_summary;
   const allUsed = used === total && total > 0;
   const progressPercent = total > 0 ? Math.round((used / total) * 100) : 0;
+  const isCompleted = caseItem.status === 'completed';
 
   return (
-    <Card className="overflow-hidden">
-      {/* Header - Always visible */}
-      <div
-        className="p-4 cursor-pointer"
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        <div className="flex items-start justify-between">
-          <div className="flex-1 min-w-0">
-            {/* Case Number & Status */}
-            <div className="flex items-center gap-2 mb-2">
-              <h3 className="font-semibold text-lg">{caseItem.case_number}</h3>
-              <Badge variant={getStatusVariant(caseItem.status)} size="sm" dot>
-                {getCaseStatusText(caseItem.status)}
-              </Badge>
-            </div>
+    <div className="space-y-3">
+      {/* Case Header Card */}
+      <Card padding="none" className="overflow-hidden">
+        {/* Colored top border */}
+        <div className={`h-1 ${
+          caseItem.status === 'green' || caseItem.status === 'completed' ? 'bg-green-500' :
+          caseItem.status === 'yellow' ? 'bg-yellow-500' :
+          caseItem.status === 'red' ? 'bg-red-500' : 'bg-gray-400'
+        }`} />
 
-            {/* Patient Info */}
-            <div className="flex items-center gap-2 text-gray-600 mb-1">
-              <User className="w-4 h-4" />
-              <span className="font-medium">{caseItem.patient_name}</span>
-              <span className="text-gray-400">({caseItem.hn_number})</span>
-            </div>
-
-            {/* Date & Time */}
-            <div className="flex items-center gap-4 text-sm text-gray-500">
-              <div className="flex items-center gap-1">
-                <Calendar className="w-4 h-4" />
-                <span>{formatDate(caseItem.surgery_date)}</span>
+        <div className="p-4">
+          {/* Case info row */}
+          <div className="flex items-start justify-between mb-3">
+            <div>
+              <div className="flex items-center gap-2 mb-1.5">
+                <h3 className="font-bold text-base text-gray-900">{caseItem.case_number}</h3>
+                <Badge variant={getStatusVariant(caseItem.status)} size="sm" dot>
+                  {getCaseStatusText(caseItem.status)}
+                </Badge>
               </div>
-              {caseItem.surgery_time && (
-                <div className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
-                  <span>{caseItem.surgery_time.slice(0, 5)}</span>
+
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <User className="w-3.5 h-3.5 text-gray-400" />
+                  <span className="font-medium">{caseItem.patient_name}</span>
+                  <span className="text-gray-400 text-xs">({caseItem.hn_number})</span>
                 </div>
-              )}
-            </div>
-
-            {/* Dentist */}
-            <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
-              <Stethoscope className="w-4 h-4" />
-              <span>{caseItem.dentist_name}</span>
-            </div>
-          </div>
-
-          {/* Expand/Collapse & Progress */}
-          <div className="flex flex-col items-end gap-2">
-            <Button variant="ghost" size="sm" className="p-1">
-              {isExpanded ? (
-                <ChevronUp className="w-5 h-5" />
-              ) : (
-                <ChevronDown className="w-5 h-5" />
-              )}
-            </Button>
-
-            {/* Material Progress */}
-            <div className="flex items-center gap-2">
-              <Package className="w-4 h-4 text-gray-400" />
-              <div className="text-right">
-                <p className="text-sm font-medium">
-                  {used}/{total}
-                </p>
-                <p className="text-xs text-gray-500">ใช้แล้ว</p>
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <Stethoscope className="w-3.5 h-3.5 text-gray-400" />
+                  <span>{caseItem.dentist_name}</span>
+                </div>
+                <div className="flex items-center gap-3 text-xs text-gray-400">
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-3 h-3" />
+                    {formatDate(caseItem.surgery_date)}
+                  </span>
+                  {caseItem.surgery_time && (
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {caseItem.surgery_time.slice(0, 5)}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Progress Bar */}
-        <div className="mt-3">
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className={`h-2 rounded-full transition-all ${
-                allUsed ? 'bg-green-500' : 'bg-blue-500'
-              }`}
-              style={{ width: `${progressPercent}%` }}
-            />
+          {/* Progress section */}
+          <div className="bg-gray-50 rounded-lg p-3">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-gray-500">ความคืบหน้าวัสดุ</span>
+              <div className="flex items-center gap-1.5">
+                {allUsed ? (
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                ) : (
+                  <Package className="w-4 h-4 text-gray-400" />
+                )}
+                <span className={`text-sm font-bold ${allUsed ? 'text-green-600' : 'text-gray-700'}`}>
+                  {used}/{total}
+                </span>
+              </div>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div
+                className={`h-2 rounded-full transition-all duration-500 ${
+                  allUsed ? 'bg-green-500' : 'bg-blue-500'
+                }`}
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+            {/* Mini status counts */}
+            <div className="flex items-center gap-3 mt-2 text-[10px] text-gray-400">
+              {pending > 0 && <span>รอดำเนินการ {pending}</span>}
+              {prepared > 0 && <span className="text-blue-500">เตรียมแล้ว {prepared}</span>}
+              {used > 0 && <span className="text-green-500">ใช้แล้ว {used}</span>}
+            </div>
           </div>
         </div>
+      </Card>
+
+      {/* Material Picking List */}
+      <div>
+        <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2 px-1">
+          รายการวัสดุ ({total} รายการ)
+        </h4>
+        <PickingList
+          reservations={caseItem.reservations}
+          onMarkUsed={onMarkUsed}
+        />
       </div>
 
-      {/* Expanded Content - Picking List */}
-      {isExpanded && (
-        <div className="border-t">
-          <PickingList
-            reservations={caseItem.reservations}
-            onMarkUsed={onMarkUsed}
-          />
-
-          {/* Action Buttons */}
-          <div className="p-4 bg-gray-50 border-t flex flex-col sm:flex-row gap-2">
-            <Button
-              variant="secondary"
-              className="flex-1"
-              onClick={() => onAddMaterial(caseItem.id)}
-            >
-              <Package className="w-4 h-4 mr-2" />
-              เพิ่ม/เปลี่ยนวัสดุ
-            </Button>
-            <Button
-              variant="primary"
-              className="flex-1"
-              onClick={() => onCloseCase(caseItem.id)}
-            >
-              ปิดเคส
-            </Button>
-          </div>
+      {/* Action Buttons */}
+      {!isCompleted && (
+        <div className="flex gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            className="flex-1"
+            onClick={() => onAddMaterial(caseItem.id)}
+          >
+            <Package className="w-4 h-4 mr-1.5" />
+            เพิ่มวัสดุ
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            className="flex-1"
+            onClick={() => onCloseCase(caseItem.id)}
+          >
+            <CheckCircle className="w-4 h-4 mr-1.5" />
+            ปิดเคส
+          </Button>
         </div>
       )}
-    </Card>
+    </div>
   );
 }
