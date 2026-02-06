@@ -113,7 +113,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL(`${homePage}?error=unauthorized`, request.url));
     }
 
-    // Reservations - not for dentist
+    // Reservations - not for dentist (dentists use the ReservationModal in case detail page instead)
     if (pathname.startsWith('/reservations') && role === 'dentist') {
       return NextResponse.redirect(new URL(`${homePage}?error=unauthorized`, request.url));
     }

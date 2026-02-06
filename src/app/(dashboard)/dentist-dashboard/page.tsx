@@ -172,7 +172,7 @@ export default function DentistDashboardPage() {
                 {actionNeededCases.slice(0, 5).map((c) => (
                   <Link
                     key={c.id}
-                    href={c.material_status === 'not_reserved' ? `/reservations/new?case=${c.id}` : `/cases/${c.id}`}
+                    href={c.material_status === 'not_reserved' ? `/cases/${c.id}?reserve=true` : `/cases/${c.id}`}
                     className="block p-3 rounded-lg border border-orange-100 bg-orange-50/50 hover:bg-orange-100/50 transition-colors"
                   >
                     <div className="flex items-center justify-between">

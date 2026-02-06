@@ -1,8 +1,8 @@
 'use client';
 
-import { use, useState } from 'react';
+import { use, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   ArrowLeft,
   Edit,
@@ -15,6 +15,7 @@ import {
   CheckCircle,
   XCircle,
   AlertTriangle,
+  ShoppingCart,
 } from 'lucide-react';
 import { Header } from '@/components/layout';
 import { Button, Badge, Card, CardHeader, CardTitle, CardContent, Modal, ModalFooter } from '@/components/ui';
@@ -27,6 +28,7 @@ import {
   TableCell,
 } from '@/components/ui/Table';
 import { useCase } from '@/hooks/useApi';
+import { useAuthStore } from '@/stores/authStore';
 import { supabase } from '@/lib/supabase';
 import {
   formatDate,
@@ -37,6 +39,7 @@ import {
 } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import type { CaseStatus, ReservationStatus } from '@/types/database';
+import { ReservationModal } from '@/components/reservations/ReservationModal';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -45,10 +48,22 @@ interface PageProps {
 export default function CaseDetailPage({ params }: PageProps) {
   const { id } = use(params);
   const router = useRouter();
+  const { user } = useAuthStore();
   const { data: caseData, isLoading, mutate } = useCase(id);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showReservationModal, setShowReservationModal] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+
+  const isDentist = user?.role === 'dentist';
+  const searchParams = useSearchParams();
+
+  // Auto-open reservation modal when navigating with ?reserve=true
+  useEffect(() => {
+    if (searchParams.get('reserve') === 'true' && isDentist && caseData && !['completed', 'cancelled'].includes(caseData.status)) {
+      setShowReservationModal(true);
+    }
+  }, [searchParams, isDentist, caseData]);
 
   const getStatusVariant = (status: CaseStatus) => {
     const variants: Record<CaseStatus, 'success' | 'warning' | 'danger' | 'gray' | 'info'> = {
@@ -262,11 +277,21 @@ export default function CaseDetailPage({ params }: PageProps) {
                   วัสดุที่จอง
                 </CardTitle>
                 {isEditable && (
-                  <Link href={`/reservations/new?case_id=${id}`}>
-                    <Button size="sm" leftIcon={<Plus className="w-4 h-4" />}>
-                      เพิ่มการจอง
+                  isDentist ? (
+                    <Button
+                      size="sm"
+                      leftIcon={<ShoppingCart className="w-4 h-4" />}
+                      onClick={() => setShowReservationModal(true)}
+                    >
+                      จองวัสดุ
                     </Button>
-                  </Link>
+                  ) : (
+                    <Link href={`/reservations/new?case_id=${id}`}>
+                      <Button size="sm" leftIcon={<Plus className="w-4 h-4" />}>
+                        เพิ่มการจอง
+                      </Button>
+                    </Link>
+                  )
                 )}
               </CardHeader>
               <CardContent>
@@ -306,11 +331,23 @@ export default function CaseDetailPage({ params }: PageProps) {
                     <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                     <p className="text-gray-500">ยังไม่มีการจองวัสดุ</p>
                     {isEditable && (
-                      <Link href={`/reservations/new?case_id=${id}`}>
-                        <Button variant="outline" size="sm" className="mt-3">
-                          เพิ่มการจองวัสดุ
+                      isDentist ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="mt-3"
+                          leftIcon={<ShoppingCart className="w-4 h-4" />}
+                          onClick={() => setShowReservationModal(true)}
+                        >
+                          จองวัสดุ
                         </Button>
-                      </Link>
+                      ) : (
+                        <Link href={`/reservations/new?case_id=${id}`}>
+                          <Button variant="outline" size="sm" className="mt-3">
+                            เพิ่มการจองวัสดุ
+                          </Button>
+                        </Link>
+                      )
                     )}
                   </div>
                 )}
@@ -451,6 +488,22 @@ export default function CaseDetailPage({ params }: PageProps) {
           </Button>
         </ModalFooter>
       </Modal>
+
+      {/* Reservation Modal for Dentists */}
+      <ReservationModal
+        isOpen={showReservationModal}
+        onClose={() => setShowReservationModal(false)}
+        caseId={id}
+        caseNumber={caseData.case_number}
+        procedureType={caseData.procedure_type}
+        surgeryDate={caseData.surgery_date}
+        patientName={
+          caseData.patient
+            ? `${caseData.patient.first_name} ${caseData.patient.last_name}`
+            : 'ไม่ระบุ'
+        }
+        onSuccess={() => mutate()}
+      />
     </div>
   );
 }

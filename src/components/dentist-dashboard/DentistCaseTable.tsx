@@ -141,7 +141,7 @@ export function DentistCaseTable({ cases, isLoading }: DentistCaseTableProps) {
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2">
                     {caseItem.material_status === 'not_reserved' && (
-                      <Link href={`/reservations/new?case=${caseItem.id}`}>
+                      <Link href={`/cases/${caseItem.id}?reserve=true`}>
                         <Button variant="primary" size="sm">
                           จองวัสดุ
                         </Button>
