@@ -84,6 +84,24 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Orders routes - admin and stock_staff only
+  const ordersOnlyPaths = ['/orders'];
+  const isOrdersOnlyPath = ordersOnlyPaths.some(path =>
+    request.nextUrl.pathname.startsWith(path)
+  );
+
+  if (isOrdersOnlyPath && user) {
+    const { data: profile } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile || !['admin', 'stock_staff'].includes(profile.role)) {
+      return NextResponse.redirect(new URL('/dashboard?error=unauthorized', request.url));
+    }
+  }
+
   // Dentist-only routes
   const dentistOnlyPaths = ['/dentist-dashboard'];
   const isDentistOnlyPath = dentistOnlyPaths.some(path =>

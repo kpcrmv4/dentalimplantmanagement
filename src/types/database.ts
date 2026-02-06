@@ -233,6 +233,7 @@ export interface PurchaseOrder {
   approved_at?: string;
   received_by?: string;
   received_at?: string;
+  supplier_access_code?: string;
   created_at: string;
   updated_at: string;
   // Relations

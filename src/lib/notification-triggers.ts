@@ -68,15 +68,29 @@ export async function triggerOutOfStock(params: {
 }
 
 /**
- * Trigger notification to supplier when PO is created
+ * Trigger notification to supplier when PO is approved (with access code and link)
  */
 export async function triggerSupplierPO(params: {
   orderId: string;
   poNumber: string;
   supplierId: string;
   totalAmount: number;
+  accessCode: string;
 }): Promise<TriggerResult> {
   return triggerNotification('supplier_po', params);
+}
+
+/**
+ * Trigger notification to admin when a new PO is created and pending approval
+ */
+export async function triggerPOCreated(params: {
+  orderId: string;
+  poNumber: string;
+  supplierName: string;
+  totalAmount: number;
+  createdByName: string;
+}): Promise<TriggerResult> {
+  return triggerNotification('po_created', params);
 }
 
 /**

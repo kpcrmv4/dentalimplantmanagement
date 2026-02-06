@@ -364,13 +364,14 @@ export async function notifyOutOfStock(
 }
 
 /**
- * Notify supplier when a purchase order is created
+ * Notify supplier when a purchase order is approved (with public link and access code)
  */
 export async function notifySupplierPO(
   orderId: string,
   poNumber: string,
   supplierId: string,
-  totalAmount: number
+  totalAmount: number,
+  accessCode: string
 ): Promise<NotificationResult> {
   const serviceClient = createServiceRoleClient();
 
@@ -392,7 +393,10 @@ export async function notifySupplierPO(
     return { push: { sent: 0, failed: 0 }, line: { sent: 0, failed: 0 }, inApp: { sent: 0, failed: 0 } };
   }
 
-  const message = `📦 ใบสั่งซื้อใหม่\n\nเลขที่: ${poNumber}\nมูลค่ารวม: ฿${totalAmount.toLocaleString()}\n\nกรุณาตรวจสอบและยืนยันการสั่งซื้อ`;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://localhost:3000';
+  const poViewUrl = `${appUrl}/po/${orderId}`;
+
+  const message = `📦 ใบสั่งซื้อได้รับการอนุมัติแล้ว\n\nเลขที่: ${poNumber}\nมูลค่ารวม: ฿${totalAmount.toLocaleString()}\n\n🔗 ดูรายละเอียด: ${poViewUrl}\n🔑 รหัสเปิดดู: ${accessCode}\n\nกรุณาตรวจสอบและยืนยันการสั่งซื้อ`;
 
   try {
     const response = await fetch('https://api.line.me/v2/bot/message/push', {
@@ -415,12 +419,12 @@ export async function notifySupplierPO(
       recipient_id: supplierId,
       channel: 'line',
       notification_type: 'purchase_order',
-      title: 'ใบสั่งซื้อใหม่',
+      title: 'ใบสั่งซื้อได้รับการอนุมัติ',
       message: `PO: ${poNumber}`,
       status: success ? 'sent' : 'failed',
       sent_at: success ? new Date().toISOString() : null,
       error_message: success ? null : `LINE API error: ${response.status}`,
-      metadata: { poNumber, orderId },
+      metadata: { poNumber, orderId, accessCode },
     });
 
     return {
@@ -432,6 +436,34 @@ export async function notifySupplierPO(
     console.error('[NotificationService] Supplier LINE notification error:', error);
     return { push: { sent: 0, failed: 0 }, line: { sent: 0, failed: 1 }, inApp: { sent: 0, failed: 0 } };
   }
+}
+
+/**
+ * Notify admins when a new PO is created and pending approval
+ */
+export async function notifyPOCreated(
+  orderId: string,
+  poNumber: string,
+  supplierName: string,
+  totalAmount: number,
+  createdByName: string
+): Promise<NotificationResult> {
+  return sendNotification(
+    {
+      title: '📋 ใบสั่งซื้อใหม่รออนุมัติ',
+      body: `${poNumber} จาก ${supplierName}\nมูลค่า: ฿${totalAmount.toLocaleString()}\nสร้างโดย: ${createdByName}`,
+      tag: `po-created-${orderId}`,
+      data: {
+        url: `/orders`,
+        type: 'po_created',
+        referenceId: orderId,
+      },
+    },
+    {
+      roles: ['admin'],
+      channels: ['push', 'in_app'],
+    }
+  );
 }
 
 /**

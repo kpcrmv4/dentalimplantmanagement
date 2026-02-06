@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, Plus, Trash2, ShoppingCart } from 'lucide-react';
@@ -17,6 +17,8 @@ import {
 import { useSuppliers, useProducts } from '@/hooks/useApi';
 import { supabase } from '@/lib/supabase';
 import { formatCurrency } from '@/lib/utils';
+import { useAuthStore } from '@/stores/authStore';
+import { triggerPOCreated } from '@/lib/notification-triggers';
 import toast from 'react-hot-toast';
 
 interface OrderItem {
@@ -31,6 +33,7 @@ interface OrderItem {
 
 export default function NewOrderPage() {
   const router = useRouter();
+  const user = useAuthStore((state) => state.user);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [supplierId, setSupplierId] = useState('');
   const [expectedDeliveryDate, setExpectedDeliveryDate] = useState('');
@@ -42,6 +45,14 @@ export default function NewOrderPage() {
 
   const { data: suppliers } = useSuppliers();
   const { data: products } = useProducts();
+
+  // Role guard: only admin and stock_staff can create POs
+  useEffect(() => {
+    if (user && !['admin', 'stock_staff'].includes(user.role)) {
+      toast.error('คุณไม่มีสิทธิ์สร้างใบสั่งซื้อ');
+      router.replace('/dashboard');
+    }
+  }, [user, router]);
 
   const supplierOptions = [
     { value: '', label: 'เลือกซัพพลายเออร์' },
@@ -155,6 +166,7 @@ export default function NewOrderPage() {
           tax_amount: taxAmount,
           total_amount: totalAmount,
           notes: notes || null,
+          created_by: user?.id,
         })
         .select()
         .single();
@@ -177,8 +189,35 @@ export default function NewOrderPage() {
 
       if (itemsError) throw itemsError;
 
+      // Get supplier name for logging and notification
+      const supplierObj = suppliers?.find((s) => s.id === supplierId);
+      const supplierName = supplierObj?.name || 'Unknown';
+
+      // Audit log: PO_CREATED
+      await supabase.from('audit_logs').insert({
+        action: 'PO_CREATED',
+        entity_type: 'purchase_orders',
+        entity_id: order.id,
+        details: {
+          po_number: poNumber,
+          supplier: supplierName,
+          total_amount: totalAmount,
+          items_count: items.length,
+          created_by_name: user?.full_name,
+        },
+      });
+
+      // Notify admins about new PO pending approval
+      triggerPOCreated({
+        orderId: order.id,
+        poNumber,
+        supplierName,
+        totalAmount,
+        createdByName: user?.full_name || 'Unknown',
+      }).catch((err) => console.error('Failed to notify PO created:', err));
+
       toast.success('สร้างใบสั่งซื้อเรียบร้อยแล้ว');
-      router.push(`/orders/${order.id}`);
+      router.push('/orders');
     } catch (error) {
       console.error('Error creating order:', error);
       toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่');

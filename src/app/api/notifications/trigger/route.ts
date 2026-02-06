@@ -7,6 +7,7 @@ import {
   notifyUrgentCase,
   notifyLowStock,
   notifyMaterialPrepared,
+  notifyPOCreated,
 } from '@/lib/notification-service';
 
 type TriggerType =
@@ -15,7 +16,8 @@ type TriggerType =
   | 'supplier_po'
   | 'urgent_case'
   | 'low_stock'
-  | 'material_prepared';
+  | 'material_prepared'
+  | 'po_created';
 
 interface TriggerPayload {
   type: TriggerType;
@@ -74,7 +76,18 @@ export async function POST(request: NextRequest) {
           data.orderId as string,
           data.poNumber as string,
           data.supplierId as string,
-          data.totalAmount as number
+          data.totalAmount as number,
+          data.accessCode as string
+        );
+        break;
+
+      case 'po_created':
+        result = await notifyPOCreated(
+          data.orderId as string,
+          data.poNumber as string,
+          data.supplierName as string,
+          data.totalAmount as number,
+          data.createdByName as string
         );
         break;
 

@@ -28,17 +28,23 @@ import {
 import { useOrders } from '@/hooks/useApi';
 import { supabase } from '@/lib/supabase';
 import { formatDate, formatCurrency, getOrderStatusText } from '@/lib/utils';
+import { useAuthStore } from '@/stores/authStore';
+import { triggerSupplierPO } from '@/lib/notification-triggers';
 import toast from 'react-hot-toast';
 import type { OrderStatus } from '@/types/database';
 
 export default function OrdersPage() {
   const router = useRouter();
+  const user = useAuthStore((state) => state.user);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [showApproveModal, setShowApproveModal] = useState(false);
   const [showReceiveModal, setShowReceiveModal] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+
+  const isAdmin = user?.role === 'admin';
+  const canCreateOrder = user?.role === 'admin' || user?.role === 'stock_staff';
 
   const { data: orders, isLoading, mutate } = useOrders();
 
@@ -84,13 +90,30 @@ export default function OrdersPage() {
   const handleApprove = async () => {
     if (!selectedOrder) return;
 
+    // Role check: only admin can approve
+    if (!isAdmin) {
+      toast.error('เฉพาะแอดมินเท่านั้นที่สามารถอนุมัติใบสั่งซื้อได้');
+      return;
+    }
+
+    // Separation of duties: creator cannot be the approver
+    if (selectedOrder.created_by && selectedOrder.created_by === user?.id) {
+      toast.error('ไม่สามารถอนุมัติใบสั่งซื้อที่ตัวเองเป็นผู้สร้างได้');
+      return;
+    }
+
     setIsUpdating(true);
     try {
+      // Generate 5-character random access code for supplier
+      const accessCode = Math.random().toString(36).substring(2, 7).toUpperCase();
+
       const { error } = await supabase
         .from('purchase_orders')
         .update({
           status: 'approved',
           approved_at: new Date().toISOString(),
+          approved_by: user?.id,
+          supplier_access_code: accessCode,
         })
         .eq('id', selectedOrder.id);
 
@@ -129,8 +152,19 @@ export default function OrdersPage() {
           supplier: selectedOrder.supplier?.name,
           total_amount: selectedOrder.total_amount,
           items_count: selectedOrder.items?.length,
+          approved_by_name: user?.full_name,
+          access_code_generated: true,
         },
       });
+
+      // Notify supplier via LINE with public link and access code (after approval)
+      triggerSupplierPO({
+        orderId: selectedOrder.id,
+        poNumber: selectedOrder.po_number,
+        supplierId: selectedOrder.supplier_id,
+        totalAmount: selectedOrder.total_amount,
+        accessCode,
+      }).catch((err) => console.error('Failed to notify supplier:', err));
 
       toast.success('อนุมัติใบสั่งซื้อเรียบร้อย');
       mutate();
@@ -154,6 +188,7 @@ export default function OrdersPage() {
           status: 'received',
           actual_delivery_date: new Date().toISOString().split('T')[0],
           received_at: new Date().toISOString(),
+          received_by: user?.id,
         })
         .eq('id', selectedOrder.id);
 
@@ -262,6 +297,7 @@ export default function OrdersPage() {
           supplier: selectedOrder.supplier?.name,
           items_count: selectedOrder.items?.length,
           linked_reservations: productIds.length,
+          received_by_name: user?.full_name,
         },
       });
 
@@ -282,11 +318,13 @@ export default function OrdersPage() {
         title="ใบสั่งซื้อ"
         subtitle="จัดการใบสั่งซื้อและติดตามการจัดส่ง"
         actions={
-          <Link href="/orders/new">
-            <Button leftIcon={<Plus className="w-4 h-4" />}>
-              สร้างใบสั่งซื้อ
-            </Button>
-          </Link>
+          canCreateOrder ? (
+            <Link href="/orders/new">
+              <Button leftIcon={<Plus className="w-4 h-4" />}>
+                สร้างใบสั่งซื้อ
+              </Button>
+            </Link>
+          ) : undefined
         }
       />
 
@@ -421,7 +459,7 @@ export default function OrdersPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
-                        {order.status === 'pending' && (
+                        {order.status === 'pending' && isAdmin && (
                           <Button
                             variant="outline"
                             size="sm"
