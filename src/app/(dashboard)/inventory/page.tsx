@@ -225,20 +225,22 @@ export default function InventoryPage() {
         title="สต็อกวัสดุและรากเทียม"
         subtitle="จัดการคลังสินค้าและติดตามสต็อก"
         actions={
-          <div className="flex gap-2">
-            <Link href="/inventory/receive">
-              <Button variant="outline" size="sm" leftIcon={<Package className="w-4 h-4" />}>
-                <span className="hidden sm:inline">รับของเข้า</span>
-                <span className="sm:hidden">รับของ</span>
-              </Button>
-            </Link>
-            <Link href="/products/new">
-              <Button size="sm" leftIcon={<Plus className="w-4 h-4" />}>
-                <span className="hidden sm:inline">เพิ่มสินค้าใหม่</span>
-                <span className="sm:hidden">เพิ่ม</span>
-              </Button>
-            </Link>
-          </div>
+          canManageStock ? (
+            <div className="flex gap-2">
+              <Link href="/inventory/receive">
+                <Button variant="outline" size="sm" leftIcon={<Package className="w-4 h-4" />}>
+                  <span className="hidden sm:inline">รับของเข้า</span>
+                  <span className="sm:hidden">รับของ</span>
+                </Button>
+              </Link>
+              <Link href="/products/new">
+                <Button size="sm" leftIcon={<Plus className="w-4 h-4" />}>
+                  <span className="hidden sm:inline">เพิ่มสินค้าใหม่</span>
+                  <span className="sm:hidden">เพิ่ม</span>
+                </Button>
+              </Link>
+            </div>
+          ) : undefined
         }
       />
 

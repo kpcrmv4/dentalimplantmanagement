@@ -7,6 +7,7 @@ import { ArrowLeft, Save, Calendar, Clock } from 'lucide-react';
 import { Header } from '@/components/layout';
 import { Button, Card, CardHeader, CardTitle, CardContent, Input, Select } from '@/components/ui';
 import { useCase, useUsers, useProcedureTypes } from '@/hooks/useApi';
+import { useAuthStore } from '@/stores/authStore';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 
@@ -24,6 +25,8 @@ interface PageProps {
 export default function EditCasePage({ params }: PageProps) {
   const { id } = use(params);
   const router = useRouter();
+  const { user } = useAuthStore();
+  const canEditCase = user?.role === 'admin' || user?.role === 'dentist';
   const { data: caseData, error: caseError, isLoading: isCaseLoading } = useCase(id);
   const { data: dentists } = useUsers('dentist');
   const { data: assistants } = useUsers('assistant');
@@ -128,6 +131,19 @@ export default function EditCasePage({ params }: PageProps) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+      </div>
+    );
+  }
+
+  if (!canEditCase) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-500 mb-4">คุณไม่มีสิทธิ์แก้ไขเคส</p>
+          <Link href={`/cases/${id}`}>
+            <Button variant="outline">กลับไปหน้ารายละเอียดเคส</Button>
+          </Link>
+        </div>
       </div>
     );
   }

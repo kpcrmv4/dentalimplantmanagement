@@ -25,6 +25,7 @@ import {
   TableCell,
 } from '@/components/ui/Table';
 import { useExchanges, useSuppliers, useProducts, useInventory } from '@/hooks/useApi';
+import { useAuthStore } from '@/stores/authStore';
 import { supabase } from '@/lib/supabase';
 import { formatDate } from '@/lib/utils';
 import toast from 'react-hot-toast';
@@ -32,6 +33,8 @@ import type { ExchangeStatus, ExchangeType } from '@/types/database';
 import { getExchangeStatusVariant } from '@/lib/status';
 
 export default function ExchangesPage() {
+  const { user } = useAuthStore();
+  const canManageExchanges = user?.role === 'admin' || user?.role === 'stock_staff';
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -233,12 +236,14 @@ export default function ExchangesPage() {
         title="ยืม-คืน/แลกเปลี่ยนกับบริษัท"
         subtitle="จัดการการยืม-คืนและแลกเปลี่ยนวัสดุกับบริษัท"
         actions={
-          <Button
-            leftIcon={<Plus className="w-4 h-4" />}
-            onClick={() => setShowNewModal(true)}
-          >
-            สร้างรายการใหม่
-          </Button>
+          canManageExchanges ? (
+            <Button
+              leftIcon={<Plus className="w-4 h-4" />}
+              onClick={() => setShowNewModal(true)}
+            >
+              สร้างรายการใหม่
+            </Button>
+          ) : undefined
         }
       />
 
@@ -407,7 +412,7 @@ export default function ExchangesPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      {exchange.status === 'active' && (
+                      {exchange.status === 'active' && canManageExchanges && (
                         <Button
                           variant="outline"
                           size="sm"

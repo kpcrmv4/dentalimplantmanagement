@@ -31,6 +31,7 @@ interface CasePreparationTableProps {
   onPrepareItem: (reservation: CaseReservation) => void;
   onPrepareAll: (caseItem: CasePreparationItem) => void;
   isLoading?: boolean;
+  canPrepare?: boolean;
 }
 
 export function CasePreparationTable({
@@ -38,6 +39,7 @@ export function CasePreparationTable({
   onPrepareItem,
   onPrepareAll,
   isLoading,
+  canPrepare = true,
 }: CasePreparationTableProps) {
   const [expandedCases, setExpandedCases] = useState<Set<string>>(new Set());
 
@@ -148,7 +150,7 @@ export function CasePreparationTable({
             const prepStatus = getPreparationStatusDisplay(caseItem.preparation_status);
             const { total, prepared, pending, confirmed, out_of_stock } = caseItem.preparation_summary;
             const canPrepareAll =
-              caseItem.reservations?.some((r) => r.status === 'confirmed') ?? false;
+              canPrepare && (caseItem.reservations?.some((r) => r.status === 'confirmed') ?? false);
 
             return (
               <>
@@ -285,7 +287,7 @@ export function CasePreparationTable({
                                 <span className="text-sm text-gray-600">
                                   จำนวน: {reservation.quantity}
                                 </span>
-                                {reservation.status === 'confirmed' && !reservation.is_out_of_stock && (
+                                {canPrepare && reservation.status === 'confirmed' && !reservation.is_out_of_stock && (
                                   <Button
                                     variant="outline"
                                     size="sm"

@@ -20,12 +20,16 @@ import {
   type ViewMode,
 } from '@/components/preparation';
 import { useCasePreparation } from '@/hooks/useApi';
+import { useAuthStore } from '@/stores/authStore';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 import type { DateRangeFilter, CasePreparationItem, CaseReservation } from '@/types/database';
 import { startOfWeek, endOfWeek, format } from 'date-fns';
 
 export default function ReservationsPage() {
+  const { user } = useAuthStore();
+  const canPrepare = user?.role === 'admin' || user?.role === 'assistant' || user?.role === 'stock_staff';
+
   // Default to this week
   const now = new Date();
   const defaultStart = startOfWeek(now, { weekStartsOn: 1 });
@@ -251,6 +255,7 @@ export default function ReservationsPage() {
             onPrepareItem={openPrepareItemModal}
             onPrepareAll={openPrepareAllModal}
             isLoading={isLoading}
+            canPrepare={canPrepare}
           />
         ) : (
           <CasePreparationTimeline
@@ -258,6 +263,7 @@ export default function ReservationsPage() {
             onPrepareItem={openPrepareItemModal}
             onPrepareAll={openPrepareAllModal}
             isLoading={isLoading}
+            canPrepare={canPrepare}
           />
         )}
       </div>

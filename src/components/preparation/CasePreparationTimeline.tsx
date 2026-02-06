@@ -22,6 +22,7 @@ interface CasePreparationTimelineProps {
   onPrepareItem: (reservation: CaseReservation) => void;
   onPrepareAll: (caseItem: CasePreparationItem) => void;
   isLoading?: boolean;
+  canPrepare?: boolean;
 }
 
 interface GroupedCases {
@@ -33,6 +34,7 @@ export function CasePreparationTimeline({
   onPrepareItem,
   onPrepareAll,
   isLoading,
+  canPrepare = true,
 }: CasePreparationTimelineProps) {
   // Group cases by date
   const groupedCases = cases.reduce<GroupedCases>((acc, caseItem) => {
@@ -134,7 +136,7 @@ export function CasePreparationTimeline({
                 const prepConfig = getPreparationStatusConfig(caseItem.preparation_status);
                 const { total, prepared, out_of_stock } = caseItem.preparation_summary;
                 const canPrepareAll =
-                  caseItem.reservations?.some((r) => r.status === 'confirmed') ?? false;
+                  canPrepare && (caseItem.reservations?.some((r) => r.status === 'confirmed') ?? false);
 
                 return (
                   <div

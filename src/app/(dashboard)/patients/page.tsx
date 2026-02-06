@@ -24,12 +24,17 @@ import {
   TableCell,
 } from '@/components/ui/Table';
 import { usePatients } from '@/hooks/useApi';
+import { useAuthStore } from '@/stores/authStore';
 import { formatDate } from '@/lib/utils';
 
 export default function PatientsPage() {
   const router = useRouter();
+  const { user } = useAuthStore();
   const [search, setSearch] = useState('');
   const { data: patients, error: patientsError, isLoading, mutate } = usePatients(search);
+
+  const canCreatePatient = user?.role === 'admin' || user?.role === 'cs' || user?.role === 'dentist';
+  const canEditPatient = user?.role === 'admin' || user?.role === 'cs';
 
   return (
     <div className="min-h-screen">
@@ -37,11 +42,13 @@ export default function PatientsPage() {
         title="รายชื่อคนไข้"
         subtitle="จัดการข้อมูลคนไข้ทั้งหมด"
         actions={
-          <Link href="/patients/new">
-            <Button leftIcon={<Plus className="w-4 h-4" />}>
-              เพิ่มคนไข้ใหม่
-            </Button>
-          </Link>
+          canCreatePatient ? (
+            <Link href="/patients/new">
+              <Button leftIcon={<Plus className="w-4 h-4" />}>
+                เพิ่มคนไข้ใหม่
+              </Button>
+            </Link>
+          ) : undefined
         }
       />
 
@@ -154,14 +161,16 @@ export default function PatientsPage() {
                             <Eye className="w-4 h-4" />
                           </Button>
                         </Link>
-                        <Link
-                          href={`/patients/${patient.id}/edit`}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Button variant="ghost" size="sm">
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                        </Link>
+                        {canEditPatient && (
+                          <Link
+                            href={`/patients/${patient.id}/edit`}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Button variant="ghost" size="sm">
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                          </Link>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

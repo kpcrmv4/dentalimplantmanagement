@@ -52,6 +52,8 @@ export default function CaseDetailPage({ params }: PageProps) {
   const [isUpdating, setIsUpdating] = useState(false);
 
   const isDentist = user?.role === 'dentist';
+  const canEditCase = user?.role === 'admin' || user?.role === 'dentist';
+  const canCancelCase = user?.role === 'admin' || user?.role === 'dentist';
   const searchParams = useSearchParams();
 
   // Auto-open reservation modal when navigating with ?reserve=true
@@ -131,7 +133,7 @@ export default function CaseDetailPage({ params }: PageProps) {
         title={`เคส ${caseData.case_number}`}
         subtitle={caseData.procedure_type || 'Implant Surgery'}
         actions={
-          isEditable ? (
+          isEditable && canEditCase ? (
             <Link href={`/cases/${id}/edit`}>
               <Button variant="outline" leftIcon={<Edit className="w-4 h-4" />}>
                 แก้ไข
@@ -405,7 +407,7 @@ export default function CaseDetailPage({ params }: PageProps) {
             </Card>
 
             {/* Cancel action on mobile - inline instead of sidebar */}
-            {isEditable && (
+            {isEditable && canCancelCase && (
               <div className="lg:hidden">
                 <Button
                   variant="danger"
@@ -488,7 +490,7 @@ export default function CaseDetailPage({ params }: PageProps) {
             </Card>
 
             {/* Actions */}
-            {isEditable && (
+            {isEditable && canCancelCase && (
               <Card>
                 <CardContent>
                   <Button

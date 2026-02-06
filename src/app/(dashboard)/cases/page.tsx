@@ -27,6 +27,7 @@ import {
   TableCell,
 } from '@/components/ui/Table';
 import { useCases, useUsers } from '@/hooks/useApi';
+import { useAuthStore } from '@/stores/authStore';
 import {
   formatDate,
   formatTime,
@@ -47,12 +48,16 @@ const statusOptions = [
 
 export default function CasesPage() {
   const router = useRouter();
+  const { user } = useAuthStore();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [dentistFilter, setDentistFilter] = useState('');
 
   const { data: cases, isLoading, mutate } = useCases();
   const { data: dentists } = useUsers('dentist');
+
+  const canCreateCase = user?.role === 'admin' || user?.role === 'dentist';
+  const canEditCase = user?.role === 'admin' || user?.role === 'dentist';
 
   const filteredCases = useMemo(() => {
     if (!cases) return [];
@@ -82,11 +87,13 @@ export default function CasesPage() {
         title="เคสผ่าตัดรากเทียม"
         subtitle="จัดการเคสผ่าตัดและติดตามสถานะ"
         actions={
-          <Link href="/cases/new">
-            <Button leftIcon={<Plus className="w-4 h-4" />}>
-              สร้างเคสใหม่
-            </Button>
-          </Link>
+          canCreateCase ? (
+            <Link href="/cases/new">
+              <Button leftIcon={<Plus className="w-4 h-4" />}>
+                สร้างเคสใหม่
+              </Button>
+            </Link>
+          ) : undefined
         }
       />
 
@@ -199,14 +206,16 @@ export default function CasesPage() {
                             <Eye className="w-4 h-4" />
                           </Button>
                         </Link>
-                        <Link
-                          href={`/cases/${caseItem.id}/edit`}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Button variant="ghost" size="sm">
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                        </Link>
+                        {canEditCase && (
+                          <Link
+                            href={`/cases/${caseItem.id}/edit`}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Button variant="ghost" size="sm">
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                          </Link>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
