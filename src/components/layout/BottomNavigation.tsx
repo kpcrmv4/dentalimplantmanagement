@@ -19,6 +19,11 @@ import {
   MoreHorizontal,
   LogOut,
   X,
+  Boxes,
+  ArrowLeftRight,
+  History,
+  ClipboardCheck,
+  Calendar,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -39,6 +44,31 @@ interface RoleConfig {
   centerActiveColor: string;
   items: MenuItem[];
 }
+
+// All menu items with role access (mirrors Sidebar)
+interface FullMenuItem {
+  id: string;
+  label: string;
+  icon: LucideIcon;
+  href: string;
+  roles: UserRole[];
+}
+
+const allMenuItems: FullMenuItem[] = [
+  { id: 'dashboard', label: 'ภาพรวม', icon: LayoutDashboard, href: '/dashboard', roles: ['admin', 'cs', 'stock_staff'] },
+  { id: 'dentist-dashboard', label: 'Dashboard ทันตแพทย์', icon: Calendar, href: '/dentist-dashboard', roles: ['dentist'] },
+  { id: 'assistant-dashboard', label: 'งานวันนี้', icon: ClipboardCheck, href: '/assistant-dashboard', roles: ['assistant'] },
+  { id: 'cases', label: 'เคส', icon: Stethoscope, href: '/cases', roles: ['admin', 'dentist', 'cs', 'stock_staff', 'assistant'] },
+  { id: 'patients', label: 'คนไข้', icon: Users, href: '/patients', roles: ['admin', 'dentist', 'cs', 'stock_staff', 'assistant'] },
+  { id: 'inventory', label: 'สต็อกวัสดุ', icon: Boxes, href: '/inventory', roles: ['admin', 'stock_staff'] },
+  { id: 'reservations', label: 'เตรียมวัสดุ', icon: ClipboardList, href: '/reservations', roles: ['admin', 'dentist', 'stock_staff', 'assistant'] },
+  { id: 'orders', label: 'ใบสั่งซื้อ', icon: ShoppingCart, href: '/orders', roles: ['admin', 'stock_staff'] },
+  { id: 'exchanges', label: 'ยืม-คืน/แลกเปลี่ยน', icon: ArrowLeftRight, href: '/exchanges', roles: ['admin', 'stock_staff'] },
+  { id: 'notifications', label: 'การแจ้งเตือน', icon: Bell, href: '/notifications', roles: ['admin', 'cs', 'stock_staff', 'dentist', 'assistant'] },
+  { id: 'reports', label: 'รายงาน', icon: FileText, href: '/reports', roles: ['admin'] },
+  { id: 'audit-logs', label: 'ประวัติการใช้งาน', icon: History, href: '/audit-logs', roles: ['admin'] },
+  { id: 'settings', label: 'ตั้งค่าระบบ', icon: Settings, href: '/settings', roles: ['admin'] },
+];
 
 // Role-specific configurations with different colors
 const roleConfigs: Record<UserRole, RoleConfig> = {
@@ -183,6 +213,12 @@ export function BottomNavigation() {
   // Get only first 4 items for nav, 5th slot is "more" menu
   const navItems = config.items.slice(0, 4);
 
+  // Get all menu items for this role that are NOT already in the bottom nav
+  const bottomNavHrefs = new Set(navItems.map((item) => item.href));
+  const moreMenuItems = allMenuItems.filter(
+    (item) => item.roles.includes(role) && !bottomNavHrefs.has(item.href)
+  );
+
   return (
     <>
       {/* More Menu Overlay */}
@@ -192,7 +228,7 @@ export function BottomNavigation() {
           onClick={() => setShowMoreMenu(false)}
         >
           <div
-            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-4 pb-safe animate-slide-up"
+            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-4 pb-safe animate-slide-up max-h-[70vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -226,20 +262,29 @@ export function BottomNavigation() {
               </button>
             </div>
 
-            {/* 5th menu item */}
-            <button
-              onClick={() => {
-                handleNavigation(config.items[4].href);
-                setShowMoreMenu(false);
-              }}
-              className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors"
-            >
-              {(() => {
-                const Icon = config.items[4].icon;
-                return <Icon className={cn("w-5 h-5", config.color)} />;
-              })()}
-              <span className="text-gray-700">{config.items[4].label}</span>
-            </button>
+            {/* All remaining menu items for this role */}
+            <div className="space-y-1">
+              {moreMenuItems.map((item) => {
+                const Icon = item.icon;
+                const active = isActive(item.href);
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      handleNavigation(item.href);
+                      setShowMoreMenu(false);
+                    }}
+                    className={cn(
+                      "w-full flex items-center gap-3 p-3 rounded-xl transition-colors",
+                      active ? cn(config.bgColor, config.color) : "hover:bg-gray-50"
+                    )}
+                  >
+                    <Icon className={cn("w-5 h-5", active ? config.color : "text-gray-500")} />
+                    <span className={active ? "font-medium" : "text-gray-700"}>{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
 
             {/* Divider */}
             <div className="h-px bg-gray-200 my-2" />
