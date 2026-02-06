@@ -194,11 +194,14 @@ BEGIN
   SELECT id INTO p_con002 FROM products WHERE sku = 'CON-002';
   SELECT id INTO p_con003 FROM products WHERE sku = 'CON-003';
 
-  -- Skip if products not found (seed.sql not yet run)
-  IF p_imp001 IS NULL THEN
+  -- Skip if no implant products found (seed.sql not yet run)
+  IF p_imp001 IS NULL AND p_imp005 IS NULL THEN
     RAISE NOTICE 'Products not found - skipping template seed. Run seed.sql first.';
     RETURN;
   END IF;
+
+  -- Helper: Insert template items only if product_id is NOT NULL
+  -- Each item is inserted individually to skip missing products gracefully
 
   -- =========================================================
   -- Template 1: Single Implant - Straumann Standard Set
@@ -207,13 +210,15 @@ BEGIN
   VALUES (gen_random_uuid(), pt_single, 'Straumann Standard Set', 'ชุด Straumann สำหรับฝังรากเดี่ยว ครบทั้ง Implant, Healing Cap, Abutment และวัสดุสิ้นเปลือง', 1)
   RETURNING id INTO tpl_id;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES
-  (tpl_id, p_imp001, 1, 1, 'Straumann BLX Implant 4.0x10mm'),
-  (tpl_id, p_abt001, 1, 2, 'Healing Cap'),
-  (tpl_id, p_abt002, 1, 3, 'Variobase สำหรับครอบฟัน'),
-  (tpl_id, p_sur002, 1, 4, 'Torque Wrench'),
-  (tpl_id, p_con001, 2, 5, 'ไหมเย็บ 4-0'),
-  (tpl_id, p_con003, 2, 6, 'ผ้าก๊อซ');
+  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
+  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
+    (p_imp001, 1, 1, 'Straumann BLX Implant 4.0x10mm'),
+    (p_abt001, 1, 2, 'Healing Cap'),
+    (p_abt002, 1, 3, 'Variobase สำหรับครอบฟัน'),
+    (p_sur002, 1, 4, 'Torque Wrench'),
+    (p_con001, 2, 5, 'ไหมเย็บ 4-0'),
+    (p_con003, 2, 6, 'ผ้าก๊อซ')
+  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
 
   -- =========================================================
   -- Template 2: Single Implant - Osstem Economy Set
@@ -222,12 +227,14 @@ BEGIN
   VALUES (gen_random_uuid(), pt_single, 'Osstem Economy Set', 'ชุด Osstem ราคาประหยัด สำหรับฝังรากเดี่ยว', 2)
   RETURNING id INTO tpl_id;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES
-  (tpl_id, p_imp005, 1, 1, 'Osstem TS III Implant 4.0x10mm'),
-  (tpl_id, p_abt004, 1, 2, 'Osstem Transfer Abutment'),
-  (tpl_id, p_sur002, 1, 3, 'Torque Wrench'),
-  (tpl_id, p_con001, 2, 4, 'ไหมเย็บ 4-0'),
-  (tpl_id, p_con003, 2, 5, 'ผ้าก๊อซ');
+  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
+  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
+    (p_imp005, 1, 1, 'Osstem TS III Implant 4.0x10mm'),
+    (p_abt004, 1, 2, 'Osstem Transfer Abutment'),
+    (p_sur002, 1, 3, 'Torque Wrench'),
+    (p_con001, 2, 4, 'ไหมเย็บ 4-0'),
+    (p_con003, 2, 5, 'ผ้าก๊อซ')
+  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
 
   -- =========================================================
   -- Template 3: Single Implant - Nobel Biocare Premium Set
@@ -236,13 +243,15 @@ BEGIN
   VALUES (gen_random_uuid(), pt_single, 'Nobel Biocare Premium Set', 'ชุด Nobel Biocare ระดับพรีเมียม สำหรับฝังรากเดี่ยว', 3)
   RETURNING id INTO tpl_id;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES
-  (tpl_id, p_imp004, 1, 1, 'Nobel Biocare Active 4.3x10mm'),
-  (tpl_id, p_abt003, 1, 2, 'Nobel Biocare Snappy Abutment'),
-  (tpl_id, p_sur002, 1, 3, 'Torque Wrench'),
-  (tpl_id, p_sur003, 1, 4, 'Implant Driver Set'),
-  (tpl_id, p_con001, 2, 5, 'ไหมเย็บ 4-0'),
-  (tpl_id, p_con003, 2, 6, 'ผ้าก๊อซ');
+  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
+  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
+    (p_imp004, 1, 1, 'Nobel Biocare Active 4.3x10mm'),
+    (p_abt003, 1, 2, 'Nobel Biocare Snappy Abutment'),
+    (p_sur002, 1, 3, 'Torque Wrench'),
+    (p_sur003, 1, 4, 'Implant Driver Set'),
+    (p_con001, 2, 5, 'ไหมเย็บ 4-0'),
+    (p_con003, 2, 6, 'ผ้าก๊อซ')
+  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
 
   -- =========================================================
   -- Template 4: Multiple Implants - Straumann Dual Set
@@ -251,15 +260,17 @@ BEGIN
   VALUES (gen_random_uuid(), pt_multiple, 'Straumann Dual Set', 'ชุด Straumann สำหรับฝังราก 2 ตำแหน่ง', 1)
   RETURNING id INTO tpl_id;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES
-  (tpl_id, p_imp001, 1, 1, 'Implant ตำแหน่งที่ 1 (4.0x10mm)'),
-  (tpl_id, p_imp002, 1, 2, 'Implant ตำแหน่งที่ 2 (4.0x12mm)'),
-  (tpl_id, p_abt001, 2, 3, 'Healing Cap x2'),
-  (tpl_id, p_abt002, 2, 4, 'Variobase x2'),
-  (tpl_id, p_sur002, 1, 5, 'Torque Wrench'),
-  (tpl_id, p_sur003, 1, 6, 'Implant Driver Set'),
-  (tpl_id, p_con001, 3, 7, 'ไหมเย็บ 4-0'),
-  (tpl_id, p_con003, 3, 8, 'ผ้าก๊อซ');
+  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
+  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
+    (p_imp001, 1, 1, 'Implant ตำแหน่งที่ 1 (4.0x10mm)'),
+    (p_imp002, 1, 2, 'Implant ตำแหน่งที่ 2 (4.0x12mm)'),
+    (p_abt001, 2, 3, 'Healing Cap x2'),
+    (p_abt002, 2, 4, 'Variobase x2'),
+    (p_sur002, 1, 5, 'Torque Wrench'),
+    (p_sur003, 1, 6, 'Implant Driver Set'),
+    (p_con001, 3, 7, 'ไหมเย็บ 4-0'),
+    (p_con003, 3, 8, 'ผ้าก๊อซ')
+  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
 
   -- =========================================================
   -- Template 5: Multiple Implants - Osstem Dual Set
@@ -268,13 +279,15 @@ BEGIN
   VALUES (gen_random_uuid(), pt_multiple, 'Osstem Dual Set', 'ชุด Osstem สำหรับฝังราก 2 ตำแหน่ง ราคาประหยัด', 2)
   RETURNING id INTO tpl_id;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES
-  (tpl_id, p_imp005, 1, 1, 'Osstem TS III 4.0x10mm ตำแหน่งที่ 1'),
-  (tpl_id, p_imp006, 1, 2, 'Osstem TS III 4.0x11.5mm ตำแหน่งที่ 2'),
-  (tpl_id, p_abt004, 2, 3, 'Osstem Transfer Abutment x2'),
-  (tpl_id, p_sur002, 1, 4, 'Torque Wrench'),
-  (tpl_id, p_con001, 3, 5, 'ไหมเย็บ 4-0'),
-  (tpl_id, p_con003, 3, 6, 'ผ้าก๊อซ');
+  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
+  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
+    (p_imp005, 1, 1, 'Osstem TS III 4.0x10mm ตำแหน่งที่ 1'),
+    (p_imp006, 1, 2, 'Osstem TS III 4.0x11.5mm ตำแหน่งที่ 2'),
+    (p_abt004, 2, 3, 'Osstem Transfer Abutment x2'),
+    (p_sur002, 1, 4, 'Torque Wrench'),
+    (p_con001, 3, 5, 'ไหมเย็บ 4-0'),
+    (p_con003, 3, 6, 'ผ้าก๊อซ')
+  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
 
   -- =========================================================
   -- Template 6: Full Arch - Straumann Full Arch Set
@@ -283,16 +296,18 @@ BEGIN
   VALUES (gen_random_uuid(), pt_full_arch, 'Straumann Full Arch Set', 'ชุด Straumann สำหรับฝังราก Full Arch (4-6 ตัว) พร้อม Abutment ครบ', 1)
   RETURNING id INTO tpl_id;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES
-  (tpl_id, p_imp001, 3, 1, 'Straumann BLX 4.0x10mm x3'),
-  (tpl_id, p_imp002, 3, 2, 'Straumann BLX 4.0x12mm x3'),
-  (tpl_id, p_abt001, 6, 3, 'Healing Cap x6'),
-  (tpl_id, p_abt002, 6, 4, 'Variobase x6'),
-  (tpl_id, p_sur002, 1, 5, 'Torque Wrench'),
-  (tpl_id, p_sur003, 1, 6, 'Implant Driver Set'),
-  (tpl_id, p_con001, 4, 7, 'ไหมเย็บ 4-0'),
-  (tpl_id, p_con002, 2, 8, 'ไหมเย็บ 5-0 สำหรับจุดละเอียด'),
-  (tpl_id, p_con003, 5, 9, 'ผ้าก๊อซ');
+  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
+  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
+    (p_imp001, 3, 1, 'Straumann BLX 4.0x10mm x3'),
+    (p_imp002, 3, 2, 'Straumann BLX 4.0x12mm x3'),
+    (p_abt001, 6, 3, 'Healing Cap x6'),
+    (p_abt002, 6, 4, 'Variobase x6'),
+    (p_sur002, 1, 5, 'Torque Wrench'),
+    (p_sur003, 1, 6, 'Implant Driver Set'),
+    (p_con001, 4, 7, 'ไหมเย็บ 4-0'),
+    (p_con002, 2, 8, 'ไหมเย็บ 5-0 สำหรับจุดละเอียด'),
+    (p_con003, 5, 9, 'ผ้าก๊อซ')
+  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
 
   -- =========================================================
   -- Template 7: Bone Graft - Standard GBR Set (Geistlich)
@@ -301,12 +316,14 @@ BEGIN
   VALUES (gen_random_uuid(), pt_bone_graft, 'Geistlich GBR Standard Set', 'ชุดปลูกกระดูกมาตรฐาน Bio-Oss + Bio-Gide Membrane', 1)
   RETURNING id INTO tpl_id;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES
-  (tpl_id, p_bio001, 1, 1, 'Bio-Oss 0.5g กระดูกเทียม'),
-  (tpl_id, p_bio003, 1, 2, 'Bio-Gide Membrane 25x25mm'),
-  (tpl_id, p_con001, 2, 3, 'ไหมเย็บ 4-0'),
-  (tpl_id, p_con002, 2, 4, 'ไหมเย็บ 5-0'),
-  (tpl_id, p_con003, 3, 5, 'ผ้าก๊อซ');
+  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
+  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
+    (p_bio001, 1, 1, 'Bio-Oss 0.5g กระดูกเทียม'),
+    (p_bio003, 1, 2, 'Bio-Gide Membrane 25x25mm'),
+    (p_con001, 2, 3, 'ไหมเย็บ 4-0'),
+    (p_con002, 2, 4, 'ไหมเย็บ 5-0'),
+    (p_con003, 3, 5, 'ผ้าก๊อซ')
+  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
 
   -- =========================================================
   -- Template 8: Bone Graft - Botiss Economy Set
@@ -315,11 +332,13 @@ BEGIN
   VALUES (gen_random_uuid(), pt_bone_graft, 'Botiss Economy Set', 'ชุดปลูกกระดูก Cerabone + Jason Membrane ราคาประหยัด', 2)
   RETURNING id INTO tpl_id;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES
-  (tpl_id, p_bio004, 1, 1, 'Cerabone 0.5ml กระดูกเทียม'),
-  (tpl_id, p_bio005, 1, 2, 'Jason Membrane 20x30mm'),
-  (tpl_id, p_con001, 2, 3, 'ไหมเย็บ 4-0'),
-  (tpl_id, p_con003, 2, 4, 'ผ้าก๊อซ');
+  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
+  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
+    (p_bio004, 1, 1, 'Cerabone 0.5ml กระดูกเทียม'),
+    (p_bio005, 1, 2, 'Jason Membrane 20x30mm'),
+    (p_con001, 2, 3, 'ไหมเย็บ 4-0'),
+    (p_con003, 2, 4, 'ผ้าก๊อซ')
+  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
 
   -- =========================================================
   -- Template 9: Sinus Lift - Standard Sinus Set
@@ -328,12 +347,14 @@ BEGIN
   VALUES (gen_random_uuid(), pt_sinus_lift, 'Standard Sinus Lift Set', 'ชุด Sinus Lift มาตรฐาน ใช้ Bio-Oss ปริมาณมาก + Membrane', 1)
   RETURNING id INTO tpl_id;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES
-  (tpl_id, p_bio002, 2, 1, 'Bio-Oss 1.0g x2 สำหรับเติมไซนัส'),
-  (tpl_id, p_bio003, 1, 2, 'Bio-Gide Membrane ปิดหน้าต่าง'),
-  (tpl_id, p_con001, 3, 3, 'ไหมเย็บ 4-0'),
-  (tpl_id, p_con002, 2, 4, 'ไหมเย็บ 5-0'),
-  (tpl_id, p_con003, 4, 5, 'ผ้าก๊อซ');
+  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
+  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
+    (p_bio002, 2, 1, 'Bio-Oss 1.0g x2 สำหรับเติมไซนัส'),
+    (p_bio003, 1, 2, 'Bio-Gide Membrane ปิดหน้าต่าง'),
+    (p_con001, 3, 3, 'ไหมเย็บ 4-0'),
+    (p_con002, 2, 4, 'ไหมเย็บ 5-0'),
+    (p_con003, 4, 5, 'ผ้าก๊อซ')
+  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
 
   -- =========================================================
   -- Template 10: Implant + Bone Graft - Straumann + Geistlich Set
@@ -342,16 +363,18 @@ BEGIN
   VALUES (gen_random_uuid(), pt_implant_bone, 'Straumann + Geistlich Combined Set', 'ชุดฝังราก Straumann พร้อมปลูกกระดูก Geistlich ครบวงจร', 1)
   RETURNING id INTO tpl_id;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES
-  (tpl_id, p_imp001, 1, 1, 'Straumann BLX Implant 4.0x10mm'),
-  (tpl_id, p_abt001, 1, 2, 'Healing Cap'),
-  (tpl_id, p_abt002, 1, 3, 'Variobase Abutment'),
-  (tpl_id, p_bio001, 1, 4, 'Bio-Oss 0.5g กระดูกเทียม'),
-  (tpl_id, p_bio003, 1, 5, 'Bio-Gide Membrane'),
-  (tpl_id, p_sur002, 1, 6, 'Torque Wrench'),
-  (tpl_id, p_con001, 3, 7, 'ไหมเย็บ 4-0'),
-  (tpl_id, p_con002, 2, 8, 'ไหมเย็บ 5-0'),
-  (tpl_id, p_con003, 3, 9, 'ผ้าก๊อซ');
+  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
+  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
+    (p_imp001, 1, 1, 'Straumann BLX Implant 4.0x10mm'),
+    (p_abt001, 1, 2, 'Healing Cap'),
+    (p_abt002, 1, 3, 'Variobase Abutment'),
+    (p_bio001, 1, 4, 'Bio-Oss 0.5g กระดูกเทียม'),
+    (p_bio003, 1, 5, 'Bio-Gide Membrane'),
+    (p_sur002, 1, 6, 'Torque Wrench'),
+    (p_con001, 3, 7, 'ไหมเย็บ 4-0'),
+    (p_con002, 2, 8, 'ไหมเย็บ 5-0'),
+    (p_con003, 3, 9, 'ผ้าก๊อซ')
+  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
 
   -- =========================================================
   -- Template 11: Implant + Bone Graft - Osstem + Botiss Economy Set
@@ -360,14 +383,16 @@ BEGIN
   VALUES (gen_random_uuid(), pt_implant_bone, 'Osstem + Botiss Economy Set', 'ชุดฝังราก Osstem + ปลูกกระดูก Botiss ราคาประหยัด', 2)
   RETURNING id INTO tpl_id;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES
-  (tpl_id, p_imp005, 1, 1, 'Osstem TS III 4.0x10mm'),
-  (tpl_id, p_abt004, 1, 2, 'Osstem Transfer Abutment'),
-  (tpl_id, p_bio004, 1, 3, 'Cerabone กระดูกเทียม'),
-  (tpl_id, p_bio005, 1, 4, 'Jason Membrane'),
-  (tpl_id, p_sur002, 1, 5, 'Torque Wrench'),
-  (tpl_id, p_con001, 2, 6, 'ไหมเย็บ 4-0'),
-  (tpl_id, p_con003, 3, 7, 'ผ้าก๊อซ');
+  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
+  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
+    (p_imp005, 1, 1, 'Osstem TS III 4.0x10mm'),
+    (p_abt004, 1, 2, 'Osstem Transfer Abutment'),
+    (p_bio004, 1, 3, 'Cerabone กระดูกเทียม'),
+    (p_bio005, 1, 4, 'Jason Membrane'),
+    (p_sur002, 1, 5, 'Torque Wrench'),
+    (p_con001, 2, 6, 'ไหมเย็บ 4-0'),
+    (p_con003, 3, 7, 'ผ้าก๊อซ')
+  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
 
   RAISE NOTICE 'Seed templates created: 11 templates across 6 procedure types';
 END $$;
