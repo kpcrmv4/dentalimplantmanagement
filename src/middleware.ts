@@ -46,6 +46,7 @@ export async function middleware(request: NextRequest) {
     '/reports',
     '/settings',
     '/audit-logs',
+    '/profile',
   ];
 
   const isProtectedPath = protectedPaths.some(path => 

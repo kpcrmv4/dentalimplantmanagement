@@ -329,7 +329,7 @@ export function useUsers(role?: string) {
     let query = supabase
       .from('users')
       .select('*')
-      .eq('is_active', true)
+      .order('is_active', { ascending: false })
       .order('full_name', { ascending: true });
 
     if (role) {

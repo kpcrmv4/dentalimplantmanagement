@@ -204,25 +204,27 @@ export function Sidebar() {
       {/* User section */}
       <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-white">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
-            <span className="text-gray-600 font-medium">
-              {user?.full_name?.charAt(0) || 'U'}
-            </span>
-          </div>
-          {!collapsed && (
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
-                {user?.full_name || 'ผู้ใช้งาน'}
-              </p>
-              <p className="text-xs text-gray-500 truncate">
-                {user?.role === 'admin' && 'Admin'}
-                {user?.role === 'cs' && 'CS'}
-                {user?.role === 'dentist' && 'Dentist'}
-                {user?.role === 'assistant' && 'Dental Assistant'}
-                {user?.role === 'stock_staff' && 'Inventory Manager'}
-              </p>
+          <Link href="/profile" className="flex items-center gap-3 flex-1 min-w-0 hover:opacity-80 transition-opacity">
+            <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-gray-600 font-medium">
+                {user?.full_name?.charAt(0) || 'U'}
+              </span>
             </div>
-          )}
+            {!collapsed && (
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {user?.full_name || 'ผู้ใช้งาน'}
+                </p>
+                <p className="text-xs text-gray-500 truncate">
+                  {user?.role === 'admin' && 'Admin'}
+                  {user?.role === 'cs' && 'CS'}
+                  {user?.role === 'dentist' && 'Dentist'}
+                  {user?.role === 'assistant' && 'Dental Assistant'}
+                  {user?.role === 'stock_staff' && 'Inventory Manager'}
+                </p>
+              </div>
+            )}
+          </Link>
           {!collapsed && (
             <button
               onClick={handleLogout}

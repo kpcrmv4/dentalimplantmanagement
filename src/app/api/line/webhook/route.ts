@@ -124,6 +124,86 @@ export async function POST(request: NextRequest) {
         case 'message':
           // User sent a message
           if (event.message?.type === 'text' && event.source?.userId) {
+            const messageText = event.message.text?.trim() || '';
+
+            // Check if message matches a LINE linking code: LINK-XXXXXX
+            if (/^LINK-[A-F0-9]{6}$/i.test(messageText)) {
+              const code = messageText.toUpperCase();
+              const { data: linkSetting } = await serviceClient
+                .from('settings')
+                .select('*')
+                .eq('key', `line_link_code_${code}`)
+                .single();
+
+              if (linkSetting) {
+                try {
+                  const linkData = JSON.parse(linkSetting.value as string);
+
+                  // Check if expired
+                  if (new Date(linkData.expiresAt) < new Date()) {
+                    // Clean up expired token
+                    await serviceClient.from('settings').delete().eq('key', `line_link_code_${code}`);
+                    await serviceClient.from('settings').delete().eq('key', `line_link_user_${linkData.userId}`);
+
+                    if (event.replyToken) {
+                      await replyToUser(event.replyToken, [{
+                        type: 'text',
+                        text: 'รหัสเชื่อมต่อหมดอายุแล้ว กรุณาสร้างรหัสใหม่ในหน้าโปรไฟล์',
+                      }]);
+                    }
+                    break;
+                  }
+
+                  // Link the user's LINE account
+                  await serviceClient
+                    .from('users')
+                    .update({
+                      line_user_id: event.source.userId,
+                      updated_at: new Date().toISOString(),
+                    })
+                    .eq('id', linkData.userId);
+
+                  // Clean up tokens
+                  await serviceClient.from('settings').delete().eq('key', `line_link_code_${code}`);
+                  await serviceClient.from('settings').delete().eq('key', `line_link_user_${linkData.userId}`);
+
+                  // Log the linking event
+                  await serviceClient.from('notification_logs').insert({
+                    recipient_type: 'user',
+                    recipient_id: linkData.userId,
+                    channel: 'line',
+                    notification_type: 'line_linked',
+                    title: 'LINE Account Linked',
+                    message: `LINE user ${event.source.userId} linked to user ${linkData.userId}`,
+                    status: 'delivered',
+                    metadata: {
+                      lineUserId: event.source.userId,
+                      linkCode: code,
+                    },
+                  });
+
+                  if (event.replyToken) {
+                    await replyToUser(event.replyToken, [{
+                      type: 'text',
+                      text: 'เชื่อมต่อ LINE กับบัญชี DentalStock สำเร็จแล้ว! คุณจะได้รับการแจ้งเตือนผ่าน LINE',
+                    }]);
+                  }
+                  break;
+                } catch (e) {
+                  console.error('[LINE Webhook] Link code processing error:', e);
+                }
+              } else {
+                // Code not found
+                if (event.replyToken) {
+                  await replyToUser(event.replyToken, [{
+                    type: 'text',
+                    text: 'รหัสเชื่อมต่อไม่ถูกต้อง กรุณาตรวจสอบรหัสอีกครั้ง',
+                  }]);
+                }
+                break;
+              }
+            }
+
             // Log the message (for debugging/support)
             await serviceClient.from('notification_logs').insert({
               recipient_type: 'system',

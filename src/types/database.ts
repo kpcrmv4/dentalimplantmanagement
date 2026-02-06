@@ -21,6 +21,7 @@ export interface User {
   phone?: string;
   avatar_url?: string;
   license_number?: string;
+  line_user_id?: string;
   is_active: boolean;
   created_at: string;
   updated_at: string;

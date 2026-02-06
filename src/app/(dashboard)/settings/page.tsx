@@ -84,6 +84,7 @@ export default function SettingsPage() {
   const [userForm, setUserForm] = useState({
     full_name: '',
     email: '',
+    password: '',
     role: 'assistant',
     license_number: '',
     line_user_id: '',
@@ -194,37 +195,73 @@ export default function SettingsPage() {
     }
   };
 
-  // User CRUD - Updated with line_user_id
+  // User CRUD - Uses Supabase Auth via API routes
   const handleSaveUser = async () => {
     setIsSubmitting(true);
     try {
-      const userData = {
-        full_name: userForm.full_name,
-        email: userForm.email || null,
-        role: userForm.role,
-        license_number: userForm.license_number || null,
-        line_user_id: userForm.line_user_id || null,
-      };
-
       if (editingItem) {
-        const { error } = await supabase
-          .from('users')
-          .update(userData)
-          .eq('id', editingItem.id);
-        if (error) throw error;
+        // Update existing user
+        const response = await fetch(`/api/users/${editingItem.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            full_name: userForm.full_name,
+            role: userForm.role,
+            license_number: userForm.license_number,
+          }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Failed to update user');
         toast.success('แก้ไขผู้ใช้เรียบร้อย');
       } else {
-        const { error } = await supabase
-          .from('users')
-          .insert({ ...userData, is_active: true });
-        if (error) throw error;
+        // Create new user with Supabase Auth
+        if (!userForm.email || !userForm.password) {
+          toast.error('กรุณากรอกอีเมลและรหัสผ่าน');
+          setIsSubmitting(false);
+          return;
+        }
+        const response = await fetch('/api/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: userForm.email,
+            password: userForm.password,
+            full_name: userForm.full_name,
+            role: userForm.role,
+            license_number: userForm.license_number,
+          }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Failed to create user');
         toast.success('เพิ่มผู้ใช้เรียบร้อย');
       }
       mutateUsers();
       setShowUserModal(false);
       setEditingItem(null);
-      setUserForm({ full_name: '', email: '', role: 'assistant', license_number: '', line_user_id: '' });
-    } catch (error) {
+      setUserForm({ full_name: '', email: '', password: '', role: 'assistant', license_number: '', line_user_id: '' });
+    } catch (error: any) {
+      toast.error(error.message || 'เกิดข้อผิดพลาด');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDisableUser = async (id: string, currentIsActive: boolean) => {
+    if (!confirm(currentIsActive ? 'ต้องการปิดใช้งานผู้ใช้นี้?' : 'ต้องการเปิดใช้งานผู้ใช้นี้?')) return;
+    setIsSubmitting(true);
+    try {
+      const response = await fetch(`/api/users/${id}/disable`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_active: !currentIsActive }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed');
+      toast.success(currentIsActive ? 'ปิดใช้งานผู้ใช้เรียบร้อย' : 'เปิดใช้งานผู้ใช้เรียบร้อย');
+      mutateUsers();
+      setShowUserModal(false);
+      setEditingItem(null);
+    } catch {
       toast.error('เกิดข้อผิดพลาด');
     } finally {
       setIsSubmitting(false);
@@ -232,14 +269,20 @@ export default function SettingsPage() {
   };
 
   const handleDeleteUser = async (id: string) => {
-    if (!confirm('ต้องการลบผู้ใช้นี้?')) return;
+    if (!confirm('ต้องการลบผู้ใช้นี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้')) return;
+    setIsSubmitting(true);
     try {
-      const { error } = await supabase.from('users').delete().eq('id', id);
-      if (error) throw error;
+      const response = await fetch(`/api/users/${id}`, { method: 'DELETE' });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed');
       toast.success('ลบผู้ใช้เรียบร้อย');
       mutateUsers();
-    } catch (error) {
+      setShowUserModal(false);
+      setEditingItem(null);
+    } catch {
       toast.error('เกิดข้อผิดพลาด');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -434,7 +477,7 @@ export default function SettingsPage() {
                     leftIcon={<Plus className="w-4 h-4" />}
                     onClick={() => {
                       setEditingItem(null);
-                      setUserForm({ full_name: '', email: '', role: 'assistant', license_number: '', line_user_id: '' });
+                      setUserForm({ full_name: '', email: '', password: '', role: 'assistant', license_number: '', line_user_id: '' });
                       setShowUserModal(true);
                     }}
                   >
@@ -455,8 +498,13 @@ export default function SettingsPage() {
                       </TableHeader>
                       <TableBody>
                         {users?.map((user: any) => (
-                          <TableRow key={user.id}>
-                            <TableCell className="font-medium">{user.full_name}</TableCell>
+                          <TableRow key={user.id} className={!user.is_active ? 'opacity-50' : ''}>
+                            <TableCell className="font-medium">
+                              {user.full_name}
+                              {!user.is_active && (
+                                <Badge variant="gray" size="sm" className="ml-2">ปิดใช้งาน</Badge>
+                              )}
+                            </TableCell>
                             <TableCell>{user.email || '-'}</TableCell>
                             <TableCell>
                               <Badge
@@ -482,6 +530,7 @@ export default function SettingsPage() {
                                     setUserForm({
                                       full_name: user.full_name,
                                       email: user.email || '',
+                                      password: '',
                                       role: user.role,
                                       license_number: user.license_number || '',
                                       line_user_id: user.line_user_id || '',
@@ -490,13 +539,6 @@ export default function SettingsPage() {
                                   }}
                                 >
                                   <Edit className="w-4 h-4" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => handleDeleteUser(user.id)}
-                                >
-                                  <Trash2 className="w-4 h-4 text-red-500" />
                                 </Button>
                               </div>
                             </TableCell>
@@ -653,7 +695,7 @@ export default function SettingsPage() {
         </ModalFooter>
       </Modal>
 
-      {/* User Modal - Updated with LINE ID */}
+      {/* User Modal - With Supabase Auth */}
       <Modal
         isOpen={showUserModal}
         onClose={() => setShowUserModal(false)}
@@ -666,11 +708,22 @@ export default function SettingsPage() {
             onChange={(e) => setUserForm({ ...userForm, full_name: e.target.value })}
           />
           <Input
-            label="อีเมล"
+            label={editingItem ? 'อีเมล' : 'อีเมล *'}
             type="email"
             value={userForm.email}
             onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
+            disabled={!!editingItem}
+            helperText={editingItem ? 'ไม่สามารถเปลี่ยนอีเมลได้' : undefined}
           />
+          {!editingItem && (
+            <Input
+              label="รหัสผ่าน *"
+              type="password"
+              value={userForm.password}
+              onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
+              placeholder="ขั้นต่ำ 6 ตัวอักษร"
+            />
+          )}
           <Select
             label="บทบาท"
             options={roleOptions}
@@ -685,12 +738,35 @@ export default function SettingsPage() {
           <Input
             label="LINE User ID"
             value={userForm.line_user_id}
-            onChange={(e) => setUserForm({ ...userForm, line_user_id: e.target.value })}
-            placeholder="U1234567890abcdef..."
-            helperText="ID ที่ได้จากการที่ผู้ใช้เพิ่ม LINE Bot เป็นเพื่อน"
+            readOnly
+            className="bg-gray-50"
+            placeholder={editingItem ? '' : 'ผู้ใช้เชื่อมต่อเองผ่านหน้าโปรไฟล์'}
+            helperText="ผู้ใช้สามารถเชื่อมต่อ LINE ได้เองผ่านหน้าโปรไฟล์"
           />
         </div>
         <ModalFooter>
+          {editingItem && (
+            <div className="flex gap-2 mr-auto">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleDisableUser(editingItem.id, editingItem.is_active)}
+                isLoading={isSubmitting}
+              >
+                {editingItem.is_active ? 'ปิดใช้งาน' : 'เปิดใช้งาน'}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-red-600 border-red-300 hover:bg-red-50"
+                onClick={() => handleDeleteUser(editingItem.id)}
+                isLoading={isSubmitting}
+              >
+                <Trash2 className="w-4 h-4 mr-1" />
+                ลบ
+              </Button>
+            </div>
+          )}
           <Button variant="outline" onClick={() => setShowUserModal(false)}>
             ยกเลิก
           </Button>
