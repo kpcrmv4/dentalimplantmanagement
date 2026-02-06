@@ -32,7 +32,7 @@ export default function AssistantDashboardPage() {
   const [closeCaseItem, setCloseCaseItem] = useState<AssistantCaseItem | null>(null);
   const [expandedCaseId, setExpandedCaseId] = useState<string | null>(null);
 
-  const { data: cases, mutate: mutateCases } = useAssistantTodayCases(user?.id || null);
+  const { data: cases, error: casesError, isLoading: casesLoading, mutate: mutateCases } = useAssistantTodayCases(user?.id || null);
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
@@ -339,9 +339,27 @@ export default function AssistantDashboardPage() {
         </div>
 
         {/* Timeline Section */}
-        {!cases && (
+        {!cases && !casesError && (
           <div className="flex items-center justify-center py-12">
             <RefreshCw className="w-6 h-6 animate-spin text-gray-400" />
+          </div>
+        )}
+
+        {casesError && !cases && (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-3">
+              <RefreshCw className="w-8 h-8 text-red-300" />
+            </div>
+            <p className="text-gray-500 font-medium">ไม่สามารถโหลดข้อมูลได้</p>
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-3"
+              onClick={handleRefresh}
+            >
+              <RefreshCw className="w-4 h-4 mr-1.5" />
+              ลองใหม่
+            </Button>
           </div>
         )}
 

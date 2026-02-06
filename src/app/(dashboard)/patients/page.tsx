@@ -29,7 +29,7 @@ import { formatDate } from '@/lib/utils';
 export default function PatientsPage() {
   const router = useRouter();
   const [search, setSearch] = useState('');
-  const { data: patients, isLoading } = usePatients(search);
+  const { data: patients, error: patientsError, isLoading, mutate } = usePatients(search);
 
   return (
     <div className="min-h-screen">
@@ -62,6 +62,13 @@ export default function PatientsPage() {
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+            </div>
+          ) : patientsError ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 mb-3">ไม่สามารถโหลดข้อมูลได้</p>
+              <Button variant="outline" size="sm" onClick={() => mutate()}>
+                ลองใหม่
+              </Button>
             </div>
           ) : !patients || patients.length === 0 ? (
             <div className="text-center py-12">
