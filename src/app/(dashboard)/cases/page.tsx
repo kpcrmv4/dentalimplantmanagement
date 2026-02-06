@@ -105,7 +105,7 @@ export default function CasesPage() {
       <div className="p-4 sm:p-6 lg:p-8">
         <Card>
           {/* Filters */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="space-y-3 sm:space-y-0 sm:flex sm:flex-row sm:gap-4 mb-6">
             <div className="flex-1">
               <Input
                 placeholder="ค้นหาเคส, ชื่อคนไข้..."
@@ -114,18 +114,18 @@ export default function CasesPage() {
                 leftIcon={<Search className="w-4 h-4" />}
               />
             </div>
-            <div className="flex gap-3">
+            <div className="grid grid-cols-2 gap-3 sm:flex sm:gap-3">
               <Select
                 options={statusOptions}
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-40"
+                className="w-full sm:w-40"
               />
               <Select
                 options={dentistOptions}
                 value={dentistFilter}
                 onChange={(e) => setDentistFilter(e.target.value)}
-                className="w-48"
+                className="w-full sm:w-48"
               />
             </div>
           </div>

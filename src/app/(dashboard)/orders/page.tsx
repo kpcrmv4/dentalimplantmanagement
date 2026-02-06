@@ -349,7 +349,7 @@ export default function OrdersPage() {
 
         <Card>
           {/* Filters */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="space-y-3 sm:space-y-0 sm:flex sm:flex-row sm:gap-4 mb-6">
             <div className="flex-1">
               <Input
                 placeholder="ค้นหาเลขใบสั่งซื้อ, ซัพพลายเออร์..."
@@ -362,7 +362,7 @@ export default function OrdersPage() {
               options={statusOptions}
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-40"
+              className="w-full sm:w-40"
             />
           </div>
 

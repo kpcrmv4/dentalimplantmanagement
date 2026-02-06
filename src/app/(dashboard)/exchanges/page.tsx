@@ -316,7 +316,7 @@ export default function ExchangesPage() {
 
         <Card>
           {/* Filters */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="space-y-3 sm:space-y-0 sm:flex sm:flex-row sm:gap-4 mb-6">
             <div className="flex-1">
               <Input
                 placeholder="ค้นหาเลขอ้างอิง, บริษัท, สินค้า..."
@@ -325,18 +325,20 @@ export default function ExchangesPage() {
                 leftIcon={<Search className="w-4 h-4" />}
               />
             </div>
-            <Select
-              options={typeOptions}
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="w-36"
-            />
-            <Select
-              options={statusOptions}
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-40"
-            />
+            <div className="grid grid-cols-2 gap-3 sm:flex sm:gap-3">
+              <Select
+                options={typeOptions}
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+                className="w-full sm:w-36"
+              />
+              <Select
+                options={statusOptions}
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full sm:w-40"
+              />
+            </div>
           </div>
 
           {/* Table */}

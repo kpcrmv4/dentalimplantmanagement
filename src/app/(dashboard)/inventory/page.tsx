@@ -510,7 +510,7 @@ export default function InventoryPage() {
 
         <Card>
           {/* Filters */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="space-y-3 sm:space-y-0 sm:flex sm:flex-row sm:gap-4 mb-6">
             <div className="flex-1">
               <Input
                 placeholder="ค้นหารหัส, REF, ชื่อสินค้า, Lot..."
@@ -519,14 +519,12 @@ export default function InventoryPage() {
                 leftIcon={<Search className="w-4 h-4" />}
               />
             </div>
-            <div className="flex gap-3">
-              <Select
-                options={stockFilterOptions}
-                value={stockFilter}
-                onChange={(e) => setStockFilter(e.target.value)}
-                className="w-40"
-              />
-            </div>
+            <Select
+              options={stockFilterOptions}
+              value={stockFilter}
+              onChange={(e) => setStockFilter(e.target.value)}
+              className="w-full sm:w-40"
+            />
           </div>
 
           {/* Table */}
