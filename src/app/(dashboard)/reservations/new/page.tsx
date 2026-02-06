@@ -440,19 +440,8 @@ export default function NewReservationPage() {
 
       if (reservationError) throw reservationError;
 
-      // Update inventory reserved quantities for in-stock items
-      for (const item of cart) {
-        if (!item.is_out_of_stock && item.inventory_id) {
-          const { error: inventoryError } = await supabase.rpc('reserve_inventory', {
-            p_inventory_id: item.inventory_id,
-            p_quantity: item.quantity,
-          });
-
-          if (inventoryError) {
-            console.error('Error reserving inventory:', inventoryError);
-          }
-        }
-      }
+      // Note: inventory reserved_quantity is automatically updated by the
+      // database trigger 'update_inventory_reserved_on_reservation' on INSERT
 
       // Determine new case status
       const hasOutOfStock = cart.some((item) => item.is_out_of_stock);
