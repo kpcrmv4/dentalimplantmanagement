@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Calendar, Package, CheckCircle, AlertCircle, RefreshCw, Plus } from 'lucide-react';
 import { Header } from '@/components/layout';
 import { Card, Badge, Button } from '@/components/ui';
@@ -240,13 +240,17 @@ export default function AssistantDashboardPage() {
       }
     : { total: 0, completed: 0, pending: 0, ready: 0 };
 
-  const today = new Date();
+  // Use state for today's date to avoid hydration mismatch (server vs client timezone)
+  const [todayStr, setTodayStr] = useState('');
+  useEffect(() => {
+    setTodayStr(formatDate(new Date()));
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header
         title="งานวันนี้"
-        subtitle={`${formatDate(today)} - ${user?.full_name || 'ผู้ช่วยทันตแพทย์'}`}
+        subtitle={`${todayStr || ''} - ${user?.full_name || 'ผู้ช่วยทันตแพทย์'}`}
         onRefresh={handleRefresh}
         isRefreshing={isRefreshing}
       />

@@ -172,6 +172,19 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
   };
 }
 
+// Get today's date as YYYY-MM-DD in Thailand timezone (UTC+7)
+export function getTodayDateString(): string {
+  const now = new Date();
+  // Use Intl to get components in Asia/Bangkok timezone
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Bangkok',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  return formatter.format(now); // returns YYYY-MM-DD in en-CA locale
+}
+
 // Calculate days until date
 export function daysUntil(date: string | Date): number {
   const d = typeof date === 'string' ? parseISO(date) : date;

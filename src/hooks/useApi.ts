@@ -2,6 +2,7 @@
 
 import useSWR from 'swr';
 import { supabase } from '@/lib/supabase';
+import { getTodayDateString } from '@/lib/utils';
 import type {
   DashboardSummary,
   LowStockItem,
@@ -1202,6 +1203,6 @@ export function useAssistantCases(assistantId: string | null, dateFilter?: { sta
 
 // Get today's cases for the assistant
 export function useAssistantTodayCases(assistantId: string | null) {
-  const today = new Date().toISOString().split('T')[0];
+  const today = getTodayDateString();
   return useAssistantCases(assistantId, { startDate: today, endDate: today });
 }
