@@ -34,16 +34,13 @@ export default function NewPatientPage() {
     notes: '',
   });
 
-  const generateHN = () => {
-    const now = new Date();
-    const year = now.getFullYear().toString().slice(-2);
-    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-    return `HN${year}${month}${random}`;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData.hn_number) {
+      toast.error('กรุณากรอก HN');
+      return;
+    }
 
     if (!formData.first_name || !formData.last_name) {
       toast.error('กรุณากรอกชื่อและนามสกุล');
@@ -53,7 +50,7 @@ export default function NewPatientPage() {
     setIsSubmitting(true);
 
     try {
-      const hnNumber = formData.hn_number || generateHN();
+      const hnNumber = formData.hn_number;
 
       const { data, error } = await supabase
         .from('patients')
@@ -117,8 +114,8 @@ export default function NewPatientPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <Input
-                    label="HN (Hospital Number)"
-                    placeholder="ระบบจะสร้างให้อัตโนมัติถ้าไม่กรอก"
+                    label="HN (Hospital Number) *"
+                    placeholder="กรอก HN ของคนไข้"
                     value={formData.hn_number || ''}
                     onChange={(e) =>
                       setFormData({ ...formData, hn_number: e.target.value })

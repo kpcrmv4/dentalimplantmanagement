@@ -102,16 +102,13 @@ export default function NewCasePage() {
     return `CASE-${year}${month}-${random}`;
   };
 
-  const generateHN = () => {
-    const now = new Date();
-    const year = now.getFullYear().toString().slice(-2);
-    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-    return `HN${year}${month}${random}`;
-  };
-
   // Handle new patient creation from modal
   const handleCreatePatient = async () => {
+    if (!newPatient.hn_number) {
+      toast.error('กรุณากรอก HN');
+      return;
+    }
+
     if (!newPatient.first_name || !newPatient.last_name) {
       toast.error('กรุณากรอกชื่อและนามสกุล');
       return;
@@ -120,7 +117,7 @@ export default function NewCasePage() {
     setIsCreatingPatient(true);
 
     try {
-      const hnNumber = newPatient.hn_number || generateHN();
+      const hnNumber = newPatient.hn_number;
 
       const { data, error } = await supabase
         .from('patients')
@@ -512,8 +509,8 @@ export default function NewCasePage() {
           </div>
 
           <Input
-            label="HN (Hospital Number)"
-            placeholder="ระบบจะสร้างให้อัตโนมัติถ้าไม่กรอก"
+            label="HN (Hospital Number) *"
+            placeholder="กรอก HN ของคนไข้"
             value={newPatient.hn_number || ''}
             onChange={(e) =>
               setNewPatient({ ...newPatient, hn_number: e.target.value })
