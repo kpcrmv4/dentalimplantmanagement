@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Header } from '@/components/layout';
-import { Card, Button, Input, Select, Badge } from '@/components/ui';
+import { Card, Button, Input, Select, Badge, ConfirmModal } from '@/components/ui';
 import {
   Package,
   Save,
@@ -68,6 +68,7 @@ export default function NewProductPage() {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [categoryForm, setCategoryForm] = useState({ name: '', description: '' });
   const [savingCategory, setSavingCategory] = useState(false);
+  const [deleteCategoryId, setDeleteCategoryId] = useState<string | null>(null);
 
   // Predefined specification keys for dental products
   const commonSpecKeys = [
@@ -192,8 +193,14 @@ export default function NewProductPage() {
     }
   };
 
-  const handleDeleteCategory = async (id: string) => {
-    if (!confirm('ต้องการลบหมวดหมู่นี้?')) return;
+  const handleDeleteCategory = (id: string) => {
+    setDeleteCategoryId(id);
+  };
+
+  const confirmDeleteCategory = async () => {
+    if (!deleteCategoryId) return;
+    const id = deleteCategoryId;
+    setDeleteCategoryId(null);
     try {
       const { error } = await supabase.from('product_categories').delete().eq('id', id);
       if (error) throw error;
@@ -706,6 +713,17 @@ export default function NewProductPage() {
           </div>
         )}
       </div>
+
+      {/* Delete Category Confirmation */}
+      <ConfirmModal
+        isOpen={!!deleteCategoryId}
+        onClose={() => setDeleteCategoryId(null)}
+        onConfirm={confirmDeleteCategory}
+        title="ลบหมวดหมู่"
+        message="ต้องการลบหมวดหมู่นี้? สินค้าที่อยู่ในหมวดหมู่นี้อาจได้รับผลกระทบ"
+        variant="danger"
+        confirmText="ลบ"
+      />
     </div>
   );
 }

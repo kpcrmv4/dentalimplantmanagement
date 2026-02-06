@@ -34,6 +34,7 @@ import {
   Badge,
   Modal,
   ModalFooter,
+  ConfirmModal,
 } from '@/components/ui';
 import {
   Table,
@@ -116,6 +117,21 @@ export default function SettingsPage() {
   const [templateItemSearch, setTemplateItemSearch] = useState('');
   const [addItemQty, setAddItemQty] = useState(1);
   const { data: searchResults } = useProductSearch(templateItemSearch);
+
+  // Confirm dialog state (replaces browser confirm())
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    variant: 'danger' | 'warning' | 'info';
+    confirmText?: string;
+    onConfirm: () => void;
+  }>({ isOpen: false, title: '', message: '', variant: 'danger', onConfirm: () => {} });
+
+  const showConfirm = (opts: Omit<typeof confirmDialog, 'isOpen'>) => {
+    setConfirmDialog({ ...opts, isOpen: true });
+  };
+  const closeConfirm = () => setConfirmDialog(prev => ({ ...prev, isOpen: false }));
 
   const tabs = [
     { id: 'general', label: 'ทั่วไป', icon: Building2 },
@@ -208,16 +224,24 @@ export default function SettingsPage() {
     }
   };
 
-  const handleDeleteSupplier = async (id: string) => {
-    if (!confirm('ต้องการลบซัพพลายเออร์นี้?')) return;
-    try {
-      const { error } = await supabase.from('suppliers').delete().eq('id', id);
-      if (error) throw error;
-      toast.success('ลบซัพพลายเออร์เรียบร้อย');
-      mutateSuppliers();
-    } catch (error) {
-      toast.error('เกิดข้อผิดพลาด');
-    }
+  const handleDeleteSupplier = (id: string) => {
+    showConfirm({
+      title: 'ลบซัพพลายเออร์',
+      message: 'ต้องการลบซัพพลายเออร์นี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้',
+      variant: 'danger',
+      confirmText: 'ลบ',
+      onConfirm: async () => {
+        closeConfirm();
+        try {
+          const { error } = await supabase.from('suppliers').delete().eq('id', id);
+          if (error) throw error;
+          toast.success('ลบซัพพลายเออร์เรียบร้อย');
+          mutateSuppliers();
+        } catch (error) {
+          toast.error('เกิดข้อผิดพลาด');
+        }
+      },
+    });
   };
 
   // User CRUD - Uses Supabase Auth via API routes
@@ -271,44 +295,62 @@ export default function SettingsPage() {
     }
   };
 
-  const handleDisableUser = async (id: string, currentIsActive: boolean) => {
-    if (!confirm(currentIsActive ? 'ต้องการปิดใช้งานผู้ใช้นี้?' : 'ต้องการเปิดใช้งานผู้ใช้นี้?')) return;
-    setIsSubmitting(true);
-    try {
-      const response = await fetch(`/api/users/${id}/disable`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_active: !currentIsActive }),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Failed');
-      toast.success(currentIsActive ? 'ปิดใช้งานผู้ใช้เรียบร้อย' : 'เปิดใช้งานผู้ใช้เรียบร้อย');
-      mutateUsers();
-      setShowUserModal(false);
-      setEditingItem(null);
-    } catch {
-      toast.error('เกิดข้อผิดพลาด');
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleDisableUser = (id: string, currentIsActive: boolean) => {
+    showConfirm({
+      title: currentIsActive ? 'ปิดใช้งานผู้ใช้' : 'เปิดใช้งานผู้ใช้',
+      message: currentIsActive
+        ? 'ต้องการปิดใช้งานผู้ใช้นี้? ผู้ใช้จะไม่สามารถเข้าสู่ระบบได้'
+        : 'ต้องการเปิดใช้งานผู้ใช้นี้อีกครั้ง?',
+      variant: currentIsActive ? 'warning' : 'info',
+      confirmText: currentIsActive ? 'ปิดใช้งาน' : 'เปิดใช้งาน',
+      onConfirm: async () => {
+        closeConfirm();
+        setIsSubmitting(true);
+        try {
+          const response = await fetch(`/api/users/${id}/disable`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ is_active: !currentIsActive }),
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || 'Failed');
+          toast.success(currentIsActive ? 'ปิดใช้งานผู้ใช้เรียบร้อย' : 'เปิดใช้งานผู้ใช้เรียบร้อย');
+          mutateUsers();
+          setShowUserModal(false);
+          setEditingItem(null);
+        } catch {
+          toast.error('เกิดข้อผิดพลาด');
+        } finally {
+          setIsSubmitting(false);
+        }
+      },
+    });
   };
 
-  const handleDeleteUser = async (id: string) => {
-    if (!confirm('ต้องการลบผู้ใช้นี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้')) return;
-    setIsSubmitting(true);
-    try {
-      const response = await fetch(`/api/users/${id}`, { method: 'DELETE' });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Failed');
-      toast.success('ลบผู้ใช้เรียบร้อย');
-      mutateUsers();
-      setShowUserModal(false);
-      setEditingItem(null);
-    } catch {
-      toast.error('เกิดข้อผิดพลาด');
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleDeleteUser = (id: string) => {
+    showConfirm({
+      title: 'ลบผู้ใช้',
+      message: 'ต้องการลบผู้ใช้นี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้',
+      variant: 'danger',
+      confirmText: 'ลบ',
+      onConfirm: async () => {
+        closeConfirm();
+        setIsSubmitting(true);
+        try {
+          const response = await fetch(`/api/users/${id}`, { method: 'DELETE' });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || 'Failed');
+          toast.success('ลบผู้ใช้เรียบร้อย');
+          mutateUsers();
+          setShowUserModal(false);
+          setEditingItem(null);
+        } catch {
+          toast.error('เกิดข้อผิดพลาด');
+        } finally {
+          setIsSubmitting(false);
+        }
+      },
+    });
   };
 
   // Procedure Type CRUD
@@ -353,18 +395,26 @@ export default function SettingsPage() {
     }
   };
 
-  const handleDeleteProcedureType = async (id: string) => {
-    if (!confirm('ต้องการลบประเภทการรักษานี้? เทมเพลทที่ผูกกับประเภทนี้จะถูกลบด้วย')) return;
-    try {
-      const { error } = await supabase.from('procedure_types').delete().eq('id', id);
-      if (error) throw error;
-      toast.success('ลบประเภทการรักษาเรียบร้อย');
-      if (selectedProcedureTypeId === id) setSelectedProcedureTypeId('');
-      mutateProcedureTypes();
-      mutateTemplates();
-    } catch {
-      toast.error('เกิดข้อผิดพลาด');
-    }
+  const handleDeleteProcedureType = (id: string) => {
+    showConfirm({
+      title: 'ลบประเภทการรักษา',
+      message: 'ต้องการลบประเภทการรักษานี้? เทมเพลทที่ผูกกับประเภทนี้จะถูกลบด้วย',
+      variant: 'danger',
+      confirmText: 'ลบ',
+      onConfirm: async () => {
+        closeConfirm();
+        try {
+          const { error } = await supabase.from('procedure_types').delete().eq('id', id);
+          if (error) throw error;
+          toast.success('ลบประเภทการรักษาเรียบร้อย');
+          if (selectedProcedureTypeId === id) setSelectedProcedureTypeId('');
+          mutateProcedureTypes();
+          mutateTemplates();
+        } catch {
+          toast.error('เกิดข้อผิดพลาด');
+        }
+      },
+    });
   };
 
   const handleToggleProcedureActive = async (pt: ProcedureType) => {
@@ -425,16 +475,24 @@ export default function SettingsPage() {
     }
   };
 
-  const handleDeleteTemplate = async (id: string) => {
-    if (!confirm('ต้องการลบเทมเพลทนี้? รายการวัสดุทั้งหมดจะถูกลบด้วย')) return;
-    try {
-      const { error } = await supabase.from('material_templates').delete().eq('id', id);
-      if (error) throw error;
-      toast.success('ลบเทมเพลทเรียบร้อย');
-      mutateTemplates();
-    } catch {
-      toast.error('เกิดข้อผิดพลาด');
-    }
+  const handleDeleteTemplate = (id: string) => {
+    showConfirm({
+      title: 'ลบเทมเพลท',
+      message: 'ต้องการลบเทมเพลทนี้? รายการวัสดุทั้งหมดในเทมเพลทจะถูกลบด้วย',
+      variant: 'danger',
+      confirmText: 'ลบ',
+      onConfirm: async () => {
+        closeConfirm();
+        try {
+          const { error } = await supabase.from('material_templates').delete().eq('id', id);
+          if (error) throw error;
+          toast.success('ลบเทมเพลทเรียบร้อย');
+          mutateTemplates();
+        } catch {
+          toast.error('เกิดข้อผิดพลาด');
+        }
+      },
+    });
   };
 
   // Template Item CRUD
@@ -1341,6 +1399,17 @@ export default function SettingsPage() {
           </Button>
         </ModalFooter>
       </Modal>
+
+      {/* Confirm Dialog */}
+      <ConfirmModal
+        isOpen={confirmDialog.isOpen}
+        onClose={closeConfirm}
+        onConfirm={confirmDialog.onConfirm}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        variant={confirmDialog.variant}
+        confirmText={confirmDialog.confirmText}
+      />
     </div>
   );
 }

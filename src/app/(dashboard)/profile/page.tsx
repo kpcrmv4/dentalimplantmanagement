@@ -23,6 +23,7 @@ import {
   CardContent,
   Input,
   Badge,
+  ConfirmModal,
 } from '@/components/ui';
 import { useAuthStore } from '@/stores/authStore';
 import toast from 'react-hot-toast';
@@ -59,6 +60,7 @@ export default function ProfilePage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isCheckingLink, setIsCheckingLink] = useState(false);
   const [isUnlinking, setIsUnlinking] = useState(false);
+  const [showUnlinkConfirm, setShowUnlinkConfirm] = useState(false);
 
   // Sync fullName when user data changes
   useEffect(() => {
@@ -187,7 +189,11 @@ export default function ProfilePage() {
   };
 
   const handleUnlinkLine = async () => {
-    if (!confirm('ต้องการยกเลิกการเชื่อมต่อ LINE?')) return;
+    setShowUnlinkConfirm(true);
+  };
+
+  const confirmUnlinkLine = async () => {
+    setShowUnlinkConfirm(false);
     setIsUnlinking(true);
     try {
       const response = await fetch('/api/profile/unlink-line', { method: 'POST' });
@@ -405,6 +411,17 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Unlink LINE Confirmation */}
+      <ConfirmModal
+        isOpen={showUnlinkConfirm}
+        onClose={() => setShowUnlinkConfirm(false)}
+        onConfirm={confirmUnlinkLine}
+        title="ยกเลิกการเชื่อมต่อ LINE"
+        message="ต้องการยกเลิกการเชื่อมต่อ LINE? คุณจะไม่ได้รับการแจ้งเตือนผ่าน LINE อีกต่อไป"
+        variant="warning"
+        confirmText="ยกเลิกการเชื่อมต่อ"
+      />
     </div>
   );
 }

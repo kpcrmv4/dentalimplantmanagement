@@ -32,6 +32,7 @@ import {
   Badge,
   Modal,
   ModalFooter,
+  ConfirmModal,
 } from '@/components/ui';
 import { useCases, useProducts, useInventory, useProductSearch, useCategories } from '@/hooks/useApi';
 import { useAuthStore } from '@/stores/authStore';
@@ -92,6 +93,8 @@ export default function NewReservationPage() {
   const [showTemplatePanel, setShowTemplatePanel] = useState(false);
   const [showOosConfirmModal, setShowOosConfirmModal] = useState(false);
   const [pendingTemplateLoad, setPendingTemplateLoad] = useState<TemplateWithScore | null>(null);
+  const [showCartReplaceConfirm, setShowCartReplaceConfirm] = useState(false);
+  const [pendingCartReplaceTemplate, setPendingCartReplaceTemplate] = useState<TemplateWithScore | null>(null);
 
   const { data: cases } = useCases();
   const { data: searchResults, isLoading: isSearching } = useProductSearch(searchTerm);
@@ -274,9 +277,14 @@ export default function NewReservationPage() {
   // Load template into cart
   const handleSelectTemplate = (scored: TemplateWithScore) => {
     if (cart.length > 0) {
-      if (!confirm('ต้องการเปลี่ยนรายการในตะกร้า? รายการเดิมจะถูกลบ')) return;
+      setPendingCartReplaceTemplate(scored);
+      setShowCartReplaceConfirm(true);
+      return;
     }
+    proceedWithTemplate(scored);
+  };
 
+  const proceedWithTemplate = (scored: TemplateWithScore) => {
     if (scored.oosItems.length > 0) {
       // Has OOS items - show confirmation
       setPendingTemplateLoad(scored);
@@ -1189,6 +1197,24 @@ export default function NewReservationPage() {
           </Button>
         </ModalFooter>
       </Modal>
+
+      {/* Cart Replace Confirmation */}
+      <ConfirmModal
+        isOpen={showCartReplaceConfirm}
+        onClose={() => { setShowCartReplaceConfirm(false); setPendingCartReplaceTemplate(null); }}
+        onConfirm={() => {
+          setShowCartReplaceConfirm(false);
+          if (pendingCartReplaceTemplate) {
+            proceedWithTemplate(pendingCartReplaceTemplate);
+            setPendingCartReplaceTemplate(null);
+          }
+        }}
+        title="เปลี่ยนรายการในตะกร้า"
+        message="ต้องการเปลี่ยนรายการในตะกร้า? รายการเดิมจะถูกแทนที่ด้วยเทมเพลทที่เลือก"
+        variant="warning"
+        confirmText="เปลี่ยน"
+        cancelText="ยกเลิก"
+      />
     </div>
   );
 }

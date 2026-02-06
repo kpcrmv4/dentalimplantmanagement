@@ -14,13 +14,16 @@ import {
   Activity,
 } from 'lucide-react';
 import { Header } from '@/components/layout';
-import { Button, Card, CardHeader, CardTitle, CardContent, Select, Badge } from '@/components/ui';
+import { Button, Card, CardHeader, CardTitle, CardContent, Select, Badge, ConfirmModal } from '@/components/ui';
 import { useCases, useInventory, useOrders, usePatients } from '@/hooks/useApi';
 import { formatCurrency, formatDate } from '@/lib/utils';
+import toast from 'react-hot-toast';
 
 export default function ReportsPage() {
   const [reportType, setReportType] = useState('overview');
   const [dateRange, setDateRange] = useState('month');
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [exportType, setExportType] = useState('');
 
   const { data: cases } = useCases();
   const { data: inventory } = useInventory();
@@ -133,8 +136,8 @@ export default function ReportsPage() {
   }, [cases]);
 
   const handleExport = (type: string) => {
-    // In a real app, this would generate and download a report
-    alert(`กำลังส่งออกรายงาน ${type}...`);
+    setExportType(type);
+    setShowExportModal(true);
   };
 
   return (
@@ -406,6 +409,22 @@ export default function ReportsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Export Confirmation */}
+      <ConfirmModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        onConfirm={() => {
+          setShowExportModal(false);
+          // In a real app, this would generate and download a report
+          toast.success(`กำลังเตรียมรายงาน ${exportType}...`);
+        }}
+        title="ส่งออกรายงาน"
+        message={`ต้องการส่งออกรายงาน ${exportType}? ระบบจะเตรียมไฟล์ให้ดาวน์โหลด`}
+        variant="info"
+        confirmText="ส่งออก"
+        cancelText="ยกเลิก"
+      />
     </div>
   );
 }

@@ -3,6 +3,7 @@ export { Input, type InputProps } from './Input';
 export { Card, CardHeader, CardTitle, CardContent, CardFooter } from './Card';
 export { Badge } from './Badge';
 export { Modal, ModalFooter } from './Modal';
+export { ConfirmModal } from './ConfirmModal';
 export { Select, type SelectOption, type SelectProps } from './Select';
 export {
   Table,
