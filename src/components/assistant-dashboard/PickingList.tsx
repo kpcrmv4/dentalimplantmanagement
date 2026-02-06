@@ -60,7 +60,8 @@ export function PickingList({ reservations, onMarkUsed }: PickingListProps) {
         const config = getStatusConfig(reservation.status);
         const StatusIcon = config.icon;
         const isUsed = reservation.status === 'used';
-        const canMarkUsed = reservation.status === 'prepared' || reservation.status === 'confirmed';
+        const isCancelled = reservation.status === 'cancelled';
+        const canMarkUsed = !isUsed && !isCancelled;
 
         return (
           <div
@@ -137,10 +138,16 @@ export function PickingList({ reservations, onMarkUsed }: PickingListProps) {
                   size="sm"
                   className="w-full"
                   onClick={() => handleOpenModal(reservation)}
+                  disabled={reservation.is_out_of_stock}
                 >
                   <Camera className="w-4 h-4 mr-2" />
                   ถ่ายรูป & บันทึกการใช้
                 </Button>
+                {reservation.is_out_of_stock && (
+                  <p className="text-xs text-orange-600 mt-1 text-center">
+                    รอเจ้าหน้าที่สต็อกจัดหาวัสดุ
+                  </p>
+                )}
               </div>
             )}
           </div>

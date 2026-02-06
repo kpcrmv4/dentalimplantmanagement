@@ -32,11 +32,20 @@ export default function AssistantDashboardPage() {
   // Mark a reservation as used with photo evidence
   const handleMarkUsed = useCallback(
     async (reservationId: string, photoUrls: string[]) => {
+      // Fetch reservation to get actual quantity
+      const { data: reservation } = await supabase
+        .from('case_reservations')
+        .select('quantity')
+        .eq('id', reservationId)
+        .single();
+
+      const qty = reservation?.quantity || 1;
+
       const { error } = await supabase
         .from('case_reservations')
         .update({
           status: 'used',
-          used_quantity: 1, // Assuming 1 for now; can be made configurable
+          used_quantity: qty,
           used_at: new Date().toISOString(),
           used_by: user?.id,
           photo_evidence: photoUrls,
@@ -52,6 +61,7 @@ export default function AssistantDashboardPage() {
         entity_id: reservationId,
         user_id: user?.id,
         details: {
+          quantity: qty,
           photo_count: photoUrls.length,
         },
       });

@@ -143,7 +143,6 @@ export function AssistantCaseCard({
               variant="primary"
               className="flex-1"
               onClick={() => onCloseCase(caseItem.id)}
-              disabled={!allUsed && used < total}
             >
               ปิดเคส
             </Button>
