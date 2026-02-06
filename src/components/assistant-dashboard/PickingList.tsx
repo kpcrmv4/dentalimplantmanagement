@@ -60,8 +60,7 @@ export function PickingList({ reservations, onMarkUsed }: PickingListProps) {
         const config = getStatusConfig(reservation.status);
         const StatusIcon = config.icon;
         const isUsed = reservation.status === 'used';
-        const isCancelled = reservation.status === 'cancelled';
-        const canMarkUsed = !isUsed && !isCancelled;
+        const canMarkUsed = reservation.status === 'prepared' || reservation.status === 'confirmed';
 
         return (
           <div
