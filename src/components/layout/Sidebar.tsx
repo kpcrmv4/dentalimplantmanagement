@@ -3,111 +3,15 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils';
+import { cn, getRoleText } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
-import { supabase } from '@/lib/supabase';
+import { performLogout } from '@/lib/logout';
+import { getMenuItemsForRole } from '@/lib/navigation';
 import {
-  LayoutDashboard,
-  Calendar,
-  Users,
-  Package,
-  Boxes,
-  ClipboardList,
-  ShoppingCart,
-  ArrowLeftRight,
-  FileText,
-  Settings,
-  Bell,
   ChevronLeft,
   ChevronRight,
   LogOut,
-  Stethoscope,
-  History,
-  ClipboardCheck,
 } from 'lucide-react';
-import type { UserRole } from '@/types/database';
-
-interface MenuItem {
-  name: string;
-  href: string;
-  icon: React.ComponentType<{ className?: string }>;
-  roles: UserRole[];
-}
-
-const menuItems: MenuItem[] = [
-  {
-    name: 'ภาพรวม',
-    href: '/dashboard',
-    icon: LayoutDashboard,
-    roles: ['admin', 'cs', 'stock_staff'],
-  },
-  {
-    name: 'Dashboard ทันตแพทย์',
-    href: '/dentist-dashboard',
-    icon: Calendar,
-    roles: ['dentist'],
-  },
-  {
-    name: 'งานวันนี้',
-    href: '/assistant-dashboard',
-    icon: ClipboardCheck,
-    roles: ['assistant'],
-  },
-  {
-    name: 'เคส',
-    href: '/cases',
-    icon: Stethoscope,
-    roles: ['admin', 'dentist', 'cs', 'stock_staff', 'assistant'],
-  },
-  {
-    name: 'คนไข้',
-    href: '/patients',
-    icon: Users,
-    roles: ['admin', 'dentist', 'cs', 'stock_staff', 'assistant'],
-  },
-  {
-    name: 'สต็อกวัสดุและรากเทียม',
-    href: '/inventory',
-    icon: Boxes,
-    roles: ['admin', 'stock_staff'],
-  },
-  {
-    name: 'เตรียมวัสดุสำหรับเคส',
-    href: '/reservations',
-    icon: ClipboardList,
-    roles: ['admin', 'stock_staff', 'assistant'],
-  },
-  {
-    name: 'ใบสั่งซื้อ',
-    href: '/orders',
-    icon: ShoppingCart,
-    roles: ['admin', 'stock_staff'],
-  },
-  {
-    name: 'ยืม-คืน/แลกเปลี่ยนกับบริษัท',
-    href: '/exchanges',
-    icon: ArrowLeftRight,
-    roles: ['admin', 'stock_staff'],
-  },
-  {
-    name: 'รายงาน',
-    href: '/reports',
-    icon: FileText,
-    roles: ['admin'],
-  },
-  {
-    name: 'ประวัติการใช้งาน',
-    href: '/audit-logs',
-    icon: History,
-    roles: ['admin'],
-  },
-  {
-    name: 'ตั้งค่าระบบ',
-    href: '/settings',
-    icon: Settings,
-    roles: ['admin'],
-  },
-];
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -116,35 +20,15 @@ export function Sidebar() {
   const router = useRouter();
   const { user, logout } = useAuthStore();
 
-  const filteredMenuItems = menuItems.filter(
-    (item) => !user?.role || item.roles.includes(user.role)
-  );
+  const filteredMenuItems = user?.role ? getMenuItemsForRole(user.role) : [];
 
   const handleLogout = async () => {
     if (loggingOut) return;
-    
+
     setLoggingOut(true);
     try {
-      // Log the logout event
-      if (user) {
-        await fetch('/api/auth/log', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'LOGOUT',
-            userId: user.id,
-            email: user.email,
-          }),
-        });
-      }
-
-      // Sign out from Supabase
-      await supabase.auth.signOut();
-
-      // Clear local state
+      await performLogout(user);
       logout();
-
-      // Full page redirect to login (avoids middleware caching stale session)
       window.location.href = '/login';
     } catch (error) {
       console.error('Logout error:', error);
@@ -194,7 +78,7 @@ export function Sidebar() {
               )}
             >
               <Icon className={cn('w-5 h-5 flex-shrink-0', isActive && 'text-blue-600')} />
-              {!collapsed && <span className="truncate">{item.name}</span>}
+              {!collapsed && <span className="truncate">{item.label}</span>}
             </Link>
           );
         })}
@@ -215,11 +99,7 @@ export function Sidebar() {
                   {user?.full_name || 'ผู้ใช้งาน'}
                 </p>
                 <p className="text-xs text-gray-500 truncate">
-                  {user?.role === 'admin' && 'Admin'}
-                  {user?.role === 'cs' && 'CS'}
-                  {user?.role === 'dentist' && 'Dentist'}
-                  {user?.role === 'assistant' && 'Dental Assistant'}
-                  {user?.role === 'stock_staff' && 'Inventory Manager'}
+                  {user?.role ? getRoleText(user.role) : ''}
                 </p>
               </div>
             )}

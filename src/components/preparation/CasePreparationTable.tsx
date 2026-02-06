@@ -23,7 +23,8 @@ import {
   TableCell,
 } from '@/components/ui/Table';
 import { formatDate, getCaseStatusText } from '@/lib/utils';
-import type { CasePreparationItem, CaseReservation, CaseStatus, PreparationStatus } from '@/types/database';
+import type { CasePreparationItem, CaseReservation, PreparationStatus } from '@/types/database';
+import { getCaseStatusVariant } from '@/lib/status';
 
 interface CasePreparationTableProps {
   cases: CasePreparationItem[];
@@ -50,18 +51,6 @@ export function CasePreparationTable({
       }
       return next;
     });
-  };
-
-  const getStatusVariant = (status: CaseStatus): 'success' | 'warning' | 'danger' | 'gray' => {
-    const variants: Record<CaseStatus, 'success' | 'warning' | 'danger' | 'gray'> = {
-      green: 'success',
-      yellow: 'warning',
-      red: 'danger',
-      gray: 'gray',
-      completed: 'success',
-      cancelled: 'gray',
-    };
-    return variants[status];
   };
 
   const getPreparationStatusDisplay = (status: PreparationStatus) => {
@@ -200,7 +189,7 @@ export function CasePreparationTable({
                       {caseItem.case_number}
                     </Link>
                     <div className="mt-1">
-                      <Badge variant={getStatusVariant(caseItem.status)} size="sm" dot>
+                      <Badge variant={getCaseStatusVariant(caseItem.status)} size="sm" dot>
                         {getCaseStatusText(caseItem.status)}
                       </Badge>
                     </div>

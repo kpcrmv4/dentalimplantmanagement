@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui';
 import { cn, getCaseStatusText, formatTime } from '@/lib/utils';
 import type { CalendarCase } from '@/types/database';
+import { getCaseStatusVariant } from '@/lib/status';
 
 interface CaseDetailPanelProps {
   selectedDate: Date | null;
@@ -17,18 +18,6 @@ export function CaseDetailPanel({ selectedDate, cases }: CaseDetailPanelProps) {
   const filteredCases = selectedDate
     ? cases.filter((c) => isSameDay(new Date(c.surgery_date), selectedDate))
     : [];
-
-  const getStatusVariant = (status: string) => {
-    const variants: Record<string, 'success' | 'warning' | 'danger' | 'gray' | 'info'> = {
-      green: 'success',
-      yellow: 'warning',
-      red: 'danger',
-      gray: 'gray',
-      completed: 'info',
-      cancelled: 'gray',
-    };
-    return variants[status] || 'gray';
-  };
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6 h-full">
@@ -62,7 +51,7 @@ export function CaseDetailPanel({ selectedDate, cases }: CaseDetailPanelProps) {
                     <span className="font-medium text-gray-900">
                       {caseItem.case_number}
                     </span>
-                    <Badge variant={getStatusVariant(caseItem.status)} size="sm">
+                    <Badge variant={getCaseStatusVariant(caseItem.status)} size="sm">
                       {getCaseStatusText(caseItem.status)}
                     </Badge>
                   </div>

@@ -22,7 +22,8 @@ import { useAssistantTodayCases } from '@/hooks/useApi';
 import { useAuthStore } from '@/stores/authStore';
 import { supabase } from '@/lib/supabase';
 import { formatDate, getCaseStatusText } from '@/lib/utils';
-import type { AssistantCaseItem, CaseStatus } from '@/types/database';
+import { getCaseStatusVariant, getCaseStatusColor, getCaseStatusBorder } from '@/lib/status';
+import type { AssistantCaseItem } from '@/types/database';
 
 export default function AssistantDashboardPage() {
   const { user } = useAuthStore();
@@ -168,66 +169,71 @@ export default function AssistantDashboardPage() {
     [addMaterialCaseId, user?.id, mutateCases]
   );
 
-  // Close a case
+  // Close a case — cancel unused reservations in parallel, then update case + log
   const handleCloseCase = useCallback(
     async (unusedReservationIds: string[], notes?: string) => {
       if (!closeCaseItem) return;
 
-      for (const reservationId of unusedReservationIds) {
-        const reservation = closeCaseItem.reservations.find((r) => r.id === reservationId);
-        if (!reservation) continue;
+      // Cancel unused reservations and restore inventory in parallel
+      await Promise.all(
+        unusedReservationIds.map(async (reservationId) => {
+          const reservation = closeCaseItem.reservations.find((r) => r.id === reservationId);
+          if (!reservation) return;
 
-        await supabase
-          .from('case_reservations')
-          .update({
-            status: 'cancelled',
-            notes: reservation.notes
-              ? `${reservation.notes} [ยกเลิกเมื่อปิดเคส]`
-              : '[ยกเลิกเมื่อปิดเคส]',
-          })
-          .eq('id', reservationId);
+          await supabase
+            .from('case_reservations')
+            .update({
+              status: 'cancelled',
+              notes: reservation.notes
+                ? `${reservation.notes} [ยกเลิกเมื่อปิดเคส]`
+                : '[ยกเลิกเมื่อปิดเคส]',
+            })
+            .eq('id', reservationId);
 
-        if (reservation.inventory_id) {
-          const { data: inv } = await supabase
-            .from('inventory')
-            .select('reserved_quantity, available_quantity')
-            .eq('id', reservation.inventory_id)
-            .single();
-
-          if (inv) {
-            await supabase
+          if (reservation.inventory_id) {
+            const { data: inv } = await supabase
               .from('inventory')
-              .update({
-                reserved_quantity: Math.max(0, inv.reserved_quantity - reservation.quantity),
-                available_quantity: inv.available_quantity + reservation.quantity,
-              })
-              .eq('id', reservation.inventory_id);
+              .select('reserved_quantity, available_quantity')
+              .eq('id', reservation.inventory_id)
+              .single();
+
+            if (inv) {
+              await supabase
+                .from('inventory')
+                .update({
+                  reserved_quantity: Math.max(0, inv.reserved_quantity - reservation.quantity),
+                  available_quantity: inv.available_quantity + reservation.quantity,
+                })
+                .eq('id', reservation.inventory_id);
+            }
           }
-        }
-      }
-
-      await supabase
-        .from('cases')
-        .update({
-          status: 'completed',
-          completed_at: new Date().toISOString(),
-          post_op_notes: notes,
         })
-        .eq('id', closeCaseItem.id);
+      );
 
-      await supabase.from('audit_logs').insert({
-        action: 'CASE_CLOSED',
-        entity_type: 'cases',
-        entity_id: closeCaseItem.id,
-        user_id: user?.id,
-        details: {
-          case_number: closeCaseItem.case_number,
-          patient_name: closeCaseItem.patient_name,
-          materials_used: closeCaseItem.reservations.filter((r) => r.status === 'used').length,
-          materials_returned: unusedReservationIds.length,
-          notes,
-        },
-      });
+      // Update case status and log in parallel
+      await Promise.all([
+        supabase
+          .from('cases')
+          .update({
+            status: 'completed',
+            completed_at: new Date().toISOString(),
+            post_op_notes: notes,
+          })
+          .eq('id', closeCaseItem.id),
+        supabase.from('audit_logs').insert({
+          action: 'CASE_CLOSED',
+          entity_type: 'cases',
+          entity_id: closeCaseItem.id,
+          user_id: user?.id,
+          details: {
+            case_number: closeCaseItem.case_number,
+            patient_name: closeCaseItem.patient_name,
+            materials_used: closeCaseItem.reservations.filter((r) => r.status === 'used').length,
+            materials_returned: unusedReservationIds.length,
+            notes,
+          },
+        }),
+      ]);
 
       await mutateCases();
       setCloseCaseItem(null);
@@ -278,30 +284,6 @@ export default function AssistantDashboardPage() {
 
     return slots;
   }, [cases]);
-
-  const getStatusColor = (status: CaseStatus) => {
-    const colors: Record<CaseStatus, string> = {
-      green: 'bg-green-500',
-      yellow: 'bg-yellow-500',
-      red: 'bg-red-500',
-      gray: 'bg-gray-400',
-      completed: 'bg-green-500',
-      cancelled: 'bg-gray-400',
-    };
-    return colors[status];
-  };
-
-  const getStatusBorder = (status: CaseStatus) => {
-    const colors: Record<CaseStatus, string> = {
-      green: 'border-green-200 bg-green-50',
-      yellow: 'border-yellow-200 bg-yellow-50',
-      red: 'border-red-200 bg-red-50',
-      gray: 'border-gray-200 bg-gray-50',
-      completed: 'border-green-200 bg-green-50',
-      cancelled: 'border-gray-200 bg-gray-50',
-    };
-    return colors[status];
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -404,7 +386,7 @@ export default function AssistantDashboardPage() {
                       return (
                         <div
                           key={caseItem.id}
-                          className={`border rounded-xl p-3 cursor-pointer transition-all active:scale-[0.98] ${getStatusBorder(caseItem.status)} ${
+                          className={`border rounded-xl p-3 cursor-pointer transition-all active:scale-[0.98] ${getCaseStatusBorder(caseItem.status)} ${
                             expandedCaseId === caseItem.id ? 'ring-2 ring-blue-300' : ''
                           }`}
                           onClick={() => setExpandedCaseId(expandedCaseId === caseItem.id ? null : caseItem.id)}
@@ -412,17 +394,12 @@ export default function AssistantDashboardPage() {
                           <div className="flex items-center justify-between">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <div className={`w-2 h-2 rounded-full shrink-0 ${getStatusColor(caseItem.status)}`} />
+                                <div className={`w-2 h-2 rounded-full shrink-0 ${getCaseStatusColor(caseItem.status)}`} />
                                 <span className="font-semibold text-sm text-gray-900 truncate">
                                   {caseItem.case_number}
                                 </span>
                                 <Badge
-                                  variant={
-                                    caseItem.status === 'completed' ? 'success' :
-                                    caseItem.status === 'green' ? 'success' :
-                                    caseItem.status === 'yellow' ? 'warning' :
-                                    caseItem.status === 'red' ? 'danger' : 'gray'
-                                  }
+                                  variant={getCaseStatusVariant(caseItem.status)}
                                   size="sm"
                                 >
                                   {getCaseStatusText(caseItem.status)}

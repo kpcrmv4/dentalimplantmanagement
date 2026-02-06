@@ -29,6 +29,7 @@ import { supabase } from '@/lib/supabase';
 import { formatDate } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import type { ExchangeStatus, ExchangeType } from '@/types/database';
+import { getExchangeStatusVariant } from '@/lib/status';
 
 export default function ExchangesPage() {
   const [search, setSearch] = useState('');
@@ -120,16 +121,6 @@ export default function ExchangesPage() {
     if (type === 'borrow') return <ArrowDownLeft className="w-4 h-4" />;
     if (type === 'lend') return <ArrowUpRight className="w-4 h-4" />;
     return <ArrowLeftRight className="w-4 h-4" />;
-  };
-
-  const getStatusVariant = (status: ExchangeStatus) => {
-    const variants: Record<ExchangeStatus, 'success' | 'warning' | 'info' | 'gray'> = {
-      pending: 'warning',
-      active: 'info',
-      returned: 'success',
-      completed: 'success',
-    };
-    return variants[status];
   };
 
   const getStatusLabel = (status: ExchangeStatus) => {
@@ -411,7 +402,7 @@ export default function ExchangesPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={getStatusVariant(exchange.status)}>
+                      <Badge variant={getExchangeStatusVariant(exchange.status)}>
                         {getStatusLabel(exchange.status)}
                       </Badge>
                     </TableCell>

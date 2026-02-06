@@ -38,7 +38,8 @@ import {
   cn,
 } from '@/lib/utils';
 import toast from 'react-hot-toast';
-import type { CaseStatus, ReservationStatus } from '@/types/database';
+import type { ReservationStatus } from '@/types/database';
+import { getCaseStatusVariant } from '@/lib/status';
 import { ReservationModal } from '@/components/reservations/ReservationModal';
 
 interface PageProps {
@@ -64,18 +65,6 @@ export default function CaseDetailPage({ params }: PageProps) {
       setShowReservationModal(true);
     }
   }, [searchParams, isDentist, caseData]);
-
-  const getStatusVariant = (status: CaseStatus) => {
-    const variants: Record<CaseStatus, 'success' | 'warning' | 'danger' | 'gray' | 'info'> = {
-      green: 'success',
-      yellow: 'warning',
-      red: 'danger',
-      gray: 'gray',
-      completed: 'info',
-      cancelled: 'gray',
-    };
-    return variants[status];
-  };
 
   const getReservationVariant = (status: ReservationStatus) => {
     const variants: Record<ReservationStatus, 'success' | 'warning' | 'danger' | 'gray' | 'info'> = {
@@ -200,7 +189,7 @@ export default function CaseDetailPage({ params }: PageProps) {
             <Card>
               <CardHeader>
                 <CardTitle>ข้อมูลเคส</CardTitle>
-                <Badge variant={getStatusVariant(caseData.status)} size="lg" dot>
+                <Badge variant={getCaseStatusVariant(caseData.status)} size="lg" dot>
                   {getCaseStatusText(caseData.status)}
                 </Badge>
               </CardHeader>

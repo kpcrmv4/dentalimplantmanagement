@@ -31,7 +31,7 @@ import { formatDate, formatCurrency, getOrderStatusText } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { triggerSupplierPO } from '@/lib/notification-triggers';
 import toast from 'react-hot-toast';
-import type { OrderStatus } from '@/types/database';
+import { getOrderStatusVariant } from '@/lib/status';
 
 export default function OrdersPage() {
   const router = useRouter();
@@ -73,19 +73,6 @@ export default function OrdersPage() {
     { value: 'received', label: 'รับของแล้ว' },
     { value: 'cancelled', label: 'ยกเลิก' },
   ];
-
-  const getStatusVariant = (status: OrderStatus) => {
-    const variants: Record<OrderStatus, 'success' | 'warning' | 'danger' | 'gray' | 'info' | 'default'> = {
-      draft: 'gray',
-      pending: 'warning',
-      approved: 'info',
-      ordered: 'info',
-      shipped: 'info',
-      received: 'success',
-      cancelled: 'danger',
-    };
-    return variants[status];
-  };
 
   const handleApprove = async () => {
     if (!selectedOrder) return;
@@ -453,7 +440,7 @@ export default function OrdersPage() {
                       {formatCurrency(order.total_amount)}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={getStatusVariant(order.status)}>
+                      <Badge variant={getOrderStatusVariant(order.status)}>
                         {getOrderStatusText(order.status)}
                       </Badge>
                     </TableCell>

@@ -33,7 +33,7 @@ import {
   getCaseStatusText,
   cn,
 } from '@/lib/utils';
-import type { CaseStatus } from '@/types/database';
+import { getCaseStatusVariant } from '@/lib/status';
 
 const statusOptions = [
   { value: '', label: 'ทุกสถานะ' },
@@ -70,18 +70,6 @@ export default function CasesPage() {
       return matchesSearch && matchesStatus && matchesDentist;
     });
   }, [cases, search, statusFilter, dentistFilter]);
-
-  const getStatusVariant = (status: CaseStatus) => {
-    const variants: Record<CaseStatus, 'success' | 'warning' | 'danger' | 'gray' | 'info'> = {
-      green: 'success',
-      yellow: 'warning',
-      red: 'danger',
-      gray: 'gray',
-      completed: 'info',
-      cancelled: 'gray',
-    };
-    return variants[status];
-  };
 
   const dentistOptions = [
     { value: '', label: 'ทันตแพทย์ทั้งหมด' },
@@ -197,7 +185,7 @@ export default function CasesPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={getStatusVariant(caseItem.status)} dot>
+                      <Badge variant={getCaseStatusVariant(caseItem.status)} dot>
                         {getCaseStatusText(caseItem.status)}
                       </Badge>
                     </TableCell>

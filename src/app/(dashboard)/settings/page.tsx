@@ -47,6 +47,7 @@ import {
 import { useSuppliers, useUsers, useProcedureTypesAll, useMaterialTemplatesAll, useProductSearch } from '@/hooks/useApi';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
+import { getRoleShortLabel } from '@/lib/status';
 import toast from 'react-hot-toast';
 import type { ProcedureType, MaterialTemplate, MaterialTemplateItem } from '@/types/database';
 
@@ -545,17 +546,6 @@ export default function SettingsPage() {
     }
   };
 
-  const getRoleLabel = (role: string) => {
-    const labels: Record<string, string> = {
-      admin: 'Admin',
-      cs: 'CS',
-      dentist: 'ทันตแพทย์',
-      assistant: 'ผู้ช่วย',
-      stock_staff: 'สต็อก',
-    };
-    return labels[role] || role;
-  };
-
   return (
     <div className="min-h-screen">
       <Header title="ตั้งค่าระบบ" subtitle="จัดการการตั้งค่าต่างๆ ของระบบ" />
@@ -769,7 +759,7 @@ export default function SettingsPage() {
                               <Badge
                                 variant={user.role === 'admin' ? 'info' : 'gray'}
                               >
-                                {getRoleLabel(user.role)}
+                                {getRoleShortLabel(user.role)}
                               </Badge>
                             </TableCell>
                             <TableCell>

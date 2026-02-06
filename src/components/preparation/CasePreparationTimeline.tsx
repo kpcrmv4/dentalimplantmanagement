@@ -12,7 +12,8 @@ import {
 } from 'lucide-react';
 import { Button, Badge, Card } from '@/components/ui';
 import { formatDate, formatThaiDate, getCaseStatusText } from '@/lib/utils';
-import type { CasePreparationItem, CaseReservation, CaseStatus, PreparationStatus } from '@/types/database';
+import type { CasePreparationItem, CaseReservation, PreparationStatus } from '@/types/database';
+import { getCaseStatusVariant } from '@/lib/status';
 import { format, isToday, isTomorrow, parseISO } from 'date-fns';
 import { th } from 'date-fns/locale';
 
@@ -51,18 +52,6 @@ export function CasePreparationTimeline({
     if (isToday(date)) return 'วันนี้';
     if (isTomorrow(date)) return 'พรุ่งนี้';
     return format(date, 'EEEE d MMMM yyyy', { locale: th });
-  };
-
-  const getStatusVariant = (status: CaseStatus): 'success' | 'warning' | 'danger' | 'gray' => {
-    const variants: Record<CaseStatus, 'success' | 'warning' | 'danger' | 'gray'> = {
-      green: 'success',
-      yellow: 'warning',
-      red: 'danger',
-      gray: 'gray',
-      completed: 'success',
-      cancelled: 'gray',
-    };
-    return variants[status];
   };
 
   const getPreparationStatusConfig = (status: PreparationStatus) => {
@@ -174,7 +163,7 @@ export function CasePreparationTimeline({
                         >
                           {caseItem.case_number}
                         </Link>
-                        <Badge variant={getStatusVariant(caseItem.status)} size="sm" dot>
+                        <Badge variant={getCaseStatusVariant(caseItem.status)} size="sm" dot>
                           {getCaseStatusText(caseItem.status)}
                         </Badge>
                       </div>

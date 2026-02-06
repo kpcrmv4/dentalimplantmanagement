@@ -22,6 +22,7 @@ import { supabase } from '@/lib/supabase';
 import { formatDate, getCaseStatusText } from '@/lib/utils';
 import useSWR from 'swr';
 import type { Case } from '@/types/database';
+import { getCaseStatusVariant } from '@/lib/status';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -46,18 +47,6 @@ export default function PatientDetailPage({ params }: PageProps) {
     if (error) throw error;
     return data || [];
   });
-
-  const getStatusVariant = (status: string) => {
-    const variants: Record<string, 'success' | 'warning' | 'danger' | 'gray' | 'info'> = {
-      green: 'success',
-      yellow: 'warning',
-      red: 'danger',
-      gray: 'gray',
-      completed: 'info',
-      cancelled: 'gray',
-    };
-    return variants[status] || 'gray';
-  };
 
   if (isLoading) {
     return (
@@ -193,7 +182,7 @@ export default function PatientDetailPage({ params }: PageProps) {
                       >
                         <div className="flex items-center justify-between mb-2">
                           <span className="font-semibold text-gray-900">{c.case_number}</span>
-                          <Badge variant={getStatusVariant(c.status)} size="sm">
+                          <Badge variant={getCaseStatusVariant(c.status)} size="sm">
                             {getCaseStatusText(c.status)}
                           </Badge>
                         </div>

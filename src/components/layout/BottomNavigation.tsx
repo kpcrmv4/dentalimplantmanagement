@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
-import { supabase } from '@/lib/supabase';
+import { performLogout } from '@/lib/logout';
+import { menuItems as allMenuItems } from '@/lib/navigation';
 import {
   LayoutDashboard,
   FileText,
@@ -14,22 +15,17 @@ import {
   ShoppingCart,
   ClipboardList,
   Stethoscope,
-  UserCog,
   Bell,
   MoreHorizontal,
   LogOut,
   X,
-  Boxes,
-  ArrowLeftRight,
-  History,
-  ClipboardCheck,
   Calendar,
   type LucideIcon,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, getRoleText } from '@/lib/utils';
 import type { UserRole } from '@/types/database';
 
-interface MenuItem {
+interface BottomNavMenuItem {
   id: string;
   label: string;
   icon: LucideIcon;
@@ -42,33 +38,8 @@ interface RoleConfig {
   hoverColor: string;
   centerBgColor: string;
   centerActiveColor: string;
-  items: MenuItem[];
+  items: BottomNavMenuItem[];
 }
-
-// All menu items with role access (mirrors Sidebar)
-interface FullMenuItem {
-  id: string;
-  label: string;
-  icon: LucideIcon;
-  href: string;
-  roles: UserRole[];
-}
-
-const allMenuItems: FullMenuItem[] = [
-  { id: 'dashboard', label: 'ภาพรวม', icon: LayoutDashboard, href: '/dashboard', roles: ['admin', 'cs', 'stock_staff'] },
-  { id: 'dentist-dashboard', label: 'Dashboard ทันตแพทย์', icon: Calendar, href: '/dentist-dashboard', roles: ['dentist'] },
-  { id: 'assistant-dashboard', label: 'งานวันนี้', icon: ClipboardCheck, href: '/assistant-dashboard', roles: ['assistant'] },
-  { id: 'cases', label: 'เคส', icon: Stethoscope, href: '/cases', roles: ['admin', 'dentist', 'cs', 'stock_staff', 'assistant'] },
-  { id: 'patients', label: 'คนไข้', icon: Users, href: '/patients', roles: ['admin', 'dentist', 'cs', 'stock_staff', 'assistant'] },
-  { id: 'inventory', label: 'สต็อกวัสดุ', icon: Boxes, href: '/inventory', roles: ['admin', 'stock_staff'] },
-  { id: 'reservations', label: 'เตรียมวัสดุ', icon: ClipboardList, href: '/reservations', roles: ['admin', 'stock_staff', 'assistant'] },
-  { id: 'orders', label: 'ใบสั่งซื้อ', icon: ShoppingCart, href: '/orders', roles: ['admin', 'stock_staff'] },
-  { id: 'exchanges', label: 'ยืม-คืน/แลกเปลี่ยน', icon: ArrowLeftRight, href: '/exchanges', roles: ['admin', 'stock_staff'] },
-  { id: 'notifications', label: 'การแจ้งเตือน', icon: Bell, href: '/notifications', roles: ['admin', 'cs', 'stock_staff', 'dentist', 'assistant'] },
-  { id: 'reports', label: 'รายงาน', icon: FileText, href: '/reports', roles: ['admin'] },
-  { id: 'audit-logs', label: 'ประวัติการใช้งาน', icon: History, href: '/audit-logs', roles: ['admin'] },
-  { id: 'settings', label: 'ตั้งค่าระบบ', icon: Settings, href: '/settings', roles: ['admin'] },
-];
 
 // Role-specific configurations with different colors
 const roleConfigs: Record<UserRole, RoleConfig> = {
@@ -161,7 +132,7 @@ export function BottomNavigation() {
     if (loggingOut) return;
     setLoggingOut(true);
     try {
-      await supabase.auth.signOut();
+      await performLogout(user);
       logout();
       window.location.href = '/login';
     } catch (error) {
@@ -244,11 +215,7 @@ export function BottomNavigation() {
                 <div className="text-left">
                   <p className="font-medium text-gray-900">{user.full_name}</p>
                   <p className="text-xs text-gray-500">
-                    {role === 'admin' && 'Admin'}
-                    {role === 'dentist' && 'ทันตแพทย์'}
-                    {role === 'assistant' && 'ผู้ช่วยทันตแพทย์'}
-                    {role === 'stock_staff' && 'เจ้าหน้าที่สต็อก'}
-                    {role === 'cs' && 'Customer Service'}
+                    {getRoleText(role)}
                   </p>
                 </div>
               </button>

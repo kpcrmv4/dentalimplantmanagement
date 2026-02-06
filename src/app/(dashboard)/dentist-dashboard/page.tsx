@@ -4,15 +4,15 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Plus, AlertTriangle, Calendar, Clock, Package } from 'lucide-react';
 import { Header } from '@/components/layout';
-import { Button, Card, Badge } from '@/components/ui';
+import { Card, Badge } from '@/components/ui';
 import { DateRangePicker, ViewToggle, type ViewMode } from '@/components/preparation';
-import { DentistSummaryCards, DentistCaseTable } from '@/components/dentist-dashboard';
+import { DentistSummaryCards, DentistCaseTable, DentistCaseTimeline } from '@/components/dentist-dashboard';
 import { useDentistDashboard } from '@/hooks/useApi';
 import { useAuthStore } from '@/stores/authStore';
 import { formatDate, getCaseStatusText } from '@/lib/utils';
-import type { DateRangeFilter, DentistCaseItem, CaseStatus } from '@/types/database';
-import { startOfMonth, endOfMonth, format, isToday, isTomorrow, parseISO } from 'date-fns';
-import { th } from 'date-fns/locale';
+import { getCaseStatusVariant } from '@/lib/status';
+import type { DateRangeFilter } from '@/types/database';
+import { startOfMonth, endOfMonth, format } from 'date-fns';
 
 export default function DentistDashboardPage() {
   const { user } = useAuthStore();
@@ -94,18 +94,6 @@ export default function DentistDashboardPage() {
     return Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
   }, [dateFilter]);
 
-  const getStatusVariant = (status: CaseStatus): 'success' | 'warning' | 'danger' | 'gray' => {
-    const variants: Record<CaseStatus, 'success' | 'warning' | 'danger' | 'gray'> = {
-      green: 'success',
-      yellow: 'warning',
-      red: 'danger',
-      gray: 'gray',
-      completed: 'success',
-      cancelled: 'gray',
-    };
-    return variants[status];
-  };
-
   return (
     <div className="min-h-screen">
       <Header
@@ -146,7 +134,7 @@ export default function DentistDashboardPage() {
                           {c.surgery_time && ` ${c.surgery_time.slice(0, 5)}`}
                         </p>
                       </div>
-                      <Badge variant={getStatusVariant(c.status)} size="sm">
+                      <Badge variant={getCaseStatusVariant(c.status)} size="sm">
                         {getCaseStatusText(c.status)}
                       </Badge>
                     </div>
@@ -268,101 +256,6 @@ export default function DentistDashboardPage() {
           </Card>
         </div>
       </div>
-    </div>
-  );
-}
-
-// Simple Timeline component for dentist dashboard
-function DentistCaseTimeline({
-  cases,
-  isLoading,
-}: {
-  cases: DentistCaseItem[];
-  isLoading?: boolean;
-}) {
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-      </div>
-    );
-  }
-
-  if (cases.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-        <p className="text-gray-500">ไม่มีเคสในช่วงเวลาที่เลือก</p>
-      </div>
-    );
-  }
-
-  // Group by date
-  const grouped = cases.reduce<Record<string, DentistCaseItem[]>>((acc, c) => {
-    if (!acc[c.surgery_date]) acc[c.surgery_date] = [];
-    acc[c.surgery_date].push(c);
-    return acc;
-  }, {});
-
-  const sortedDates = Object.keys(grouped).sort();
-
-  const getDateLabel = (dateStr: string) => {
-    const date = parseISO(dateStr);
-    if (isToday(date)) return 'วันนี้';
-    if (isTomorrow(date)) return 'พรุ่งนี้';
-    return format(date, 'EEEE d MMMM', { locale: th });
-  };
-
-  const getMaterialStatusColor = (status: DentistCaseItem['material_status']) => {
-    const colors: Record<DentistCaseItem['material_status'], string> = {
-      ready: 'bg-green-500',
-      waiting: 'bg-orange-500',
-      not_available: 'bg-red-500',
-      not_reserved: 'bg-gray-400',
-    };
-    return colors[status];
-  };
-
-  return (
-    <div className="space-y-6">
-      {sortedDates.map((date) => (
-        <div key={date}>
-          <div className="flex items-center gap-3 mb-3">
-            <span className="font-semibold text-gray-700">{getDateLabel(date)}</span>
-            <span className="text-sm text-gray-500">{grouped[date].length} เคส</span>
-            <div className="flex-1 h-px bg-gray-200" />
-          </div>
-          <div className="space-y-2 pl-4 border-l-2 border-gray-200">
-            {grouped[date].map((c) => (
-              <Link
-                key={c.id}
-                href={`/cases/${c.id}`}
-                className="block p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors relative"
-              >
-                <div
-                  className={`absolute -left-[9px] top-4 w-3 h-3 rounded-full border-2 border-white ${getMaterialStatusColor(c.material_status)}`}
-                />
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    {c.surgery_time && (
-                      <span className="text-sm font-medium text-gray-600">
-                        {c.surgery_time.slice(0, 5)}
-                      </span>
-                    )}
-                    <span className="font-medium">{c.patient_name}</span>
-                    <span className="text-sm text-gray-500">{c.procedure_type || '-'}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-500">
-                      {c.reservation_summary.prepared}/{c.reservation_summary.total}
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      ))}
     </div>
   );
 }

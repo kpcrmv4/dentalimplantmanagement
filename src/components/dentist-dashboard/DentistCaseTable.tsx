@@ -12,7 +12,8 @@ import {
   TableCell,
 } from '@/components/ui/Table';
 import { formatDate, getCaseStatusText } from '@/lib/utils';
-import type { DentistCaseItem, CaseStatus } from '@/types/database';
+import type { DentistCaseItem } from '@/types/database';
+import { getCaseStatusVariant } from '@/lib/status';
 
 interface DentistCaseTableProps {
   cases: DentistCaseItem[];
@@ -20,18 +21,6 @@ interface DentistCaseTableProps {
 }
 
 export function DentistCaseTable({ cases, isLoading }: DentistCaseTableProps) {
-  const getStatusVariant = (status: CaseStatus): 'success' | 'warning' | 'danger' | 'gray' => {
-    const variants: Record<CaseStatus, 'success' | 'warning' | 'danger' | 'gray'> = {
-      green: 'success',
-      yellow: 'warning',
-      red: 'danger',
-      gray: 'gray',
-      completed: 'success',
-      cancelled: 'gray',
-    };
-    return variants[status];
-  };
-
   const getMaterialStatusDisplay = (status: DentistCaseItem['material_status']) => {
     const config: Record<
       DentistCaseItem['material_status'],
@@ -117,7 +106,7 @@ export function DentistCaseTable({ cases, isLoading }: DentistCaseTableProps) {
                   <span className="text-sm">{caseItem.procedure_type || '-'}</span>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={getStatusVariant(caseItem.status)} size="sm" dot>
+                  <Badge variant={getCaseStatusVariant(caseItem.status)} size="sm" dot>
                     {getCaseStatusText(caseItem.status)}
                   </Badge>
                 </TableCell>

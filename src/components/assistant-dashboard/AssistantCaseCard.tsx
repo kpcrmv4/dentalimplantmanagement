@@ -4,7 +4,8 @@ import { Calendar, Clock, User, Stethoscope, Package, CheckCircle } from 'lucide
 import { Card, Badge, Button } from '@/components/ui';
 import { PickingList } from './PickingList';
 import { formatDate, getCaseStatusText } from '@/lib/utils';
-import type { AssistantCaseItem, CaseStatus } from '@/types/database';
+import type { AssistantCaseItem } from '@/types/database';
+import { getCaseStatusVariant } from '@/lib/status';
 
 interface AssistantCaseCardProps {
   caseItem: AssistantCaseItem;
@@ -19,18 +20,6 @@ export function AssistantCaseCard({
   onAddMaterial,
   onCloseCase,
 }: AssistantCaseCardProps) {
-  const getStatusVariant = (status: CaseStatus): 'success' | 'warning' | 'danger' | 'gray' => {
-    const variants: Record<CaseStatus, 'success' | 'warning' | 'danger' | 'gray'> = {
-      green: 'success',
-      yellow: 'warning',
-      red: 'danger',
-      gray: 'gray',
-      completed: 'success',
-      cancelled: 'gray',
-    };
-    return variants[status];
-  };
-
   const { total, prepared, used, pending } = caseItem.material_summary;
   const allUsed = used === total && total > 0;
   const progressPercent = total > 0 ? Math.round((used / total) * 100) : 0;
@@ -53,7 +42,7 @@ export function AssistantCaseCard({
             <div>
               <div className="flex items-center gap-2 mb-1.5">
                 <h3 className="font-bold text-base text-gray-900">{caseItem.case_number}</h3>
-                <Badge variant={getStatusVariant(caseItem.status)} size="sm" dot>
+                <Badge variant={getCaseStatusVariant(caseItem.status)} size="sm" dot>
                   {getCaseStatusText(caseItem.status)}
                 </Badge>
               </div>

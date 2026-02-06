@@ -5,6 +5,7 @@ import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Badge } from '@/components/ui';
 import { cn, getCaseStatusText, formatDate } from '@/lib/utils';
 import type { Case } from '@/types/database';
+import { getCaseStatusVariant } from '@/lib/status';
 
 interface PendingCasesAlertProps {
   cases: Case[];
@@ -36,12 +37,6 @@ export function PendingCasesAlert({ cases }: PendingCasesAlertProps) {
     );
   }
 
-  const getStatusVariant = (status: string) => {
-    if (status === 'red') return 'danger';
-    if (status === 'gray') return 'gray';
-    return 'warning';
-  };
-
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6">
       <div className="flex items-center gap-2 mb-4">
@@ -67,7 +62,7 @@ export function PendingCasesAlert({ cases }: PendingCasesAlertProps) {
                 {formatDate(caseItem.surgery_date)}
               </p>
             </div>
-            <Badge variant={getStatusVariant(caseItem.status)} size="sm">
+            <Badge variant={getCaseStatusVariant(caseItem.status)} size="sm">
               {getCaseStatusText(caseItem.status)}
             </Badge>
           </Link>

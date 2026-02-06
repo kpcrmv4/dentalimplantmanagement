@@ -26,19 +26,9 @@ import {
   ConfirmModal,
 } from '@/components/ui';
 import { useAuthStore } from '@/stores/authStore';
+import { getRoleText } from '@/lib/utils';
 import type { User as UserType } from '@/types/database';
 import toast from 'react-hot-toast';
-
-const getRoleLabel = (role: string) => {
-  const labels: Record<string, string> = {
-    admin: 'Admin (ผู้บริหาร)',
-    cs: 'Customer Service (CS)',
-    dentist: 'Dentist (ทันตแพทย์)',
-    assistant: 'Dental Assistant (ผู้ช่วยทันตแพทย์)',
-    stock_staff: 'Inventory Manager (เจ้าหน้าที่สต็อก)',
-  };
-  return labels[role] || role;
-};
 
 // --- Section 1: Personal Info ---
 function PersonalInfoSection({ user, setUser }: { user: UserType; setUser: (u: UserType) => void }) {
@@ -86,7 +76,7 @@ function PersonalInfoSection({ user, setUser }: { user: UserType; setUser: (u: U
       <CardContent className="space-y-4">
         <Input label="ชื่อ-นามสกุล" value={fullName} onChange={(e) => setFullName(e.target.value)} />
         <Input label="อีเมล" value={user.email || ''} disabled helperText="ไม่สามารถเปลี่ยนอีเมลได้" />
-        <Input label="บทบาท" value={getRoleLabel(user.role)} disabled />
+        <Input label="บทบาท" value={getRoleText(user.role)} disabled />
         <Button onClick={handleSave} isLoading={isSaving} leftIcon={<Save className="w-4 h-4" />}>
           บันทึก
         </Button>
