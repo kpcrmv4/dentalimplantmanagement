@@ -3,13 +3,13 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Save, Calendar, Clock, User, Stethoscope } from 'lucide-react';
+import { ArrowLeft, Save, Calendar, Clock, User, Stethoscope, UserPlus } from 'lucide-react';
 import { Header } from '@/components/layout';
-import { Button, Card, CardHeader, CardTitle, CardContent, Input, Select } from '@/components/ui';
+import { Button, Card, CardHeader, CardTitle, CardContent, Input, Select, Modal, ModalFooter } from '@/components/ui';
 import { usePatients, useUsers } from '@/hooks/useApi';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
-import type { CreateCaseInput } from '@/types/database';
+import type { CreateCaseInput, CreatePatientInput } from '@/types/database';
 
 const procedureTypes = [
   { value: 'single_implant', label: 'Single Implant' },
@@ -25,6 +25,13 @@ const toothPositions = [
   '21', '22', '23', '24', '25', '26', '27', '28',
   '31', '32', '33', '34', '35', '36', '37', '38',
   '41', '42', '43', '44', '45', '46', '47', '48',
+];
+
+const genderOptions = [
+  { value: '', label: 'เลือกเพศ' },
+  { value: 'male', label: 'ชาย' },
+  { value: 'female', label: 'หญิง' },
+  { value: 'other', label: 'อื่นๆ' },
 ];
 
 export default function NewCasePage() {
@@ -43,7 +50,21 @@ export default function NewCasePage() {
   const [selectedTeeth, setSelectedTeeth] = useState<string[]>([]);
   const [patientSearch, setPatientSearch] = useState('');
 
-  const { data: patients } = usePatients(patientSearch);
+  // New patient modal state
+  const [showNewPatientModal, setShowNewPatientModal] = useState(false);
+  const [isCreatingPatient, setIsCreatingPatient] = useState(false);
+  const [newPatient, setNewPatient] = useState<Partial<CreatePatientInput>>({
+    hn_number: '',
+    first_name: '',
+    last_name: '',
+    date_of_birth: '',
+    gender: undefined,
+    phone: '',
+    allergies: '',
+    medical_history: '',
+  });
+
+  const { data: patients, mutate: mutatePatients } = usePatients(patientSearch);
   const { data: dentists } = useUsers('dentist');
   const { data: assistants } = useUsers('assistant');
 
@@ -79,6 +100,80 @@ export default function NewCasePage() {
     const month = (now.getMonth() + 1).toString().padStart(2, '0');
     const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
     return `CASE-${year}${month}-${random}`;
+  };
+
+  const generateHN = () => {
+    const now = new Date();
+    const year = now.getFullYear().toString().slice(-2);
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    return `HN${year}${month}${random}`;
+  };
+
+  // Handle new patient creation from modal
+  const handleCreatePatient = async () => {
+    if (!newPatient.first_name || !newPatient.last_name) {
+      toast.error('กรุณากรอกชื่อและนามสกุล');
+      return;
+    }
+
+    setIsCreatingPatient(true);
+
+    try {
+      const hnNumber = newPatient.hn_number || generateHN();
+
+      const { data, error } = await supabase
+        .from('patients')
+        .insert({
+          hn_number: hnNumber,
+          first_name: newPatient.first_name,
+          last_name: newPatient.last_name,
+          date_of_birth: newPatient.date_of_birth || null,
+          gender: newPatient.gender || null,
+          phone: newPatient.phone || null,
+          email: null,
+          address: null,
+          medical_history: newPatient.medical_history || null,
+          allergies: newPatient.allergies || null,
+          notes: null,
+          is_active: true,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast.success(`เพิ่มคนไข้ ${data.first_name} ${data.last_name} เรียบร้อย`);
+
+      // Auto-select the new patient
+      setFormData({ ...formData, patient_id: data.id });
+      setPatientSearch(`${data.first_name} ${data.last_name}`);
+
+      // Refresh patient list
+      await mutatePatients();
+
+      // Close modal & reset form
+      setShowNewPatientModal(false);
+      setNewPatient({
+        hn_number: '',
+        first_name: '',
+        last_name: '',
+        date_of_birth: '',
+        gender: undefined,
+        phone: '',
+        allergies: '',
+        medical_history: '',
+      });
+    } catch (error: any) {
+      console.error('Error creating patient:', error);
+      if (error.code === '23505') {
+        toast.error('HN นี้มีอยู่ในระบบแล้ว');
+      } else {
+        toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่');
+      }
+    } finally {
+      setIsCreatingPatient(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -146,7 +241,18 @@ export default function NewCasePage() {
               {/* Patient & Team */}
               <Card>
                 <CardHeader>
-                  <CardTitle>ข้อมูลคนไข้และทีมผ่าตัด</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>ข้อมูลคนไข้และทีมผ่าตัด</CardTitle>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      leftIcon={<UserPlus className="w-4 h-4" />}
+                      onClick={() => setShowNewPatientModal(true)}
+                    >
+                      +คนไข้
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
@@ -373,6 +479,134 @@ export default function NewCasePage() {
           </div>
         </form>
       </div>
+
+      {/* New Patient Modal */}
+      <Modal
+        isOpen={showNewPatientModal}
+        onClose={() => setShowNewPatientModal(false)}
+        title="เพิ่มคนไข้ใหม่"
+        description="กรอกข้อมูลเบื้องต้นเพื่อสร้างคนไข้ใหม่ สามารถแก้ไขเพิ่มเติมภายหลังได้"
+        size="lg"
+      >
+        <div className="space-y-4">
+          {/* Basic Info */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Input
+              label="ชื่อ *"
+              placeholder="ชื่อจริง"
+              value={newPatient.first_name || ''}
+              onChange={(e) =>
+                setNewPatient({ ...newPatient, first_name: e.target.value })
+              }
+              disabled={isCreatingPatient}
+            />
+            <Input
+              label="นามสกุล *"
+              placeholder="นามสกุล"
+              value={newPatient.last_name || ''}
+              onChange={(e) =>
+                setNewPatient({ ...newPatient, last_name: e.target.value })
+              }
+              disabled={isCreatingPatient}
+            />
+          </div>
+
+          <Input
+            label="HN (Hospital Number)"
+            placeholder="ระบบจะสร้างให้อัตโนมัติถ้าไม่กรอก"
+            value={newPatient.hn_number || ''}
+            onChange={(e) =>
+              setNewPatient({ ...newPatient, hn_number: e.target.value })
+            }
+            disabled={isCreatingPatient}
+          />
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <Input
+              label="วันเกิด"
+              type="date"
+              value={newPatient.date_of_birth || ''}
+              onChange={(e) =>
+                setNewPatient({ ...newPatient, date_of_birth: e.target.value })
+              }
+              disabled={isCreatingPatient}
+            />
+            <Select
+              label="เพศ"
+              options={genderOptions}
+              value={newPatient.gender || ''}
+              onChange={(e) =>
+                setNewPatient({
+                  ...newPatient,
+                  gender: e.target.value as 'male' | 'female' | 'other',
+                })
+              }
+              disabled={isCreatingPatient}
+            />
+            <Input
+              label="เบอร์โทรศัพท์"
+              type="tel"
+              placeholder="0812345678"
+              value={newPatient.phone || ''}
+              onChange={(e) =>
+                setNewPatient({ ...newPatient, phone: e.target.value })
+              }
+              disabled={isCreatingPatient}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              ประวัติแพ้ยา/อาหาร
+            </label>
+            <textarea
+              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none disabled:bg-gray-50 disabled:text-gray-500"
+              rows={2}
+              value={newPatient.allergies || ''}
+              onChange={(e) =>
+                setNewPatient({ ...newPatient, allergies: e.target.value })
+              }
+              placeholder="ระบุสิ่งที่แพ้..."
+              disabled={isCreatingPatient}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              ประวัติการรักษา / โรคประจำตัว
+            </label>
+            <textarea
+              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none disabled:bg-gray-50 disabled:text-gray-500"
+              rows={2}
+              value={newPatient.medical_history || ''}
+              onChange={(e) =>
+                setNewPatient({ ...newPatient, medical_history: e.target.value })
+              }
+              placeholder="โรคประจำตัว ยาที่ใช้..."
+              disabled={isCreatingPatient}
+            />
+          </div>
+        </div>
+
+        <ModalFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setShowNewPatientModal(false)}
+            disabled={isCreatingPatient}
+          >
+            ยกเลิก
+          </Button>
+          <Button
+            type="button"
+            onClick={handleCreatePatient}
+            isLoading={isCreatingPatient}
+            leftIcon={<UserPlus className="w-4 h-4" />}
+          >
+            เพิ่มคนไข้
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 }
