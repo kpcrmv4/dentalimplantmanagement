@@ -26,25 +26,17 @@ export function AssistantCaseCard({
   const progressPercent = total > 0 ? Math.round((used / total) * 100) : 0;
   const isCompleted = caseItem.status === 'completed';
 
-  // Check if all materials are ready to close the case:
-  // 1. All reservations must be 'used' or 'cancelled' (no pending/prepared/confirmed left)
-  // 2. Every 'used' reservation must have at least 1 photo evidence
+  // Check if case can be closed:
+  // - Every 'used' reservation must have at least 1 photo evidence
+  // - Unused items (prepared/confirmed/pending) are OK — they'll be returned to stock
   const closeCaseCheck = useMemo(() => {
-    const activeReservations = caseItem.reservations.filter((r) => r.status !== 'cancelled');
-    const notUsedItems = activeReservations.filter((r) => r.status !== 'used');
-    const usedWithoutPhoto = activeReservations.filter(
+    const usedWithoutPhoto = caseItem.reservations.filter(
       (r) => r.status === 'used' && (!r.photo_evidence || r.photo_evidence.length === 0)
     );
 
-    const canClose = activeReservations.length > 0 && notUsedItems.length === 0 && usedWithoutPhoto.length === 0;
+    const canClose = usedWithoutPhoto.length === 0;
 
     const reasons: string[] = [];
-    if (activeReservations.length === 0) {
-      reasons.push('ไม่มีวัสดุในเคส');
-    }
-    if (notUsedItems.length > 0) {
-      reasons.push(`วัสดุยังไม่ได้ใช้ ${notUsedItems.length} รายการ`);
-    }
     if (usedWithoutPhoto.length > 0) {
       reasons.push(`ยังไม่ได้ถ่ายรูปยืนยันการตัดวัสดุ ${usedWithoutPhoto.length} รายการ`);
     }
