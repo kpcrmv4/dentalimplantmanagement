@@ -100,80 +100,85 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
   };
 
   return (
-    <div className={cn('flex flex-wrap items-center gap-2', className)}>
-      {/* Quick filters */}
-      <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-        {quickFilters.map((filter) => (
-          <button
-            key={filter.type}
-            onClick={() => handleQuickFilter(filter.type)}
-            className={cn(
-              'px-3 py-1.5 text-sm font-medium rounded-md transition-colors',
-              value.type === filter.type
-                ? 'bg-white text-blue-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            )}
+    <div className={cn('space-y-2', className)}>
+      {/* Row 1: Quick filters + Month navigation */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+          {quickFilters.map((filter) => (
+            <button
+              key={filter.type}
+              onClick={() => handleQuickFilter(filter.type)}
+              className={cn(
+                'px-3 py-1.5 text-sm font-medium rounded-md transition-colors',
+                value.type === filter.type
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              )}
+            >
+              {filter.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Month navigation */}
+        <div className="flex items-center gap-0.5">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleMonthNavigation('prev')}
+            className="p-1.5"
           >
-            {filter.label}
-          </button>
-        ))}
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleMonthNavigation('next')}
+            className="p-1.5"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
 
-      {/* Month navigation */}
-      <div className="flex items-center gap-1">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => handleMonthNavigation('prev')}
-          className="p-1.5"
-        >
-          <ChevronLeft className="w-4 h-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => handleMonthNavigation('next')}
-          className="p-1.5"
-        >
-          <ChevronRight className="w-4 h-4" />
-        </Button>
-      </div>
-
-      {/* Date range display/picker toggle */}
+      {/* Row 2: Date range display */}
       <button
         onClick={() => setShowCustomPicker(!showCustomPicker)}
         className={cn(
-          'flex items-center gap-2 px-3 py-2 text-sm border rounded-lg transition-colors',
+          'flex items-center gap-2 px-3 py-2 text-sm border rounded-lg transition-colors w-full sm:w-auto',
           showCustomPicker || value.type === 'custom'
             ? 'border-blue-500 bg-blue-50 text-blue-700'
             : 'border-gray-300 hover:border-gray-400'
         )}
       >
-        <Calendar className="w-4 h-4" />
+        <Calendar className="w-4 h-4 shrink-0" />
         <span>{getDisplayText() || 'เลือกช่วงเวลา'}</span>
       </button>
 
       {/* Custom date inputs */}
       {showCustomPicker && (
-        <div className="flex items-center gap-2">
-          <Input
-            type="date"
-            value={customStart}
-            onChange={(e) => setCustomStart(e.target.value)}
-            className="w-36 text-sm"
-          />
-          <span className="text-gray-400">→</span>
-          <Input
-            type="date"
-            value={customEnd}
-            onChange={(e) => setCustomEnd(e.target.value)}
-            className="w-36 text-sm"
-          />
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+          <div className="flex items-center gap-2 flex-1">
+            <Input
+              type="date"
+              value={customStart}
+              onChange={(e) => setCustomStart(e.target.value)}
+              className="flex-1 text-sm"
+            />
+            <span className="text-gray-400">→</span>
+            <Input
+              type="date"
+              value={customEnd}
+              onChange={(e) => setCustomEnd(e.target.value)}
+              className="flex-1 text-sm"
+            />
+          </div>
           <Button
             variant="primary"
             size="sm"
             onClick={handleCustomDateChange}
             disabled={!customStart || !customEnd}
+            className="w-full sm:w-auto"
           >
             ใช้งาน
           </Button>

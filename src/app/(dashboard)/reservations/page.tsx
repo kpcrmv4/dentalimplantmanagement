@@ -183,8 +183,8 @@ export default function ReservationsPage() {
       />
 
       <div className="p-4 sm:p-6 lg:p-8">
-        {/* Summary Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-6">
+        {/* Summary Cards - compact on mobile */}
+        <div className="hidden sm:grid sm:grid-cols-5 gap-4 mb-6">
           <Card padding="sm">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -242,8 +242,40 @@ export default function ReservationsPage() {
           </Card>
         </div>
 
+        {/* Mobile-only: Compact summary row */}
+        <div className="sm:hidden mb-4">
+          <Card padding="sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-500">เคส</span>
+                <span className="text-lg font-bold text-blue-600">{summary.total}</span>
+              </div>
+              <div className="flex items-center gap-3 text-xs">
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-green-500" />
+                  พร้อม {summary.ready}
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-yellow-500" />
+                  บางส่วน {summary.partial}
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-gray-400" />
+                  ยังไม่เริ่ม {summary.notStarted}
+                </span>
+                {summary.blocked > 0 && (
+                  <span className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-red-500" />
+                    ติดปัญหา {summary.blocked}
+                  </span>
+                )}
+              </div>
+            </div>
+          </Card>
+        </div>
+
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <div className="space-y-3 sm:space-y-0 sm:flex sm:flex-row sm:items-start sm:justify-between sm:gap-4 mb-6">
           <DateRangePicker value={dateFilter} onChange={setDateFilter} />
           <ViewToggle value={viewMode} onChange={setViewMode} />
         </div>
