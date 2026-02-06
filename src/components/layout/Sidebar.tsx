@@ -54,13 +54,13 @@ const menuItems: MenuItem[] = [
     roles: ['assistant'],
   },
   {
-    name: 'เคสผ่าตัดรากเทียม',
+    name: 'เคส',
     href: '/cases',
     icon: Stethoscope,
     roles: ['admin', 'dentist', 'cs', 'stock_staff', 'assistant'],
   },
   {
-    name: 'รายชื่อคนไข้',
+    name: 'คนไข้',
     href: '/patients',
     icon: Users,
     roles: ['admin', 'dentist', 'cs', 'stock_staff', 'assistant'],
@@ -75,7 +75,7 @@ const menuItems: MenuItem[] = [
     name: 'เตรียมวัสดุสำหรับเคส',
     href: '/reservations',
     icon: ClipboardList,
-    roles: ['admin', 'dentist', 'stock_staff', 'assistant'],
+    roles: ['admin', 'stock_staff', 'assistant'],
   },
   {
     name: 'ใบสั่งซื้อ',

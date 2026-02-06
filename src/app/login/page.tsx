@@ -53,7 +53,24 @@ function LoginForm() {
           }),
         });
 
-        router.push(redirectTo);
+        // Determine redirect based on user role
+        let targetUrl = redirectTo;
+        if (redirectTo === '/dashboard') {
+          // Fetch user role to redirect to role-specific home page
+          const { data: profile } = await supabase
+            .from('users')
+            .select('role')
+            .eq('id', data.user.id)
+            .single();
+
+          if (profile?.role === 'dentist') {
+            targetUrl = '/dentist-dashboard';
+          } else if (profile?.role === 'assistant') {
+            targetUrl = '/assistant-dashboard';
+          }
+        }
+
+        router.push(targetUrl);
         router.refresh();
       }
     } catch (err) {

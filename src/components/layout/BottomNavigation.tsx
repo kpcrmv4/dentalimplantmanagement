@@ -61,7 +61,7 @@ const allMenuItems: FullMenuItem[] = [
   { id: 'cases', label: 'เคส', icon: Stethoscope, href: '/cases', roles: ['admin', 'dentist', 'cs', 'stock_staff', 'assistant'] },
   { id: 'patients', label: 'คนไข้', icon: Users, href: '/patients', roles: ['admin', 'dentist', 'cs', 'stock_staff', 'assistant'] },
   { id: 'inventory', label: 'สต็อกวัสดุ', icon: Boxes, href: '/inventory', roles: ['admin', 'stock_staff'] },
-  { id: 'reservations', label: 'เตรียมวัสดุ', icon: ClipboardList, href: '/reservations', roles: ['admin', 'dentist', 'stock_staff', 'assistant'] },
+  { id: 'reservations', label: 'เตรียมวัสดุ', icon: ClipboardList, href: '/reservations', roles: ['admin', 'stock_staff', 'assistant'] },
   { id: 'orders', label: 'ใบสั่งซื้อ', icon: ShoppingCart, href: '/orders', roles: ['admin', 'stock_staff'] },
   { id: 'exchanges', label: 'ยืม-คืน/แลกเปลี่ยน', icon: ArrowLeftRight, href: '/exchanges', roles: ['admin', 'stock_staff'] },
   { id: 'notifications', label: 'การแจ้งเตือน', icon: Bell, href: '/notifications', roles: ['admin', 'cs', 'stock_staff', 'dentist', 'assistant'] },
@@ -93,11 +93,10 @@ const roleConfigs: Record<UserRole, RoleConfig> = {
     centerBgColor: 'bg-emerald-600 hover:bg-emerald-700',
     centerActiveColor: 'bg-emerald-700',
     items: [
-      { id: 'dashboard', label: 'ภาพรวม', icon: LayoutDashboard, href: '/dashboard' },
       { id: 'cases', label: 'เคส', icon: FileText, href: '/cases' },
-      { id: 'dentist-dashboard', label: 'งานฉัน', icon: Stethoscope, href: '/dentist-dashboard' }, // Center - main action
-      { id: 'reservations', label: 'จองของ', icon: CalendarCheck, href: '/reservations' },
       { id: 'patients', label: 'คนไข้', icon: Users, href: '/patients' },
+      { id: 'dentist-dashboard', label: 'หน้าหลัก', icon: Stethoscope, href: '/dentist-dashboard' }, // Center - main action
+      { id: 'notifications', label: 'แจ้งเตือน', icon: Bell, href: '/notifications' },
     ],
   },
   stock_staff: {
