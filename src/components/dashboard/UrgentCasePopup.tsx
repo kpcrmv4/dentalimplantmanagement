@@ -101,7 +101,7 @@ export function UrgentCasePopup({ cases, isOpen, onClose }: UrgentCasePopupProps
                           </div>
                         )}
                         {caseItem.unprepared_count > 0 && (
-                          <div className="flex items-center gap-1 text-xs text-yellow-700 bg-yellow-50 px-2 py-1 rounded">
+                          <div className="flex items-center gap-1 text-xs text-orange-700 bg-orange-50 px-2 py-1 rounded">
                             <Package className="w-3.5 h-3.5" />
                             <span>ยังไม่เตรียม {caseItem.unprepared_count} รายการ</span>
                           </div>
@@ -109,7 +109,7 @@ export function UrgentCasePopup({ cases, isOpen, onClose }: UrgentCasePopupProps
                         {caseItem.out_of_stock_count > 0 && (
                           <div className="flex items-center gap-1 text-xs text-red-700 bg-red-50 px-2 py-1 rounded">
                             <AlertCircle className="w-3.5 h-3.5" />
-                            <span>ไม่มีในสต็อก {caseItem.out_of_stock_count} รายการ</span>
+                            <span>ขาด {caseItem.out_of_stock_count} รายการ</span>
                           </div>
                         )}
                       </div>

@@ -67,7 +67,7 @@ export function getCaseStatusColor(status: string): string {
   const colors: Record<string, string> = {
     gray: 'bg-gray-100 text-gray-800 border-gray-300',
     green: 'bg-green-100 text-green-800 border-green-300',
-    yellow: 'bg-yellow-100 text-yellow-800 border-yellow-300',
+    yellow: 'bg-orange-100 text-orange-800 border-orange-300',
     red: 'bg-red-100 text-red-800 border-red-300',
     completed: 'bg-blue-100 text-blue-800 border-blue-300',
     cancelled: 'bg-gray-100 text-gray-500 border-gray-300',
@@ -79,7 +79,7 @@ export function getCaseStatusDot(status: string): string {
   const colors: Record<string, string> = {
     gray: 'bg-gray-400',
     green: 'bg-green-500',
-    yellow: 'bg-yellow-500',
+    yellow: 'bg-orange-500',
     red: 'bg-red-500',
     completed: 'bg-blue-500',
     cancelled: 'bg-gray-400',
@@ -89,10 +89,10 @@ export function getCaseStatusDot(status: string): string {
 
 export function getCaseStatusText(status: string): string {
   const texts: Record<string, string> = {
-    gray: 'ยังไม่จองวัสดุ',
-    green: 'พร้อมผ่าตัด',
-    yellow: 'สั่งซื้อแล้ว รอของ', // Order placed, waiting for delivery
-    red: 'วัสดุไม่พอ',
+    gray: 'ยังไม่จอง',
+    green: 'พร้อม',
+    yellow: 'รอของ',
+    red: 'ขาด',
     completed: 'เสร็จสิ้น',
     cancelled: 'ยกเลิก',
   };

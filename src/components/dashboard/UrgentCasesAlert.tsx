@@ -107,19 +107,25 @@ export function UrgentCasesAlert({ cases }: UrgentCasesAlertProps) {
 
             {/* Warning indicators */}
             <div className="flex items-center gap-3 mt-3">
-              {caseItem.unprepared_items > 0 && (
-                <div className="flex items-center gap-1 text-xs text-yellow-600 bg-yellow-50 px-2 py-1 rounded">
+              {caseItem.has_no_reservations && (
+                <div className="flex items-center gap-1 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                  <Package className="w-3.5 h-3.5" />
+                  <span>ยังไม่จองวัสดุ</span>
+                </div>
+              )}
+              {!caseItem.has_no_reservations && caseItem.unprepared_items > 0 && (
+                <div className="flex items-center gap-1 text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded">
                   <Package className="w-3.5 h-3.5" />
                   <span>ยังไม่เตรียม {caseItem.unprepared_items} รายการ</span>
                 </div>
               )}
-              {caseItem.out_of_stock_items > 0 && (
+              {!caseItem.has_no_reservations && caseItem.out_of_stock_items > 0 && (
                 <div className="flex items-center gap-1 text-xs text-red-600 bg-red-50 px-2 py-1 rounded">
                   <AlertCircle className="w-3.5 h-3.5" />
-                  <span>ไม่มีในสต็อก {caseItem.out_of_stock_items} รายการ</span>
+                  <span>ขาด {caseItem.out_of_stock_items} รายการ</span>
                 </div>
               )}
-              {caseItem.unprepared_items === 0 && caseItem.out_of_stock_items === 0 && (
+              {!caseItem.has_no_reservations && caseItem.unprepared_items === 0 && caseItem.out_of_stock_items === 0 && (
                 <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded">
                   <Package className="w-3.5 h-3.5" />
                   <span>วัสดุพร้อมแล้ว</span>

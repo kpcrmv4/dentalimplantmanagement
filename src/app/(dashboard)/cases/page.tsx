@@ -37,10 +37,10 @@ import type { CaseStatus } from '@/types/database';
 
 const statusOptions = [
   { value: '', label: 'ทุกสถานะ' },
-  { value: 'gray', label: 'ยังไม่จองวัสดุ' },
-  { value: 'green', label: 'พร้อมผ่าตัด' },
-  { value: 'yellow', label: 'รอวัสดุ' },
-  { value: 'red', label: 'วัสดุไม่พอ' },
+  { value: 'gray', label: 'ยังไม่จอง' },
+  { value: 'green', label: 'พร้อม' },
+  { value: 'yellow', label: 'รอของ' },
+  { value: 'red', label: 'ขาด' },
   { value: 'completed', label: 'เสร็จสิ้น' },
   { value: 'cancelled', label: 'ยกเลิก' },
 ];

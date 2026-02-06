@@ -24,12 +24,12 @@ export function DentistSummaryCards({ summary }: DentistSummaryCardsProps) {
       </Card>
       <Card padding="sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-            <Package className="w-5 h-5 text-yellow-600" />
+          <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+            <Package className="w-5 h-5 text-orange-600" />
           </div>
           <div>
-            <p className="text-sm text-gray-500">รอจองวัสดุ</p>
-            <p className="text-xl font-bold text-yellow-600">{summary.pending_reservations}</p>
+            <p className="text-sm text-gray-500">รอของ</p>
+            <p className="text-xl font-bold text-orange-600">{summary.pending_reservations}</p>
           </div>
         </div>
       </Card>
@@ -50,7 +50,7 @@ export function DentistSummaryCards({ summary }: DentistSummaryCardsProps) {
             <AlertCircle className="w-5 h-5 text-red-600" />
           </div>
           <div>
-            <p className="text-sm text-gray-500">วัสดุไม่พร้อม</p>
+            <p className="text-sm text-gray-500">ขาด</p>
             <p className="text-xl font-bold text-red-600">{summary.not_ready_cases}</p>
           </div>
         </div>

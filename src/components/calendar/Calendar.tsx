@@ -37,9 +37,9 @@ interface CalendarProps {
 function getCaseStatusBg(status: CaseStatus): string {
   switch (status) {
     case 'green':
-      return 'bg-cyan-100 text-cyan-700 border-cyan-200';
+      return 'bg-green-100 text-green-700 border-green-200';
     case 'yellow':
-      return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+      return 'bg-orange-100 text-orange-700 border-orange-200';
     case 'red':
       return 'bg-red-100 text-red-700 border-red-200';
     case 'gray':
@@ -241,11 +241,11 @@ export function Calendar({
       <div className="flex flex-wrap items-center gap-4 mb-4 text-sm">
         <span className="text-gray-500">สถานะ:</span>
         <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-cyan-500" />
+          <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
           <span className="text-gray-600">พร้อม</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
+          <span className="w-2.5 h-2.5 rounded-full bg-orange-500" />
           <span className="text-gray-600">รอของ</span>
         </div>
         <div className="flex items-center gap-1.5">
@@ -440,13 +440,13 @@ export function Calendar({
           <div className="text-xs sm:text-sm text-gray-500">เคสทั้งหมด</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl sm:text-3xl font-bold text-cyan-600">
+          <div className="text-2xl sm:text-3xl font-bold text-green-600">
             {summary.ready}
           </div>
           <div className="text-xs sm:text-sm text-gray-500">พร้อม</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl sm:text-3xl font-bold text-yellow-600">
+          <div className="text-2xl sm:text-3xl font-bold text-orange-600">
             {summary.waiting}
           </div>
           <div className="text-xs sm:text-sm text-gray-500">รอของ</div>

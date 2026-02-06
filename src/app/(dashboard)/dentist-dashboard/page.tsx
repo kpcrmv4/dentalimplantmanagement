@@ -224,12 +224,12 @@ export default function DentistDashboardPage() {
               {statusSummary.ready} พร้อม
             </span>
             <span className="flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-yellow-500" />
-              {statusSummary.partial} บางส่วน
+              <span className="w-2 h-2 rounded-full bg-orange-500" />
+              {statusSummary.partial} รอของ
             </span>
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-red-500" />
-              {statusSummary.notReady} ไม่พร้อม
+              {statusSummary.notReady} ขาด
             </span>
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-gray-400" />
@@ -316,7 +316,7 @@ function DentistCaseTimeline({
   const getMaterialStatusColor = (status: DentistCaseItem['material_status']) => {
     const colors: Record<DentistCaseItem['material_status'], string> = {
       ready: 'bg-green-500',
-      waiting: 'bg-yellow-500',
+      waiting: 'bg-orange-500',
       not_available: 'bg-red-500',
       not_reserved: 'bg-gray-400',
     };

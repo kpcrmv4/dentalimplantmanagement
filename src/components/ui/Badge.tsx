@@ -14,7 +14,7 @@ const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
     const variants = {
       default: 'bg-blue-100 text-blue-800',
       success: 'bg-green-100 text-green-800',
-      warning: 'bg-yellow-100 text-yellow-800',
+      warning: 'bg-orange-100 text-orange-800',
       danger: 'bg-red-100 text-red-800',
       info: 'bg-cyan-100 text-cyan-800',
       gray: 'bg-gray-100 text-gray-800',
@@ -23,7 +23,7 @@ const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
     const dotColors = {
       default: 'bg-blue-500',
       success: 'bg-green-500',
-      warning: 'bg-yellow-500',
+      warning: 'bg-orange-500',
       danger: 'bg-red-500',
       info: 'bg-cyan-500',
       gray: 'bg-gray-500',

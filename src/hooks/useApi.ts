@@ -562,13 +562,14 @@ export function useUrgentCases48h() {
         status: c.status,
         dentist_id: c.dentist?.id,
         dentist_name: c.dentist?.full_name || 'ไม่ระบุ',
-        patient_name: c.patient 
-          ? `${c.patient.first_name} ${c.patient.last_name}` 
+        patient_name: c.patient
+          ? `${c.patient.first_name} ${c.patient.last_name}`
           : 'ไม่ระบุ',
         hn_number: c.patient?.hn_number || '',
         days_until_surgery: daysUntil,
         unprepared_items: unpreparedItems,
         out_of_stock_items: outOfStockItems,
+        has_no_reservations: (c.reservations || []).length === 0,
       };
     });
   });

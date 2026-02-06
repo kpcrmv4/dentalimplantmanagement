@@ -1,13 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Noto_Sans_Thai } from "next/font/google";
+import { Prompt } from "next/font/google";
 import "./globals.css";
 import { ToasterProvider } from "@/components/providers/ToasterProvider";
 import { ServiceWorkerProvider } from "@/components/providers/ServiceWorkerProvider";
 
-const notoSansThai = Noto_Sans_Thai({
+const prompt = Prompt({
   weight: ['300', '400', '500', '600', '700'],
   subsets: ["thai", "latin"],
-  variable: "--font-noto-sans-thai",
+  variable: "--font-prompt",
 });
 
 export const metadata: Metadata = {
@@ -43,7 +43,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th">
-      <body className={`${notoSansThai.variable} font-sans antialiased`}>
+      <body className={`${prompt.variable} font-sans antialiased`}>
         {children}
         <ToasterProvider />
         <ServiceWorkerProvider />

@@ -89,9 +89,10 @@ export default function ReportsPage() {
     });
 
     const statusLabels: Record<string, string> = {
-      gray: 'รอดำเนินการ',
-      yellow: 'รอวัสดุ',
+      gray: 'ยังไม่จอง',
+      yellow: 'รอของ',
       green: 'พร้อม',
+      red: 'ขาด',
       completed: 'เสร็จสิ้น',
       cancelled: 'ยกเลิก',
     };

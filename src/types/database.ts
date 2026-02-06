@@ -407,6 +407,7 @@ export interface UrgentCase48h {
   days_until_surgery: number;
   unprepared_items: number;
   out_of_stock_items: number;
+  has_no_reservations: boolean;
 }
 
 // Dashboard types
