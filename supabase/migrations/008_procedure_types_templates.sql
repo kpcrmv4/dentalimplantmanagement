@@ -49,6 +49,20 @@ ALTER TABLE procedure_types ENABLE ROW LEVEL SECURITY;
 ALTER TABLE material_templates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE material_template_items ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if re-running (idempotent)
+DROP POLICY IF EXISTS "procedure_types_select" ON procedure_types;
+DROP POLICY IF EXISTS "procedure_types_insert" ON procedure_types;
+DROP POLICY IF EXISTS "procedure_types_update" ON procedure_types;
+DROP POLICY IF EXISTS "procedure_types_delete" ON procedure_types;
+DROP POLICY IF EXISTS "material_templates_select" ON material_templates;
+DROP POLICY IF EXISTS "material_templates_insert" ON material_templates;
+DROP POLICY IF EXISTS "material_templates_update" ON material_templates;
+DROP POLICY IF EXISTS "material_templates_delete" ON material_templates;
+DROP POLICY IF EXISTS "material_template_items_select" ON material_template_items;
+DROP POLICY IF EXISTS "material_template_items_insert" ON material_template_items;
+DROP POLICY IF EXISTS "material_template_items_update" ON material_template_items;
+DROP POLICY IF EXISTS "material_template_items_delete" ON material_template_items;
+
 -- Everyone authenticated can read
 CREATE POLICY "procedure_types_select" ON procedure_types
   FOR SELECT TO authenticated USING (true);
@@ -88,7 +102,10 @@ CREATE POLICY "material_template_items_delete" ON material_template_items
   FOR DELETE TO authenticated
   USING ((SELECT role FROM users WHERE id = auth.uid()) = 'admin');
 
--- Triggers for updated_at
+-- Triggers for updated_at (drop first to be idempotent)
+DROP TRIGGER IF EXISTS set_procedure_types_updated_at ON procedure_types;
+DROP TRIGGER IF EXISTS set_material_templates_updated_at ON material_templates;
+
 CREATE TRIGGER set_procedure_types_updated_at
   BEFORE UPDATE ON procedure_types
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
