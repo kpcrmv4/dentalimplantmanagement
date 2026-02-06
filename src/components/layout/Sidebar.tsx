@@ -72,7 +72,7 @@ const menuItems: MenuItem[] = [
     roles: ['admin', 'stock_staff'],
   },
   {
-    name: 'การจองของสำหรับเคส',
+    name: 'เตรียมวัสดุสำหรับเคส',
     href: '/reservations',
     icon: ClipboardList,
     roles: ['admin', 'dentist', 'stock_staff', 'assistant'],

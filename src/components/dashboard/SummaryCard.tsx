@@ -7,6 +7,7 @@ interface SummaryCardProps {
   title: string;
   value: string | number;
   subtitle?: string;
+  shortSubtitle?: string; // For mobile display
   icon: ReactNode;
   trend?: {
     value: number;
@@ -20,6 +21,7 @@ export function SummaryCard({
   title,
   value,
   subtitle,
+  shortSubtitle,
   icon,
   trend,
   variant = 'default',
@@ -57,20 +59,29 @@ export function SummaryCard({
   return (
     <div
       className={cn(
-        'rounded-xl border border-gray-200 p-5 transition-all duration-200',
+        'rounded-xl border border-gray-200 p-3 sm:p-5 transition-all duration-200',
         style.bg,
         onClick && 'cursor-pointer hover:shadow-md hover:border-gray-300'
       )}
       onClick={onClick}
     >
       <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-sm font-medium text-gray-500">{title}</p>
-          <p className={cn('mt-2 text-3xl font-bold', style.valueColor)}>
+        <div className="flex-1 min-w-0">
+          <p className="text-xs sm:text-sm font-medium text-gray-500 truncate">{title}</p>
+          <p className={cn('mt-1 sm:mt-2 text-2xl sm:text-3xl font-bold', style.valueColor)}>
             {typeof value === 'number' ? value.toLocaleString('th-TH') : value}
           </p>
-          {subtitle && (
-            <p className="mt-1 text-sm text-gray-500">{subtitle}</p>
+          {(subtitle || shortSubtitle) && (
+            <>
+              {shortSubtitle ? (
+                <>
+                  <p className="mt-1 text-xs text-gray-500 sm:hidden">{shortSubtitle}</p>
+                  <p className="mt-1 text-sm text-gray-500 hidden sm:block">{subtitle}</p>
+                </>
+              ) : (
+                <p className="mt-1 text-xs sm:text-sm text-gray-500">{subtitle}</p>
+              )}
+            </>
           )}
           {trend && (
             <div className="mt-2 flex items-center gap-1">
@@ -89,9 +100,10 @@ export function SummaryCard({
         </div>
         <div
           className={cn(
-            'w-12 h-12 rounded-xl flex items-center justify-center',
+            'w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0',
             style.iconBg,
-            style.iconColor
+            style.iconColor,
+            '[&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-6 sm:[&>svg]:h-6'
           )}
         >
           {icon}

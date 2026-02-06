@@ -52,8 +52,8 @@ const roleConfigs: Record<UserRole, RoleConfig> = {
       { id: 'cases', label: 'เคส', icon: FileText, href: '/cases' },
       { id: 'inventory', label: 'สต็อก', icon: Package, href: '/inventory' },
       { id: 'dashboard', label: 'ภาพรวม', icon: LayoutDashboard, href: '/dashboard' }, // Center - main action
+      { id: 'reservations', label: 'เตรียมของ', icon: CalendarCheck, href: '/reservations' },
       { id: 'settings', label: 'ตั้งค่า', icon: Settings, href: '/settings' },
-      { id: 'users', label: 'ผู้ใช้', icon: UserCog, href: '/settings/users' },
     ],
   },
   dentist: {

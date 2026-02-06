@@ -25,7 +25,7 @@ import {
 } from '@/hooks/useApi';
 import { useAuthStore } from '@/stores/authStore';
 import { useUrgentPopupStore } from '@/stores/urgentPopupStore';
-import { formatThaiDate } from '@/lib/utils';
+import { formatThaiDate, formatThaiDateShort } from '@/lib/utils';
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
@@ -115,19 +115,22 @@ export default function DashboardPage() {
             title="เคสเดือนนี้"
             value={summary?.cases_this_month || 0}
             subtitle={formatThaiDate(new Date())}
+            shortSubtitle={formatThaiDateShort(new Date())}
             icon={<CalendarIcon className="w-6 h-6" />}
           />
           <SummaryCard
             title="เคสด่วน 48 ชม."
             value={urgentCount}
             subtitle="ต้องเตรียมด่วน"
+            shortSubtitle="เตรียมด่วน"
             icon={<Clock className="w-6 h-6" />}
             variant={urgentCount > 0 ? 'danger' : 'default'}
           />
           <SummaryCard
-            title="วัสดุยังไม่พร้อม"
+            title="วัสดุไม่พร้อม"
             value={summary?.cases_not_ready || 0}
             subtitle="ต้องเตรียมของ"
+            shortSubtitle="เตรียมของ"
             icon={<Package className="w-6 h-6" />}
             variant={summary?.cases_not_ready ? 'danger' : 'default'}
           />
@@ -135,6 +138,7 @@ export default function DashboardPage() {
             title="รอสั่งซื้อ"
             value={outOfStockCount + (summary?.low_stock_items || 0)}
             subtitle="สินค้าไม่มี/ใกล้หมด"
+            shortSubtitle="ไม่มี/ใกล้หมด"
             icon={<AlertTriangle className="w-6 h-6" />}
             variant={(outOfStockCount + (summary?.low_stock_items || 0)) > 0 ? 'warning' : 'default'}
           />

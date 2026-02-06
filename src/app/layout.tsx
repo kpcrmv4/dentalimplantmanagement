@@ -1,12 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Sarabun } from "next/font/google";
+import { Noto_Sans_Thai } from "next/font/google";
 import "./globals.css";
 import { ToasterProvider } from "@/components/providers/ToasterProvider";
 
-const sarabun = Sarabun({
+const notoSansThai = Noto_Sans_Thai({
   weight: ['300', '400', '500', '600', '700'],
   subsets: ["thai", "latin"],
-  variable: "--font-sarabun",
+  variable: "--font-noto-sans-thai",
 });
 
 export const metadata: Metadata = {
@@ -30,7 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th">
-      <body className={`${sarabun.variable} font-sans antialiased`}>
+      <body className={`${notoSansThai.variable} font-sans antialiased`}>
         {children}
         <ToasterProvider />
       </body>

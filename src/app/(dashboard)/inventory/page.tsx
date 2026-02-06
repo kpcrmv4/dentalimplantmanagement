@@ -276,13 +276,15 @@ export default function InventoryPage() {
         actions={
           <div className="flex gap-2">
             <Link href="/inventory/receive">
-              <Button variant="outline" leftIcon={<Package className="w-4 h-4" />}>
-                รับของเข้า
+              <Button variant="outline" size="sm" leftIcon={<Package className="w-4 h-4" />}>
+                <span className="hidden sm:inline">รับของเข้า</span>
+                <span className="sm:hidden">รับของ</span>
               </Button>
             </Link>
             <Link href="/products/new">
-              <Button leftIcon={<Plus className="w-4 h-4" />}>
-                เพิ่มสินค้าใหม่
+              <Button size="sm" leftIcon={<Plus className="w-4 h-4" />}>
+                <span className="hidden sm:inline">เพิ่มสินค้าใหม่</span>
+                <span className="sm:hidden">เพิ่ม</span>
               </Button>
             </Link>
           </div>

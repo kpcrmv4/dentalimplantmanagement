@@ -70,12 +70,13 @@ export function Calendar({
   const weekDays = ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'];
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
+    <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-          <span className="text-xl">📅</span>
-          ปฏิทินเคสผ่าตัด
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <h2 className="text-base sm:text-lg font-semibold text-gray-900 flex items-center gap-2">
+          <span className="text-lg sm:text-xl">📅</span>
+          <span className="hidden sm:inline">ปฏิทินเคสผ่าตัด</span>
+          <span className="sm:hidden">ปฏิทิน</span>
         </h2>
         <div className="flex items-center gap-2">
           <button

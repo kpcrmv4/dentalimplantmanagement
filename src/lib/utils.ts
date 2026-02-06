@@ -28,6 +28,13 @@ export function formatThaiDate(date: string | Date): string {
   return format(d, `dd MMMM`, { locale: th }) + ` ${thaiYear}`;
 }
 
+export function formatThaiDateShort(date: string | Date): string {
+  const d = typeof date === 'string' ? parseISO(date) : date;
+  if (!isValid(d)) return '-';
+  const thaiYear = d.getFullYear() + 543;
+  return format(d, `dd MMM`, { locale: th }) + ` ${thaiYear}`;
+}
+
 export function formatThaiDateTime(date: string | Date): string {
   const d = typeof date === 'string' ? parseISO(date) : date;
   if (!isValid(d)) return '-';
