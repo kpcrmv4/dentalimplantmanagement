@@ -131,39 +131,31 @@ ON CONFLICT (value) DO NOTHING;
 -- =====================================================
 DO $$
 DECLARE
-  -- Procedure type IDs
   pt_single UUID;
   pt_multiple UUID;
   pt_full_arch UUID;
   pt_bone_graft UUID;
   pt_sinus_lift UUID;
   pt_implant_bone UUID;
-  -- Template IDs
   tpl_id UUID;
-  -- Product IDs (looked up by SKU)
-  p_imp001 UUID; -- Straumann BLX 4.0x10mm
-  p_imp002 UUID; -- Straumann BLX 4.0x12mm
-  p_imp003 UUID; -- Straumann BLT 4.1x10mm
-  p_imp004 UUID; -- Nobel Biocare Active 4.3x10mm
-  p_imp005 UUID; -- Osstem TS III 4.0x10mm
-  p_imp006 UUID; -- Osstem TS III 4.0x11.5mm
-  p_imp007 UUID; -- Dentium SuperLine 4.0x10mm
-  p_abt001 UUID; -- Straumann RC Healing Cap
-  p_abt002 UUID; -- Straumann Variobase Abutment
-  p_abt003 UUID; -- Nobel Biocare Snappy Abutment
-  p_abt004 UUID; -- Osstem Transfer Abutment
-  p_bio001 UUID; -- Bio-Oss 0.5g
-  p_bio002 UUID; -- Bio-Oss 1.0g
-  p_bio003 UUID; -- Bio-Gide Membrane 25x25mm
-  p_bio004 UUID; -- Cerabone 0.5ml
-  p_bio005 UUID; -- Jason Membrane 20x30mm
-  p_sur002 UUID; -- Torque Wrench
-  p_sur003 UUID; -- Implant Driver Set
-  p_con001 UUID; -- Suture 4-0
-  p_con002 UUID; -- Suture 5-0
-  p_con003 UUID; -- Sterile Gauze
+  p_imp001 UUID;
+  p_imp002 UUID;
+  p_imp004 UUID;
+  p_imp005 UUID;
+  p_imp006 UUID;
+  p_abt001 UUID;
+  p_abt002 UUID;
+  p_abt003 UUID;
+  p_abt004 UUID;
+  p_bio001 UUID;
+  p_bio002 UUID;
+  p_bio003 UUID;
+  p_bio004 UUID;
+  p_bio005 UUID;
+  p_con001 UUID;
+  p_con002 UUID;
+  p_con003 UUID;
 BEGIN
-  -- Lookup procedure types
   SELECT id INTO pt_single FROM procedure_types WHERE value = 'single_implant';
   SELECT id INTO pt_multiple FROM procedure_types WHERE value = 'multiple_implants';
   SELECT id INTO pt_full_arch FROM procedure_types WHERE value = 'full_arch';
@@ -171,14 +163,11 @@ BEGIN
   SELECT id INTO pt_sinus_lift FROM procedure_types WHERE value = 'sinus_lift';
   SELECT id INTO pt_implant_bone FROM procedure_types WHERE value = 'implant_with_bone_graft';
 
-  -- Lookup products by SKU
   SELECT id INTO p_imp001 FROM products WHERE sku = 'IMP-001';
   SELECT id INTO p_imp002 FROM products WHERE sku = 'IMP-002';
-  SELECT id INTO p_imp003 FROM products WHERE sku = 'IMP-003';
   SELECT id INTO p_imp004 FROM products WHERE sku = 'IMP-004';
   SELECT id INTO p_imp005 FROM products WHERE sku = 'IMP-005';
   SELECT id INTO p_imp006 FROM products WHERE sku = 'IMP-006';
-  SELECT id INTO p_imp007 FROM products WHERE sku = 'IMP-007';
   SELECT id INTO p_abt001 FROM products WHERE sku = 'ABT-001';
   SELECT id INTO p_abt002 FROM products WHERE sku = 'ABT-002';
   SELECT id INTO p_abt003 FROM products WHERE sku = 'ABT-003';
@@ -188,211 +177,128 @@ BEGIN
   SELECT id INTO p_bio003 FROM products WHERE sku = 'BIO-003';
   SELECT id INTO p_bio004 FROM products WHERE sku = 'BIO-004';
   SELECT id INTO p_bio005 FROM products WHERE sku = 'BIO-005';
-  SELECT id INTO p_sur002 FROM products WHERE sku = 'SUR-002';
-  SELECT id INTO p_sur003 FROM products WHERE sku = 'SUR-003';
   SELECT id INTO p_con001 FROM products WHERE sku = 'CON-001';
   SELECT id INTO p_con002 FROM products WHERE sku = 'CON-002';
   SELECT id INTO p_con003 FROM products WHERE sku = 'CON-003';
 
-  -- Skip if no implant products found (seed.sql not yet run)
   IF p_imp001 IS NULL AND p_imp005 IS NULL THEN
-    RAISE NOTICE 'Products not found - skipping template seed. Run seed.sql first.';
+    RAISE NOTICE 'Products not found - skipping template seed.';
     RETURN;
   END IF;
 
-  -- Helper: Insert template items only if product_id is NOT NULL
-  -- Each item is inserted individually to skip missing products gracefully
-
-  -- =========================================================
   -- Template 1: Single Implant - Straumann Standard Set
-  -- =========================================================
-  INSERT INTO material_templates (id, procedure_type_id, name, description, sort_order)
-  VALUES (gen_random_uuid(), pt_single, 'Straumann Standard Set', 'ชุด Straumann สำหรับฝังรากเดี่ยว ครบทั้ง Implant, Healing Cap, Abutment และวัสดุสิ้นเปลือง', 1)
+  INSERT INTO material_templates (procedure_type_id, name, description, sort_order)
+  VALUES (pt_single, 'Straumann Standard Set', 'ชุด Straumann สำหรับฝังรากเดี่ยว ครบทั้ง Implant, Healing Cap, Abutment และวัสดุสิ้นเปลือง', 1)
   RETURNING id INTO tpl_id;
+  IF p_imp001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_imp001, 1, 1, 'Straumann BLX Implant 4.0x10mm'); END IF;
+  IF p_abt001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_abt001, 1, 2, 'Healing Cap'); END IF;
+  IF p_abt002 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_abt002, 1, 3, 'Variobase สำหรับครอบฟัน'); END IF;
+  IF p_con001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con001, 2, 4, 'ไหมเย็บ 4-0'); END IF;
+  IF p_con003 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con003, 2, 5, 'ผ้าก๊อซ'); END IF;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
-  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
-    (p_imp001, 1, 1, 'Straumann BLX Implant 4.0x10mm'),
-    (p_abt001, 1, 2, 'Healing Cap'),
-    (p_abt002, 1, 3, 'Variobase สำหรับครอบฟัน'),
-    (p_sur002, 1, 4, 'Torque Wrench'),
-    (p_con001, 2, 5, 'ไหมเย็บ 4-0'),
-    (p_con003, 2, 6, 'ผ้าก๊อซ')
-  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
-
-  -- =========================================================
   -- Template 2: Single Implant - Osstem Economy Set
-  -- =========================================================
-  INSERT INTO material_templates (id, procedure_type_id, name, description, sort_order)
-  VALUES (gen_random_uuid(), pt_single, 'Osstem Economy Set', 'ชุด Osstem ราคาประหยัด สำหรับฝังรากเดี่ยว', 2)
+  INSERT INTO material_templates (procedure_type_id, name, description, sort_order)
+  VALUES (pt_single, 'Osstem Economy Set', 'ชุด Osstem ราคาประหยัด สำหรับฝังรากเดี่ยว', 2)
   RETURNING id INTO tpl_id;
+  IF p_imp005 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_imp005, 1, 1, 'Osstem TS III Implant 4.0x10mm'); END IF;
+  IF p_abt004 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_abt004, 1, 2, 'Osstem Transfer Abutment'); END IF;
+  IF p_con001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con001, 2, 3, 'ไหมเย็บ 4-0'); END IF;
+  IF p_con003 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con003, 2, 4, 'ผ้าก๊อซ'); END IF;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
-  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
-    (p_imp005, 1, 1, 'Osstem TS III Implant 4.0x10mm'),
-    (p_abt004, 1, 2, 'Osstem Transfer Abutment'),
-    (p_sur002, 1, 3, 'Torque Wrench'),
-    (p_con001, 2, 4, 'ไหมเย็บ 4-0'),
-    (p_con003, 2, 5, 'ผ้าก๊อซ')
-  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
-
-  -- =========================================================
   -- Template 3: Single Implant - Nobel Biocare Premium Set
-  -- =========================================================
-  INSERT INTO material_templates (id, procedure_type_id, name, description, sort_order)
-  VALUES (gen_random_uuid(), pt_single, 'Nobel Biocare Premium Set', 'ชุด Nobel Biocare ระดับพรีเมียม สำหรับฝังรากเดี่ยว', 3)
+  INSERT INTO material_templates (procedure_type_id, name, description, sort_order)
+  VALUES (pt_single, 'Nobel Biocare Premium Set', 'ชุด Nobel Biocare ระดับพรีเมียม สำหรับฝังรากเดี่ยว', 3)
   RETURNING id INTO tpl_id;
+  IF p_imp004 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_imp004, 1, 1, 'Nobel Biocare Active 4.3x10mm'); END IF;
+  IF p_abt003 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_abt003, 1, 2, 'Nobel Biocare Snappy Abutment'); END IF;
+  IF p_con001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con001, 2, 3, 'ไหมเย็บ 4-0'); END IF;
+  IF p_con003 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con003, 2, 4, 'ผ้าก๊อซ'); END IF;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
-  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
-    (p_imp004, 1, 1, 'Nobel Biocare Active 4.3x10mm'),
-    (p_abt003, 1, 2, 'Nobel Biocare Snappy Abutment'),
-    (p_sur002, 1, 3, 'Torque Wrench'),
-    (p_sur003, 1, 4, 'Implant Driver Set'),
-    (p_con001, 2, 5, 'ไหมเย็บ 4-0'),
-    (p_con003, 2, 6, 'ผ้าก๊อซ')
-  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
-
-  -- =========================================================
   -- Template 4: Multiple Implants - Straumann Dual Set
-  -- =========================================================
-  INSERT INTO material_templates (id, procedure_type_id, name, description, sort_order)
-  VALUES (gen_random_uuid(), pt_multiple, 'Straumann Dual Set', 'ชุด Straumann สำหรับฝังราก 2 ตำแหน่ง', 1)
+  INSERT INTO material_templates (procedure_type_id, name, description, sort_order)
+  VALUES (pt_multiple, 'Straumann Dual Set', 'ชุด Straumann สำหรับฝังราก 2 ตำแหน่ง', 1)
   RETURNING id INTO tpl_id;
+  IF p_imp001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_imp001, 1, 1, 'Implant ตำแหน่งที่ 1 (4.0x10mm)'); END IF;
+  IF p_imp002 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_imp002, 1, 2, 'Implant ตำแหน่งที่ 2 (4.0x12mm)'); END IF;
+  IF p_abt001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_abt001, 2, 3, 'Healing Cap x2'); END IF;
+  IF p_abt002 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_abt002, 2, 4, 'Variobase x2'); END IF;
+  IF p_con001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con001, 3, 5, 'ไหมเย็บ 4-0'); END IF;
+  IF p_con003 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con003, 3, 6, 'ผ้าก๊อซ'); END IF;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
-  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
-    (p_imp001, 1, 1, 'Implant ตำแหน่งที่ 1 (4.0x10mm)'),
-    (p_imp002, 1, 2, 'Implant ตำแหน่งที่ 2 (4.0x12mm)'),
-    (p_abt001, 2, 3, 'Healing Cap x2'),
-    (p_abt002, 2, 4, 'Variobase x2'),
-    (p_sur002, 1, 5, 'Torque Wrench'),
-    (p_sur003, 1, 6, 'Implant Driver Set'),
-    (p_con001, 3, 7, 'ไหมเย็บ 4-0'),
-    (p_con003, 3, 8, 'ผ้าก๊อซ')
-  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
-
-  -- =========================================================
   -- Template 5: Multiple Implants - Osstem Dual Set
-  -- =========================================================
-  INSERT INTO material_templates (id, procedure_type_id, name, description, sort_order)
-  VALUES (gen_random_uuid(), pt_multiple, 'Osstem Dual Set', 'ชุด Osstem สำหรับฝังราก 2 ตำแหน่ง ราคาประหยัด', 2)
+  INSERT INTO material_templates (procedure_type_id, name, description, sort_order)
+  VALUES (pt_multiple, 'Osstem Dual Set', 'ชุด Osstem สำหรับฝังราก 2 ตำแหน่ง ราคาประหยัด', 2)
   RETURNING id INTO tpl_id;
+  IF p_imp005 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_imp005, 1, 1, 'Osstem TS III 4.0x10mm ตำแหน่งที่ 1'); END IF;
+  IF p_imp006 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_imp006, 1, 2, 'Osstem TS III 4.0x11.5mm ตำแหน่งที่ 2'); END IF;
+  IF p_abt004 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_abt004, 2, 3, 'Osstem Transfer Abutment x2'); END IF;
+  IF p_con001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con001, 3, 4, 'ไหมเย็บ 4-0'); END IF;
+  IF p_con003 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con003, 3, 5, 'ผ้าก๊อซ'); END IF;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
-  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
-    (p_imp005, 1, 1, 'Osstem TS III 4.0x10mm ตำแหน่งที่ 1'),
-    (p_imp006, 1, 2, 'Osstem TS III 4.0x11.5mm ตำแหน่งที่ 2'),
-    (p_abt004, 2, 3, 'Osstem Transfer Abutment x2'),
-    (p_sur002, 1, 4, 'Torque Wrench'),
-    (p_con001, 3, 5, 'ไหมเย็บ 4-0'),
-    (p_con003, 3, 6, 'ผ้าก๊อซ')
-  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
-
-  -- =========================================================
   -- Template 6: Full Arch - Straumann Full Arch Set
-  -- =========================================================
-  INSERT INTO material_templates (id, procedure_type_id, name, description, sort_order)
-  VALUES (gen_random_uuid(), pt_full_arch, 'Straumann Full Arch Set', 'ชุด Straumann สำหรับฝังราก Full Arch (4-6 ตัว) พร้อม Abutment ครบ', 1)
+  INSERT INTO material_templates (procedure_type_id, name, description, sort_order)
+  VALUES (pt_full_arch, 'Straumann Full Arch Set', 'ชุด Straumann สำหรับฝังราก Full Arch (4-6 ตัว) พร้อม Abutment ครบ', 1)
   RETURNING id INTO tpl_id;
+  IF p_imp001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_imp001, 3, 1, 'Straumann BLX 4.0x10mm x3'); END IF;
+  IF p_imp002 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_imp002, 3, 2, 'Straumann BLX 4.0x12mm x3'); END IF;
+  IF p_abt001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_abt001, 6, 3, 'Healing Cap x6'); END IF;
+  IF p_abt002 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_abt002, 6, 4, 'Variobase x6'); END IF;
+  IF p_con001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con001, 4, 5, 'ไหมเย็บ 4-0'); END IF;
+  IF p_con002 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con002, 2, 6, 'ไหมเย็บ 5-0 สำหรับจุดละเอียด'); END IF;
+  IF p_con003 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con003, 5, 7, 'ผ้าก๊อซ'); END IF;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
-  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
-    (p_imp001, 3, 1, 'Straumann BLX 4.0x10mm x3'),
-    (p_imp002, 3, 2, 'Straumann BLX 4.0x12mm x3'),
-    (p_abt001, 6, 3, 'Healing Cap x6'),
-    (p_abt002, 6, 4, 'Variobase x6'),
-    (p_sur002, 1, 5, 'Torque Wrench'),
-    (p_sur003, 1, 6, 'Implant Driver Set'),
-    (p_con001, 4, 7, 'ไหมเย็บ 4-0'),
-    (p_con002, 2, 8, 'ไหมเย็บ 5-0 สำหรับจุดละเอียด'),
-    (p_con003, 5, 9, 'ผ้าก๊อซ')
-  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
-
-  -- =========================================================
-  -- Template 7: Bone Graft - Standard GBR Set (Geistlich)
-  -- =========================================================
-  INSERT INTO material_templates (id, procedure_type_id, name, description, sort_order)
-  VALUES (gen_random_uuid(), pt_bone_graft, 'Geistlich GBR Standard Set', 'ชุดปลูกกระดูกมาตรฐาน Bio-Oss + Bio-Gide Membrane', 1)
+  -- Template 7: Bone Graft - Geistlich GBR Standard Set
+  INSERT INTO material_templates (procedure_type_id, name, description, sort_order)
+  VALUES (pt_bone_graft, 'Geistlich GBR Standard Set', 'ชุดปลูกกระดูกมาตรฐาน Bio-Oss + Bio-Gide Membrane', 1)
   RETURNING id INTO tpl_id;
+  IF p_bio001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_bio001, 1, 1, 'Bio-Oss 0.5g กระดูกเทียม'); END IF;
+  IF p_bio003 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_bio003, 1, 2, 'Bio-Gide Membrane 25x25mm'); END IF;
+  IF p_con001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con001, 2, 3, 'ไหมเย็บ 4-0'); END IF;
+  IF p_con002 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con002, 2, 4, 'ไหมเย็บ 5-0'); END IF;
+  IF p_con003 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con003, 3, 5, 'ผ้าก๊อซ'); END IF;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
-  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
-    (p_bio001, 1, 1, 'Bio-Oss 0.5g กระดูกเทียม'),
-    (p_bio003, 1, 2, 'Bio-Gide Membrane 25x25mm'),
-    (p_con001, 2, 3, 'ไหมเย็บ 4-0'),
-    (p_con002, 2, 4, 'ไหมเย็บ 5-0'),
-    (p_con003, 3, 5, 'ผ้าก๊อซ')
-  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
-
-  -- =========================================================
   -- Template 8: Bone Graft - Botiss Economy Set
-  -- =========================================================
-  INSERT INTO material_templates (id, procedure_type_id, name, description, sort_order)
-  VALUES (gen_random_uuid(), pt_bone_graft, 'Botiss Economy Set', 'ชุดปลูกกระดูก Cerabone + Jason Membrane ราคาประหยัด', 2)
+  INSERT INTO material_templates (procedure_type_id, name, description, sort_order)
+  VALUES (pt_bone_graft, 'Botiss Economy Set', 'ชุดปลูกกระดูก Cerabone + Jason Membrane ราคาประหยัด', 2)
   RETURNING id INTO tpl_id;
+  IF p_bio004 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_bio004, 1, 1, 'Cerabone 0.5ml กระดูกเทียม'); END IF;
+  IF p_bio005 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_bio005, 1, 2, 'Jason Membrane 20x30mm'); END IF;
+  IF p_con001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con001, 2, 3, 'ไหมเย็บ 4-0'); END IF;
+  IF p_con003 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con003, 2, 4, 'ผ้าก๊อซ'); END IF;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
-  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
-    (p_bio004, 1, 1, 'Cerabone 0.5ml กระดูกเทียม'),
-    (p_bio005, 1, 2, 'Jason Membrane 20x30mm'),
-    (p_con001, 2, 3, 'ไหมเย็บ 4-0'),
-    (p_con003, 2, 4, 'ผ้าก๊อซ')
-  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
-
-  -- =========================================================
-  -- Template 9: Sinus Lift - Standard Sinus Set
-  -- =========================================================
-  INSERT INTO material_templates (id, procedure_type_id, name, description, sort_order)
-  VALUES (gen_random_uuid(), pt_sinus_lift, 'Standard Sinus Lift Set', 'ชุด Sinus Lift มาตรฐาน ใช้ Bio-Oss ปริมาณมาก + Membrane', 1)
+  -- Template 9: Sinus Lift - Standard Sinus Lift Set
+  INSERT INTO material_templates (procedure_type_id, name, description, sort_order)
+  VALUES (pt_sinus_lift, 'Standard Sinus Lift Set', 'ชุด Sinus Lift มาตรฐาน ใช้ Bio-Oss ปริมาณมาก + Membrane', 1)
   RETURNING id INTO tpl_id;
+  IF p_bio002 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_bio002, 2, 1, 'Bio-Oss 1.0g x2 สำหรับเติมไซนัส'); END IF;
+  IF p_bio003 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_bio003, 1, 2, 'Bio-Gide Membrane ปิดหน้าต่าง'); END IF;
+  IF p_con001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con001, 3, 3, 'ไหมเย็บ 4-0'); END IF;
+  IF p_con002 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con002, 2, 4, 'ไหมเย็บ 5-0'); END IF;
+  IF p_con003 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con003, 4, 5, 'ผ้าก๊อซ'); END IF;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
-  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
-    (p_bio002, 2, 1, 'Bio-Oss 1.0g x2 สำหรับเติมไซนัส'),
-    (p_bio003, 1, 2, 'Bio-Gide Membrane ปิดหน้าต่าง'),
-    (p_con001, 3, 3, 'ไหมเย็บ 4-0'),
-    (p_con002, 2, 4, 'ไหมเย็บ 5-0'),
-    (p_con003, 4, 5, 'ผ้าก๊อซ')
-  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
-
-  -- =========================================================
-  -- Template 10: Implant + Bone Graft - Straumann + Geistlich Set
-  -- =========================================================
-  INSERT INTO material_templates (id, procedure_type_id, name, description, sort_order)
-  VALUES (gen_random_uuid(), pt_implant_bone, 'Straumann + Geistlich Combined Set', 'ชุดฝังราก Straumann พร้อมปลูกกระดูก Geistlich ครบวงจร', 1)
+  -- Template 10: Implant + Bone Graft - Straumann + Geistlich Combined Set
+  INSERT INTO material_templates (procedure_type_id, name, description, sort_order)
+  VALUES (pt_implant_bone, 'Straumann + Geistlich Combined Set', 'ชุดฝังราก Straumann พร้อมปลูกกระดูก Geistlich ครบวงจร', 1)
   RETURNING id INTO tpl_id;
+  IF p_imp001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_imp001, 1, 1, 'Straumann BLX Implant 4.0x10mm'); END IF;
+  IF p_abt001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_abt001, 1, 2, 'Healing Cap'); END IF;
+  IF p_abt002 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_abt002, 1, 3, 'Variobase Abutment'); END IF;
+  IF p_bio001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_bio001, 1, 4, 'Bio-Oss 0.5g กระดูกเทียม'); END IF;
+  IF p_bio003 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_bio003, 1, 5, 'Bio-Gide Membrane'); END IF;
+  IF p_con001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con001, 3, 6, 'ไหมเย็บ 4-0'); END IF;
+  IF p_con002 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con002, 2, 7, 'ไหมเย็บ 5-0'); END IF;
+  IF p_con003 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con003, 3, 8, 'ผ้าก๊อซ'); END IF;
 
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
-  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
-    (p_imp001, 1, 1, 'Straumann BLX Implant 4.0x10mm'),
-    (p_abt001, 1, 2, 'Healing Cap'),
-    (p_abt002, 1, 3, 'Variobase Abutment'),
-    (p_bio001, 1, 4, 'Bio-Oss 0.5g กระดูกเทียม'),
-    (p_bio003, 1, 5, 'Bio-Gide Membrane'),
-    (p_sur002, 1, 6, 'Torque Wrench'),
-    (p_con001, 3, 7, 'ไหมเย็บ 4-0'),
-    (p_con002, 2, 8, 'ไหมเย็บ 5-0'),
-    (p_con003, 3, 9, 'ผ้าก๊อซ')
-  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
-
-  -- =========================================================
   -- Template 11: Implant + Bone Graft - Osstem + Botiss Economy Set
-  -- =========================================================
-  INSERT INTO material_templates (id, procedure_type_id, name, description, sort_order)
-  VALUES (gen_random_uuid(), pt_implant_bone, 'Osstem + Botiss Economy Set', 'ชุดฝังราก Osstem + ปลูกกระดูก Botiss ราคาประหยัด', 2)
+  INSERT INTO material_templates (procedure_type_id, name, description, sort_order)
+  VALUES (pt_implant_bone, 'Osstem + Botiss Economy Set', 'ชุดฝังราก Osstem + ปลูกกระดูก Botiss ราคาประหยัด', 2)
   RETURNING id INTO tpl_id;
-
-  INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes)
-  SELECT tpl_id, pid, qty, ord, note FROM (VALUES
-    (p_imp005, 1, 1, 'Osstem TS III 4.0x10mm'),
-    (p_abt004, 1, 2, 'Osstem Transfer Abutment'),
-    (p_bio004, 1, 3, 'Cerabone กระดูกเทียม'),
-    (p_bio005, 1, 4, 'Jason Membrane'),
-    (p_sur002, 1, 5, 'Torque Wrench'),
-    (p_con001, 2, 6, 'ไหมเย็บ 4-0'),
-    (p_con003, 3, 7, 'ผ้าก๊อซ')
-  ) AS t(pid, qty, ord, note) WHERE pid IS NOT NULL;
+  IF p_imp005 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_imp005, 1, 1, 'Osstem TS III 4.0x10mm'); END IF;
+  IF p_abt004 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_abt004, 1, 2, 'Osstem Transfer Abutment'); END IF;
+  IF p_bio004 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_bio004, 1, 3, 'Cerabone กระดูกเทียม'); END IF;
+  IF p_bio005 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_bio005, 1, 4, 'Jason Membrane'); END IF;
+  IF p_con001 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con001, 2, 5, 'ไหมเย็บ 4-0'); END IF;
+  IF p_con003 IS NOT NULL THEN INSERT INTO material_template_items (template_id, product_id, quantity, sort_order, notes) VALUES (tpl_id, p_con003, 3, 6, 'ผ้าก๊อซ'); END IF;
 
   RAISE NOTICE 'Seed templates created: 11 templates across 6 procedure types';
 END $$;
