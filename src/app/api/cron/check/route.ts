@@ -10,7 +10,7 @@ import { createServiceRoleClient } from '@/lib/supabase-server';
  *
  * Setup in cron-job.org:
  * - URL: https://your-app.vercel.app/api/cron/check?secret=YOUR_SECRET
- * - Schedule: */15 * * * * (every 15 minutes)
+ * - Schedule: every 15 minutes
  */
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
