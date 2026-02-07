@@ -15,6 +15,7 @@ import {
   Eye,
   Edit,
   Trash2,
+  Phone,
 } from 'lucide-react';
 import { Header } from '@/components/layout';
 import { Button, Badge, Card, Input, Select } from '@/components/ui';
@@ -66,6 +67,7 @@ export default function CasesPage() {
       const matchesSearch =
         !search ||
         c.case_number.toLowerCase().includes(search.toLowerCase()) ||
+        c.patient?.hn_number?.toLowerCase().includes(search.toLowerCase()) ||
         c.patient?.first_name?.toLowerCase().includes(search.toLowerCase()) ||
         c.patient?.last_name?.toLowerCase().includes(search.toLowerCase());
 
@@ -140,10 +142,12 @@ export default function CasesPage() {
                 <TableRow>
                   <TableHead>เลขเคส</TableHead>
                   <TableHead>คนไข้</TableHead>
-                  <TableHead>ทันตแพทย์</TableHead>
+                  <TableHead className="hidden sm:table-cell">รหัสคนไข้</TableHead>
+                  <TableHead className="hidden md:table-cell">ทันตแพทย์</TableHead>
                   <TableHead>วันผ่าตัด</TableHead>
-                  <TableHead>เวลา</TableHead>
+                  <TableHead className="hidden lg:table-cell">เวลา</TableHead>
                   <TableHead>สถานะ</TableHead>
+                  <TableHead>ยืนยันนัด</TableHead>
                   <TableHead className="text-right">การดำเนินการ</TableHead>
                 </TableRow>
               </TableHeader>
@@ -169,7 +173,12 @@ export default function CasesPage() {
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden sm:table-cell">
+                      <span className="font-mono text-sm text-gray-600">
+                        {caseItem.patient?.hn_number || '-'}
+                      </span>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
                       <div className="flex items-center gap-2">
                         <Stethoscope className="w-4 h-4 text-gray-400" />
                         <span>{caseItem.dentist?.full_name || '-'}</span>
@@ -181,7 +190,7 @@ export default function CasesPage() {
                         <span>{formatDate(caseItem.surgery_date)}</span>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden lg:table-cell">
                       <div className="flex items-center gap-2">
                         <Clock className="w-4 h-4 text-gray-400" />
                         <span>
@@ -195,6 +204,23 @@ export default function CasesPage() {
                       <Badge variant={getCaseStatusVariant(caseItem.status)} dot>
                         {getCaseStatusText(caseItem.status)}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {(() => {
+                        const status = caseItem.confirmation_status || 'pending';
+                        const configs: Record<string, { variant: 'gray' | 'success' | 'warning' | 'danger'; text: string }> = {
+                          pending: { variant: 'gray', text: 'รอโทร' },
+                          confirmed: { variant: 'success', text: 'ยืนยัน' },
+                          postponed: { variant: 'warning', text: 'เลื่อน' },
+                          cancelled: { variant: 'danger', text: 'ยกเลิก' },
+                        };
+                        const config = configs[status] || configs.pending;
+                        return (
+                          <Badge variant={config.variant} size="sm" dot>
+                            {config.text}
+                          </Badge>
+                        );
+                      })()}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">

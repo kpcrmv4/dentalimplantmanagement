@@ -15,9 +15,11 @@ import {
   XCircle,
   AlertTriangle,
   ShoppingCart,
+  Phone,
+  PhoneCall,
 } from 'lucide-react';
 import { Header } from '@/components/layout';
-import { Button, Badge, Card, CardHeader, CardTitle, CardContent, Modal, ModalFooter } from '@/components/ui';
+import { Button, Badge, Card, CardHeader, CardTitle, CardContent, Modal, ModalFooter, Select } from '@/components/ui';
 import {
   Table,
   TableHeader,
@@ -49,11 +51,17 @@ export default function CaseDetailPage({ params }: PageProps) {
   const { data: caseData, isLoading, mutate } = useCase(id);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showReservationModal, setShowReservationModal] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [confirmationStatus, setConfirmationStatus] = useState('');
+  const [confirmationNote, setConfirmationNote] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isSavingConfirmation, setIsSavingConfirmation] = useState(false);
 
   const isDentist = user?.role === 'dentist';
   const canEditCase = user?.role === 'admin' || user?.role === 'dentist' || user?.role === 'cs';
   const canCancelCase = user?.role === 'admin' || user?.role === 'dentist' || user?.role === 'cs';
+  const canAddReservation = user?.role === 'admin' || user?.role === 'dentist';
+  const canConfirmPhone = user?.role === 'admin' || user?.role === 'cs' || user?.role === 'assistant';
   const searchParams = useSearchParams();
 
   // Auto-open reservation modal when navigating with ?reserve=true
@@ -101,6 +109,53 @@ export default function CaseDetailPage({ params }: PageProps) {
       toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่');
     } finally {
       setIsUpdating(false);
+    }
+  };
+
+  const handlePhoneConfirmation = async () => {
+    if (!confirmationStatus) return;
+    setIsSavingConfirmation(true);
+    try {
+      const { error } = await supabase
+        .from('cases')
+        .update({
+          confirmation_status: confirmationStatus,
+          confirmation_date: new Date().toISOString(),
+          confirmation_note: confirmationNote || null,
+          confirmed_by: user?.id,
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      // Insert audit log
+      await supabase.from('audit_logs').insert({
+        user_id: user?.id,
+        user_name: user?.full_name,
+        user_role: user?.role,
+        action: 'PHONE_CONFIRMATION',
+        table_name: 'cases',
+        record_id: id,
+        new_data: {
+          confirmation_status: confirmationStatus,
+          confirmation_note: confirmationNote || null,
+        },
+        description: `โทรยืนยันคนไข้: ${
+          confirmationStatus === 'confirmed' ? 'ยืนยันแล้ว'
+          : confirmationStatus === 'postponed' ? 'ขอเลื่อนนัด'
+          : 'ยกเลิก'
+        }${confirmationNote ? ` - ${confirmationNote}` : ''}`,
+      });
+
+      toast.success('บันทึกผลการโทรยืนยันเรียบร้อย');
+      mutate();
+      setShowConfirmationModal(false);
+      setConfirmationStatus('');
+      setConfirmationNote('');
+    } catch (error) {
+      toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่');
+    } finally {
+      setIsSavingConfirmation(false);
     }
   };
 
@@ -279,6 +334,78 @@ export default function CaseDetailPage({ params }: PageProps) {
               </CardContent>
             </Card>
 
+            {/* Phone Confirmation Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Phone className="w-5 h-5" />
+                  <span>ยืนยันการนัดหมาย</span>
+                </CardTitle>
+                {isEditable && canConfirmPhone && (
+                  <Button
+                    size="sm"
+                    variant={!caseData.confirmation_status || caseData.confirmation_status === 'pending' ? 'primary' : 'outline'}
+                    leftIcon={<PhoneCall className="w-4 h-4" />}
+                    onClick={() => {
+                      setConfirmationStatus(
+                        caseData.confirmation_status && caseData.confirmation_status !== 'pending'
+                          ? caseData.confirmation_status
+                          : ''
+                      );
+                      setConfirmationNote(caseData.confirmation_note || '');
+                      setShowConfirmationModal(true);
+                    }}
+                  >
+                    <span className="hidden sm:inline">
+                      {!caseData.confirmation_status || caseData.confirmation_status === 'pending' ? 'บันทึกผลโทร' : 'แก้ไขผลโทร'}
+                    </span>
+                    <span className="sm:hidden">
+                      {!caseData.confirmation_status || caseData.confirmation_status === 'pending' ? 'บันทึก' : 'แก้ไข'}
+                    </span>
+                  </Button>
+                )}
+              </CardHeader>
+              <CardContent>
+                {caseData.confirmation_status && caseData.confirmation_status !== 'pending' ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-gray-500">สถานะ:</span>
+                      <Badge
+                        variant={
+                          caseData.confirmation_status === 'confirmed' ? 'success'
+                          : caseData.confirmation_status === 'postponed' ? 'warning'
+                          : 'danger'
+                        }
+                        size="lg"
+                        dot
+                      >
+                        {caseData.confirmation_status === 'confirmed' ? 'ยืนยันแล้ว'
+                        : caseData.confirmation_status === 'postponed' ? 'ขอเลื่อนนัด'
+                        : 'ยกเลิก'}
+                      </Badge>
+                    </div>
+                    {caseData.confirmation_date && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-gray-500">วันที่โทร:</span>
+                        <span className="font-medium">{formatDate(caseData.confirmation_date)}</span>
+                      </div>
+                    )}
+                    {caseData.confirmation_note && (
+                      <div className="text-sm">
+                        <span className="text-gray-500">หมายเหตุ: </span>
+                        <span className="text-gray-700">{caseData.confirmation_note}</span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-4">
+                    <Phone className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+                    <p className="text-sm text-gray-500">ยังไม่ได้โทรยืนยัน</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
             {/* Reservations Card */}
             <Card>
               <CardHeader>
@@ -289,7 +416,7 @@ export default function CaseDetailPage({ params }: PageProps) {
                     <span className="text-sm font-normal text-gray-400">({caseData.reservations.length})</span>
                   )}
                 </CardTitle>
-                {isEditable && (
+                {isEditable && canAddReservation && (
                   isDentist ? (
                     <Button
                       size="sm"
@@ -382,7 +509,7 @@ export default function CaseDetailPage({ params }: PageProps) {
                   <div className="text-center py-8">
                     <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                     <p className="text-gray-500">ยังไม่มีการจองวัสดุ</p>
-                    {isEditable && (
+                    {isEditable && canAddReservation && (
                       isDentist ? (
                         <Button
                           variant="outline"
@@ -528,6 +655,70 @@ export default function CaseDetailPage({ params }: PageProps) {
             isLoading={isUpdating}
           >
             ยืนยันยกเลิก
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      {/* Phone Confirmation Modal */}
+      <Modal
+        isOpen={showConfirmationModal}
+        onClose={() => setShowConfirmationModal(false)}
+        title="บันทึกผลการโทรยืนยัน"
+      >
+        <p className="text-sm text-gray-500 mb-4">
+          เคส {caseData.case_number} — {caseData.patient ? `${caseData.patient.first_name} ${caseData.patient.last_name}` : ''}
+          {caseData.patient?.phone && (
+            <span className="ml-2 font-mono">({caseData.patient.phone})</span>
+          )}
+        </p>
+        <div className="space-y-4">
+          <Select
+            label="ผลการโทร"
+            value={confirmationStatus}
+            onChange={(e) => setConfirmationStatus(e.target.value)}
+            options={[
+              { value: '', label: 'เลือกผลการโทร', disabled: true },
+              { value: 'confirmed', label: 'ยืนยัน — คนไข้มาตามนัด' },
+              { value: 'postponed', label: 'เลื่อนนัด — คนไข้ขอเลื่อน' },
+              { value: 'cancelled', label: 'ยกเลิก — คนไข้ไม่มา' },
+            ]}
+          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              หมายเหตุ / เหตุผล
+            </label>
+            <textarea
+              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-colors duration-200"
+              rows={3}
+              value={confirmationNote}
+              onChange={(e) => setConfirmationNote(e.target.value)}
+              placeholder={
+                confirmationStatus === 'postponed' ? 'ระบุวันที่ต้องการเลื่อนไป หรือเหตุผล...'
+                : confirmationStatus === 'cancelled' ? 'ระบุเหตุผลที่ยกเลิก...'
+                : 'หมายเหตุเพิ่มเติม (ถ้ามี)...'
+              }
+            />
+          </div>
+          {confirmationStatus === 'postponed' && !confirmationNote && (
+            <p className="text-sm text-orange-600">* กรุณาระบุเหตุผลหรือวันที่ต้องการเลื่อน</p>
+          )}
+          {confirmationStatus === 'cancelled' && !confirmationNote && (
+            <p className="text-sm text-red-600">* กรุณาระบุเหตุผลที่ยกเลิก</p>
+          )}
+        </div>
+        <ModalFooter>
+          <Button variant="outline" onClick={() => setShowConfirmationModal(false)}>
+            ปิด
+          </Button>
+          <Button
+            onClick={handlePhoneConfirmation}
+            isLoading={isSavingConfirmation}
+            disabled={
+              !confirmationStatus ||
+              ((confirmationStatus === 'postponed' || confirmationStatus === 'cancelled') && !confirmationNote)
+            }
+          >
+            บันทึก
           </Button>
         </ModalFooter>
       </Modal>

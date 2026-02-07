@@ -6,6 +6,7 @@
 
 export type UserRole = 'admin' | 'dentist' | 'stock_staff' | 'assistant' | 'cs';
 export type CaseStatus = 'gray' | 'green' | 'yellow' | 'red' | 'completed' | 'cancelled';
+export type PhoneConfirmationStatus = 'pending' | 'confirmed' | 'postponed' | 'cancelled';
 export type ReservationStatus = 'pending' | 'confirmed' | 'prepared' | 'used' | 'cancelled';
 export type OrderStatus = 'draft' | 'pending' | 'approved' | 'ordered' | 'shipped' | 'received' | 'cancelled';
 export type TransferType = 'borrow' | 'return' | 'exchange';
@@ -159,6 +160,11 @@ export interface Case {
   completed_at?: string;
   cancelled_at?: string;
   cancelled_reason?: string;
+  // Phone confirmation
+  confirmation_status?: PhoneConfirmationStatus;
+  confirmation_date?: string;
+  confirmation_note?: string;
+  confirmed_by?: string;
   created_by?: string;
   created_at: string;
   updated_at: string;
