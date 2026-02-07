@@ -86,20 +86,20 @@ function PersonalInfoSection({ user, setUser }: { user: UserType; setUser: (u: U
   }[user.role] || 'bg-gray-100 text-gray-700';
 
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 p-5 sm:p-6 text-white">
+    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 via-blue-50 to-indigo-100 border border-blue-200 p-5 sm:p-6">
       {/* Background decoration */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-      <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100/50 rounded-full -translate-y-1/2 translate-x-1/2" />
+      <div className="absolute bottom-0 left-0 w-24 h-24 bg-indigo-100/50 rounded-full translate-y-1/2 -translate-x-1/2" />
 
       <div className="relative space-y-4">
         {/* Avatar + Role */}
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-bold">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-bold text-white">
             {user.full_name?.charAt(0)?.toUpperCase() || 'U'}
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="text-lg sm:text-xl font-bold truncate">{user.full_name || 'ผู้ใช้งาน'}</h2>
-            <p className="text-sm text-blue-200 truncate">{user.email}</p>
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900 truncate">{user.full_name || 'ผู้ใช้งาน'}</h2>
+            <p className="text-sm text-gray-500 truncate">{user.email}</p>
             <span className={`inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${roleColor}`}>
               {getRoleText(user.role)}
             </span>
@@ -108,19 +108,19 @@ function PersonalInfoSection({ user, setUser }: { user: UserType; setUser: (u: U
 
         {/* Edit name */}
         <div className="space-y-2">
-          <label className="text-sm text-blue-200">ชื่อ-นามสกุล</label>
+          <label className="text-sm text-gray-500">ชื่อ-นามสกุล</label>
           <div className="flex gap-2">
             <input
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="flex-1 px-3 py-2 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 text-white placeholder-blue-300 text-sm focus:outline-none focus:ring-2 focus:ring-white/30"
+              className="flex-1 px-3 py-2 rounded-xl bg-white border border-blue-200 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
               placeholder="กรอกชื่อ-นามสกุล"
             />
             <Button
               onClick={handleSave}
               isLoading={isSaving}
-              className="!bg-white/20 hover:!bg-white/30 !border-white/20 !text-white rounded-xl"
+              className="rounded-xl"
               size="sm"
             >
               <Save className="w-4 h-4" />
@@ -305,16 +305,16 @@ function LineConnectionSection({ user, setUser }: { user: UserType; setUser: (u:
     <>
       <div className="rounded-2xl border border-gray-200 bg-white overflow-hidden">
         {/* Header with LINE green accent */}
-        <div className="bg-gradient-to-r from-green-500 to-green-600 px-4 py-3 flex items-center gap-3">
-          <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-            <MessageSquare className="w-4 h-4 text-white" />
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100 px-4 py-3 flex items-center gap-3">
+          <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+            <MessageSquare className="w-4 h-4 text-green-600" />
           </div>
           <div>
-            <h3 className="font-semibold text-white text-sm">LINE Notify</h3>
-            <p className="text-xs text-green-100">เชื่อมต่อเพื่อรับแจ้งเตือนผ่าน LINE</p>
+            <h3 className="font-semibold text-green-800 text-sm">LINE Notify</h3>
+            <p className="text-xs text-green-500">เชื่อมต่อเพื่อรับแจ้งเตือนผ่าน LINE</p>
           </div>
           {lineConnected && (
-            <Badge variant="success" size="sm" className="ml-auto !bg-white/20 !text-white !border-white/30">
+            <Badge variant="success" size="sm" className="ml-auto">
               เชื่อมต่อแล้ว
             </Badge>
           )}
@@ -459,14 +459,14 @@ function PWAInstallGuideSection() {
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white overflow-hidden">
-      {/* Header with gradient */}
-      <div className="bg-gradient-to-r from-violet-500 to-purple-600 px-4 py-3 flex items-center gap-3">
-        <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-          <Download className="w-4 h-4 text-white" />
+      {/* Header with soft gradient */}
+      <div className="bg-gradient-to-r from-violet-50 to-purple-50 border-b border-purple-100 px-4 py-3 flex items-center gap-3">
+        <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+          <Download className="w-4 h-4 text-purple-600" />
         </div>
         <div>
-          <h3 className="font-semibold text-white text-sm">ติดตั้งแอป (PWA)</h3>
-          <p className="text-xs text-purple-100">เข้าถึงได้เร็วขึ้นเหมือนแอปมือถือ</p>
+          <h3 className="font-semibold text-purple-800 text-sm">ติดตั้งแอป (PWA)</h3>
+          <p className="text-xs text-purple-400">เข้าถึงได้เร็วขึ้นเหมือนแอปมือถือ</p>
         </div>
       </div>
 
