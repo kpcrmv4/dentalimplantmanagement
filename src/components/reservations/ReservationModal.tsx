@@ -258,6 +258,8 @@ export function ReservationModal({
               oosItems.push(oosItem);
 
               // Find alternative products from the same category
+              // Exclude ALL products already in this template (not just the current OOS item)
+              const templateProductIds = items.map((i) => i.product_id);
               const alternatives: AlternativeProduct[] = [];
               if (item.product.category_id) {
                 const { data: altProducts } = await supabase
@@ -265,10 +267,12 @@ export function ReservationModal({
                   .select('id, name, sku, ref_number, brand, specifications, category_id')
                   .eq('category_id', item.product.category_id)
                   .eq('is_active', true)
-                  .neq('id', item.product_id);
+                  .not('id', 'in', `(${templateProductIds.join(',')})`);
 
                 if (altProducts && altProducts.length > 0) {
                   const altProductIds = altProducts.map((p: any) => p.id);
+                  // Also exclude inventory lots already used by in-stock template items
+                  const usedInventoryIds = cartItems.map((ci) => ci.inventory_id).filter(Boolean);
                   const { data: altInventory } = await supabase
                     .from('inventory')
                     .select('id, product_id, lot_number, expiry_date, available_quantity')
@@ -277,8 +281,12 @@ export function ReservationModal({
                     .order('expiry_date', { ascending: true, nullsFirst: false });
 
                   if (altInventory && altInventory.length > 0) {
+                    // Filter out inventory already used by template in-stock items
+                    const filteredInventory = altInventory.filter(
+                      (inv) => !usedInventoryIds.includes(inv.id)
+                    );
                     // Sort: nearest expiry first, then most stock
-                    const sorted = [...altInventory].sort((a, b) => {
+                    const sorted = [...filteredInventory].sort((a, b) => {
                       const expA = a.expiry_date ? new Date(a.expiry_date).getTime() : Infinity;
                       const expB = b.expiry_date ? new Date(b.expiry_date).getTime() : Infinity;
                       if (expA !== expB) return expA - expB;
@@ -373,13 +381,26 @@ export function ReservationModal({
             });
           }
         }
+        // If checking an in-stock item, uncheck any alternative that uses the same inventory
+        if (!isOos && activeTemplateSelection) {
+          const templateItem = activeTemplateSelection.cartItems.find((ci) => ci.id === itemId);
+          if (templateItem?.inventory_id) {
+            activeTemplateSelection.oosWithAlternatives.forEach(({ alternatives }) => {
+              alternatives.forEach((alt) => {
+                if (alt.inventory_id === templateItem.inventory_id) {
+                  next.delete(`alt-${alt.product_id}-${alt.inventory_id}`);
+                }
+              });
+            });
+          }
+        }
       }
       return next;
     });
   };
 
-  // Toggle alternative selection (mutually exclusive with original OOS item)
-  const handleToggleAlternative = (altId: string, oosItemId: string) => {
+  // Toggle alternative selection (mutually exclusive with original OOS item and same-inventory template items)
+  const handleToggleAlternative = (altId: string, oosItemId: string, altInventoryId?: string) => {
     setSelectedItems((prev) => {
       const next = new Set(prev);
       if (next.has(altId)) {
@@ -397,6 +418,14 @@ export function ReservationModal({
             oosEntry.alternatives.forEach((alt) => {
               const id = `alt-${alt.product_id}-${alt.inventory_id}`;
               if (id !== altId) next.delete(id);
+            });
+          }
+          // If the alternative uses the same inventory as a template in-stock item, uncheck that item
+          if (altInventoryId) {
+            activeTemplateSelection.cartItems.forEach((ci) => {
+              if (ci.inventory_id === altInventoryId) {
+                next.delete(ci.id);
+              }
             });
           }
         }
@@ -455,10 +484,19 @@ export function ReservationModal({
       return;
     }
 
-    setCart(newCartItems);
-    const oosCount = newCartItems.filter((i) => i.is_out_of_stock).length;
-    const altCount = newCartItems.filter((i) => i.is_alternative).length;
-    let msg = `เพิ่ม "${activeTemplateSelection.template.name}" (${newCartItems.length} รายการ`;
+    // Safety net: deduplicate by inventory_id (keep first occurrence)
+    const seenInventoryIds = new Set<string>();
+    const deduped = newCartItems.filter((item) => {
+      if (!item.inventory_id) return true; // OOS items have no inventory_id
+      if (seenInventoryIds.has(item.inventory_id)) return false;
+      seenInventoryIds.add(item.inventory_id);
+      return true;
+    });
+
+    setCart(deduped);
+    const oosCount = deduped.filter((i) => i.is_out_of_stock).length;
+    const altCount = deduped.filter((i) => i.is_alternative).length;
+    let msg = `เพิ่ม "${activeTemplateSelection.template.name}" (${deduped.length} รายการ`;
     if (oosCount > 0) msg += `, ${oosCount} รอสั่งซื้อ`;
     if (altCount > 0) msg += `, ${altCount} ทดแทน`;
     msg += ')';
@@ -1238,7 +1276,7 @@ export function ReservationModal({
                                 <input
                                   type="checkbox"
                                   checked={isChecked}
-                                  onChange={() => handleToggleAlternative(altId, oosItem.id)}
+                                  onChange={() => handleToggleAlternative(altId, oosItem.id, alt.inventory_id)}
                                   className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 shrink-0 mt-0.5"
                                 />
                                 <div className="flex-1 min-w-0 space-y-1">
