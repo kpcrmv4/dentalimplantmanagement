@@ -235,18 +235,17 @@ export default function NewCasePage() {
               {/* Patient & Team */}
               <Card>
                 <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>ข้อมูลคนไข้และทีมผ่าตัด</CardTitle>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      leftIcon={<UserPlus className="w-4 h-4" />}
-                      onClick={() => setShowNewPatientModal(true)}
-                    >
-                      +คนไข้
-                    </Button>
-                  </div>
+                  <CardTitle>ข้อมูลคนไข้และทีมผ่าตัด</CardTitle>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    leftIcon={<UserPlus className="w-4 h-4" />}
+                    onClick={() => setShowNewPatientModal(true)}
+                    className="!border-blue-200 !text-blue-600 !bg-blue-50 hover:!bg-blue-100"
+                  >
+                    เพิ่มคนไข้ใหม่
+                  </Button>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
