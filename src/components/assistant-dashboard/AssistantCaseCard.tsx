@@ -26,22 +26,11 @@ export function AssistantCaseCard({
   const progressPercent = total > 0 ? Math.round((used / total) * 100) : 0;
   const isCompleted = caseItem.status === 'completed';
 
-  // Check if case can be closed:
-  // - Every 'used' reservation must have at least 1 photo evidence
-  // - Unused items (prepared/confirmed/pending) are OK — they'll be returned to stock
-  const closeCaseCheck = useMemo(() => {
-    const usedWithoutPhoto = caseItem.reservations.filter(
+  // Check how many used items still need photos — shown as a warning badge
+  const usedWithoutPhotoCount = useMemo(() => {
+    return caseItem.reservations.filter(
       (r) => r.status === 'used' && (!r.photo_evidence || r.photo_evidence.length === 0)
-    );
-
-    const canClose = usedWithoutPhoto.length === 0;
-
-    const reasons: string[] = [];
-    if (usedWithoutPhoto.length > 0) {
-      reasons.push(`ยังไม่ได้ถ่ายรูปยืนยันการตัดวัสดุ ${usedWithoutPhoto.length} รายการ`);
-    }
-
-    return { canClose, reasons };
+    ).length;
   }, [caseItem.reservations]);
 
   return (
@@ -153,30 +142,25 @@ export function AssistantCaseCard({
               variant="primary"
               size="sm"
               className="flex-1"
-              onClick={() => {
-                if (closeCaseCheck.canClose) {
-                  if (window.confirm('ยืนยันการปิดเคสนี้หรือไม่?\n\nเมื่อปิดแล้วจะไม่สามารถแก้ไขข้อมูลวัสดุได้อีก')) {
-                    onCloseCase(caseItem.id);
-                  }
-                }
-              }}
-              disabled={!closeCaseCheck.canClose}
+              onClick={() => onCloseCase(caseItem.id)}
             >
               <CheckCircle className="w-4 h-4 mr-1.5" />
               ปิดเคส
+              {usedWithoutPhotoCount > 0 && (
+                <span className="ml-1.5 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                  {usedWithoutPhotoCount}
+                </span>
+              )}
             </Button>
           </div>
 
-          {/* Show reasons why close case is disabled */}
-          {!closeCaseCheck.canClose && closeCaseCheck.reasons.length > 0 && (
+          {/* Warning: items need photos */}
+          {usedWithoutPhotoCount > 0 && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2.5 flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 text-yellow-600 shrink-0 mt-0.5" />
-              <div className="text-xs text-yellow-800 space-y-0.5">
-                <p className="font-medium">ยังไม่สามารถปิดเคสได้:</p>
-                {closeCaseCheck.reasons.map((reason, idx) => (
-                  <p key={idx}>- {reason}</p>
-                ))}
-              </div>
+              <p className="text-xs text-yellow-800">
+                ยังมี {usedWithoutPhotoCount} รายการที่ยังไม่ได้ถ่ายรูปหลักฐาน
+              </p>
             </div>
           )}
         </div>

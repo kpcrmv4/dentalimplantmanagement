@@ -214,12 +214,25 @@ export function PickingList({ reservations, onMarkUsed }: PickingListProps) {
                   </div>
                 )}
 
-                {/* Used but no photos */}
+                {/* Used but no photos — warning */}
                 {isUsed && (!reservation.photo_evidence || reservation.photo_evidence.length === 0) && (
-                  <div className="flex items-center gap-1 bg-green-50 rounded-lg px-2 py-1 mb-2">
-                    <CheckCircle className="w-3 h-3 text-green-500 shrink-0" />
-                    <span className="text-[10px] text-green-600">บันทึกแล้ว</span>
+                  <div className="flex items-center gap-1 bg-red-50 border border-red-200 rounded-lg px-2 py-1 mb-2">
+                    <AlertTriangle className="w-3 h-3 text-red-500 shrink-0" />
+                    <span className="text-[10px] text-red-600 font-medium">ยังไม่ได้ถ่ายรูป</span>
                   </div>
+                )}
+
+                {/* Re-take photo button for used items */}
+                {isUsed && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="w-full text-xs"
+                    onClick={() => handleOpenModal(reservation)}
+                  >
+                    <Camera className="w-3.5 h-3.5 mr-1" />
+                    {hasPhotos ? 'ถ่ายรูปใหม่' : 'ถ่ายรูป'}
+                  </Button>
                 )}
 
                 {/* Action button */}

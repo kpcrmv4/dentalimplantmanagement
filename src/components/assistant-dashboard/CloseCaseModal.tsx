@@ -207,38 +207,41 @@ export function CloseCaseModal({
                 )}
               </div>
 
-              {/* Materials Used — Without Photo */}
+              {/* Materials Used — Without Photo (BLOCKING) */}
               {usedWithoutPhoto.length > 0 && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <ImageOff className="w-5 h-5 text-amber-500" />
-                    <span className="font-medium text-sm">
-                      วัสดุที่ใช้แล้ว — ไม่มีรูปถ่าย ({usedWithoutPhoto.length})
+                    <AlertTriangle className="w-5 h-5 text-red-500" />
+                    <span className="font-medium text-sm text-red-700">
+                      ยังไม่ได้ถ่ายรูป ({usedWithoutPhoto.length} รายการ)
                     </span>
                   </div>
-                  <div className="bg-amber-50 border border-amber-200 rounded-lg divide-y divide-amber-100">
+                  <div className="bg-red-50 border border-red-300 rounded-lg divide-y divide-red-100">
                     {usedWithoutPhoto.map((item) => (
                       <div
                         key={item.id}
                         className="p-3 flex items-center justify-between"
                       >
-                        <div>
-                          <p className="font-medium text-sm">
-                            {item.product_name}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {item.product_ref && `REF: ${item.product_ref}`}
-                            {item.lot_number && ` | LOT: ${item.lot_number}`}
-                          </p>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-red-500 shrink-0 animate-pulse" />
+                          <div>
+                            <p className="font-medium text-sm text-red-900">
+                              {item.product_name}
+                            </p>
+                            <p className="text-xs text-red-400">
+                              {item.product_ref && `REF: ${item.product_ref}`}
+                              {item.lot_number && ` | LOT: ${item.lot_number}`}
+                            </p>
+                          </div>
                         </div>
-                        <Badge variant="warning" size="sm">
+                        <Badge variant="danger" size="sm">
                           {item.used_quantity || item.quantity} ชิ้น
                         </Badge>
                       </div>
                     ))}
                   </div>
-                  <p className="text-xs text-amber-600">
-                    วัสดุเหล่านี้จะถูกตัดสต็อกแต่ไม่มีรูปถ่ายหลักฐาน
+                  <p className="text-xs text-red-600 font-medium">
+                    กรุณากลับไปถ่ายรูปหลักฐานให้ครบก่อนปิดเคส
                   </p>
                 </div>
               )}
@@ -425,9 +428,14 @@ export function CloseCaseModal({
                 variant="primary"
                 className="flex-1"
                 onClick={() => setStep('confirm')}
+                disabled={usedWithoutPhoto.length > 0}
               >
-                ตรวจสอบแล้ว
-                <ArrowRight className="w-4 h-4 ml-1.5" />
+                {usedWithoutPhoto.length > 0
+                  ? `ขาดรูป ${usedWithoutPhoto.length} รายการ`
+                  : 'ตรวจสอบแล้ว'}
+                {usedWithoutPhoto.length === 0 && (
+                  <ArrowRight className="w-4 h-4 ml-1.5" />
+                )}
               </Button>
             </>
           ) : (
