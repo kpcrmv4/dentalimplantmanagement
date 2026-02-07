@@ -56,6 +56,27 @@ interface CartItem {
   requested_lot?: string;
   requested_specs?: ProductSpecifications;
   specifications?: ProductSpecifications;
+  is_alternative?: boolean;
+  original_product_name?: string;
+}
+
+interface AlternativeProduct {
+  product_id: string;
+  product_name: string;
+  product_sku?: string;
+  ref_number?: string;
+  brand?: string;
+  inventory_id: string;
+  lot_number: string;
+  expiry_date?: string;
+  available_quantity: number;
+  days_until_expiry?: number;
+  specifications?: ProductSpecifications;
+}
+
+interface OosItemWithAlternatives {
+  oosItem: CartItem;
+  alternatives: AlternativeProduct[];
 }
 
 interface TemplateWithScore {
@@ -66,6 +87,7 @@ interface TemplateWithScore {
   allInStock: boolean;
   cartItems: CartItem[];
   oosItems: CartItem[];
+  oosWithAlternatives: OosItemWithAlternatives[];
 }
 
 interface ReservationModalProps {
@@ -152,7 +174,7 @@ export function ReservationModal({
             *,
             items:material_template_items(
               *,
-              product:products(id, name, sku, ref_number, brand, is_implant, specifications)
+              product:products(id, name, sku, ref_number, brand, is_implant, specifications, category_id)
             )
           `)
           .eq('procedure_type_id', ptData.id)
@@ -172,6 +194,7 @@ export function ReservationModal({
           let inStockCount = 0;
           const cartItems: CartItem[] = [];
           const oosItems: CartItem[] = [];
+          const oosWithAlternatives: OosItemWithAlternatives[] = [];
 
           for (const item of items) {
             if (!item.product) continue;
@@ -221,7 +244,7 @@ export function ReservationModal({
                 specifications: item.product.specifications,
               });
             } else {
-              oosItems.push({
+              const oosItem: CartItem = {
                 id: `oos-${item.product_id}-${Date.now()}-${Math.random()}`,
                 product_id: item.product_id,
                 product_name: item.product.name,
@@ -231,7 +254,61 @@ export function ReservationModal({
                 is_out_of_stock: true,
                 requested_ref: item.product.ref_number || item.product.sku || '',
                 specifications: item.product.specifications,
-              });
+              };
+              oosItems.push(oosItem);
+
+              // Find alternative products from the same category
+              const alternatives: AlternativeProduct[] = [];
+              if (item.product.category_id) {
+                const { data: altProducts } = await supabase
+                  .from('products')
+                  .select('id, name, sku, ref_number, brand, specifications, category_id')
+                  .eq('category_id', item.product.category_id)
+                  .eq('is_active', true)
+                  .neq('id', item.product_id);
+
+                if (altProducts && altProducts.length > 0) {
+                  const altProductIds = altProducts.map((p: any) => p.id);
+                  const { data: altInventory } = await supabase
+                    .from('inventory')
+                    .select('id, product_id, lot_number, expiry_date, available_quantity')
+                    .in('product_id', altProductIds)
+                    .gt('available_quantity', 0)
+                    .order('expiry_date', { ascending: true, nullsFirst: false });
+
+                  if (altInventory && altInventory.length > 0) {
+                    // Sort: nearest expiry first, then most stock
+                    const sorted = [...altInventory].sort((a, b) => {
+                      const expA = a.expiry_date ? new Date(a.expiry_date).getTime() : Infinity;
+                      const expB = b.expiry_date ? new Date(b.expiry_date).getTime() : Infinity;
+                      if (expA !== expB) return expA - expB;
+                      return b.available_quantity - a.available_quantity;
+                    });
+
+                    for (const inv of sorted.slice(0, 5)) {
+                      const prod = altProducts.find((p: any) => p.id === inv.product_id);
+                      if (!prod) continue;
+                      const daysExp = inv.expiry_date
+                        ? Math.ceil((new Date(inv.expiry_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                        : undefined;
+                      alternatives.push({
+                        product_id: prod.id,
+                        product_name: prod.name,
+                        product_sku: prod.sku,
+                        ref_number: prod.ref_number,
+                        brand: prod.brand,
+                        inventory_id: inv.id,
+                        lot_number: inv.lot_number,
+                        expiry_date: inv.expiry_date,
+                        available_quantity: inv.available_quantity,
+                        days_until_expiry: daysExp,
+                        specifications: prod.specifications,
+                      });
+                    }
+                  }
+                }
+              }
+              oosWithAlternatives.push({ oosItem, alternatives });
             }
           }
 
@@ -240,9 +317,10 @@ export function ReservationModal({
             score,
             inStockCount,
             totalCount: items.length,
-            allInStock: oosItems.length === 0,
+            allInStock: items.length > 0 && oosItems.length === 0,
             cartItems,
             oosItems,
+            oosWithAlternatives,
           });
         }
 
@@ -280,11 +358,58 @@ export function ReservationModal({
     }
   };
 
+  // Use alternative product instead of OOS item
+  const handleUseAlternative = (oosProductId: string, alt: AlternativeProduct, quantity: number) => {
+    if (!pendingTemplateLoad) return;
+
+    const altCartItem: CartItem = {
+      id: `${alt.product_id}-${alt.inventory_id}`,
+      product_id: alt.product_id,
+      product_name: alt.product_name,
+      product_sku: alt.product_sku,
+      ref_number: alt.ref_number,
+      inventory_id: alt.inventory_id,
+      lot_number: alt.lot_number,
+      expiry_date: alt.expiry_date,
+      quantity,
+      available: alt.available_quantity,
+      is_out_of_stock: false,
+      is_alternative: true,
+      original_product_name: pendingTemplateLoad.oosItems.find(
+        (o) => o.product_id === oosProductId
+      )?.product_name,
+      specifications: alt.specifications,
+    };
+
+    // Replace OOS item with alternative in the pending template
+    const newOosItems = pendingTemplateLoad.oosItems.filter(
+      (o) => o.product_id !== oosProductId
+    );
+    const newCartItems = [...pendingTemplateLoad.cartItems, altCartItem];
+    const newOosWithAlternatives = pendingTemplateLoad.oosWithAlternatives.filter(
+      (o) => o.oosItem.product_id !== oosProductId
+    );
+
+    setPendingTemplateLoad({
+      ...pendingTemplateLoad,
+      cartItems: newCartItems,
+      oosItems: newOosItems,
+      oosWithAlternatives: newOosWithAlternatives,
+      inStockCount: pendingTemplateLoad.inStockCount + 1,
+      allInStock: newOosItems.length === 0,
+    });
+
+    toast.success(`ใช้ ${alt.product_name} แทน`);
+  };
+
   const confirmTemplateWithOos = () => {
     if (!pendingTemplateLoad) return;
     setCart([...pendingTemplateLoad.cartItems, ...pendingTemplateLoad.oosItems]);
+    const oosCount = pendingTemplateLoad.oosItems.length;
     toast.success(
-      `เพิ่ม "${pendingTemplateLoad.template.name}" (${pendingTemplateLoad.cartItems.length} มีสต็อก, ${pendingTemplateLoad.oosItems.length} ไม่มีสต็อก)`
+      oosCount > 0
+        ? `เพิ่ม "${pendingTemplateLoad.template.name}" (${pendingTemplateLoad.cartItems.length} มีสต็อก, ${oosCount} ไม่มีสต็อก)`
+        : `เพิ่ม "${pendingTemplateLoad.template.name}" (${pendingTemplateLoad.cartItems.length} รายการ)`
     );
     setShowOosConfirmModal(false);
     setPendingTemplateLoad(null);
@@ -503,11 +628,14 @@ export function ReservationModal({
                       type="button"
                       className={cn(
                         'p-3 rounded-lg border-2 text-left transition-all hover:shadow-md active:scale-[0.98]',
-                        scored.allInStock
-                          ? 'border-green-200 bg-green-50/70 hover:border-green-400'
-                          : 'border-orange-200 bg-orange-50/70 hover:border-orange-400'
+                        scored.totalCount === 0
+                          ? 'border-gray-200 bg-gray-50/70 hover:border-gray-400'
+                          : scored.allInStock
+                            ? 'border-green-200 bg-green-50/70 hover:border-green-400'
+                            : 'border-orange-200 bg-orange-50/70 hover:border-orange-400'
                       )}
                       onClick={() => handleSelectTemplate(scored)}
+                      disabled={scored.totalCount === 0}
                     >
                       <div className="flex items-start justify-between gap-2 mb-1.5">
                         <span className="font-medium text-gray-900 text-sm leading-tight">
@@ -522,7 +650,12 @@ export function ReservationModal({
                           {scored.template.description}
                         </p>
                       )}
-                      {scored.allInStock ? (
+                      {scored.totalCount === 0 ? (
+                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                          <Info className="w-3.5 h-3.5" />
+                          ยังไม่มีรายการวัสดุ
+                        </div>
+                      ) : scored.allInStock ? (
                         <div className="flex items-center gap-1 text-xs text-green-700">
                           <CheckCircle className="w-3.5 h-3.5" />
                           มีครบ {scored.inStockCount}/{scored.totalCount} รายการ
@@ -889,6 +1022,7 @@ export function ReservationModal({
           setPendingTemplateLoad(null);
         }}
         title="วัสดุบางรายการไม่มีในสต็อก"
+        size="lg"
       >
         {pendingTemplateLoad && (
           <div className="space-y-4">
@@ -900,26 +1034,80 @@ export function ReservationModal({
                     &quot;{pendingTemplateLoad.template.name}&quot; มีบางรายการไม่มีในสต็อก
                   </p>
                   <p className="text-yellow-700 text-xs mt-0.5">
-                    ระบบจะแจ้งเจ้าหน้าที่สต็อกให้จัดหา
+                    เลือกวัสดุทดแทนจากหมวดหมู่เดียวกัน หรือจองแจ้งสั่งซื้อ
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <p className="text-xs font-medium text-gray-500">รายการที่ไม่มีในสต็อก:</p>
-              {pendingTemplateLoad.oosItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between p-2 bg-red-50 rounded-lg border border-red-200"
-                >
-                  <div>
-                    <p className="font-medium text-sm text-gray-900">{item.product_name}</p>
-                    <p className="text-xs text-gray-500">
-                      REF: {item.requested_ref || item.ref_number}
-                    </p>
+            {/* OOS items with alternatives */}
+            <div className="space-y-3">
+              {pendingTemplateLoad.oosWithAlternatives.map(({ oosItem, alternatives }) => (
+                <div key={oosItem.id} className="rounded-lg border border-red-200 overflow-hidden">
+                  {/* OOS item header */}
+                  <div className="flex items-center justify-between p-3 bg-red-50">
+                    <div>
+                      <p className="font-medium text-sm text-gray-900">{oosItem.product_name}</p>
+                      <p className="text-xs text-gray-500">
+                        REF: {oosItem.requested_ref || oosItem.ref_number}
+                      </p>
+                    </div>
+                    <span className="text-sm text-red-600 font-medium">x{oosItem.quantity}</span>
                   </div>
-                  <span className="text-sm text-red-600 font-medium">x{item.quantity}</span>
+
+                  {/* Alternative recommendations */}
+                  {alternatives.length > 0 && (
+                    <div className="p-3 bg-blue-50/50 border-t border-red-200">
+                      <p className="text-xs font-semibold text-blue-700 mb-2 flex items-center gap-1">
+                        <Sparkles className="w-3 h-3" />
+                        วัสดุทดแทนที่มีในสต็อก (หมวดเดียวกัน)
+                      </p>
+                      <div className="space-y-1.5">
+                        {alternatives.map((alt) => (
+                          <div
+                            key={alt.inventory_id}
+                            className="flex items-center justify-between p-2 bg-white rounded-lg border border-blue-200 hover:border-blue-400 transition-colors"
+                          >
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-xs text-gray-900 truncate">
+                                {alt.product_name}
+                              </p>
+                              <div className="flex items-center gap-2 mt-0.5 text-[10px] text-gray-500">
+                                {alt.ref_number && <span>REF: {alt.ref_number}</span>}
+                                <span>LOT: {alt.lot_number}</span>
+                                {alt.expiry_date && (
+                                  <span className={cn(
+                                    'font-medium',
+                                    alt.days_until_expiry !== undefined && alt.days_until_expiry <= 90
+                                      ? 'text-amber-600'
+                                      : 'text-gray-500'
+                                  )}>
+                                    Exp: {formatDate(alt.expiry_date)}
+                                  </span>
+                                )}
+                                <span className="text-blue-600 font-medium">
+                                  คงเหลือ {alt.available_quantity}
+                                </span>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              className="ml-2 shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 transition-colors"
+                              onClick={() =>
+                                handleUseAlternative(
+                                  oosItem.product_id,
+                                  alt,
+                                  oosItem.quantity
+                                )
+                              }
+                            >
+                              ใช้แทน
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -941,10 +1129,16 @@ export function ReservationModal({
           >
             ยกเลิก
           </Button>
-          <Button variant="outline" onClick={confirmTemplateWithoutOos}>
-            เฉพาะที่มีสต็อก
+          {pendingTemplateLoad && pendingTemplateLoad.cartItems.length > 0 && (
+            <Button variant="outline" onClick={confirmTemplateWithoutOos}>
+              เฉพาะที่มีสต็อก
+            </Button>
+          )}
+          <Button onClick={confirmTemplateWithOos}>
+            {pendingTemplateLoad && pendingTemplateLoad.oosItems.length > 0
+              ? 'จองทั้งหมด (รวมรอสั่งซื้อ)'
+              : 'ยืนยัน'}
           </Button>
-          <Button onClick={confirmTemplateWithOos}>จองทั้งหมด</Button>
         </ModalFooter>
       </Modal>
 
@@ -1047,9 +1241,22 @@ function SelectedItemRow({
       <div className="flex items-start justify-between gap-2">
         {/* Info */}
         <div className="flex-1 min-w-0">
-          <p className="font-medium text-sm text-gray-900 leading-tight truncate">
-            {item.product_name}
-          </p>
+          <div className="flex items-center gap-1.5">
+            <p className="font-medium text-sm text-gray-900 leading-tight truncate">
+              {item.product_name}
+            </p>
+            {item.is_alternative && (
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-700 shrink-0">
+                <Sparkles className="w-2.5 h-2.5" />
+                ทดแทน
+              </span>
+            )}
+          </div>
+          {item.is_alternative && item.original_product_name && (
+            <p className="text-[10px] text-blue-600 mt-0.5 truncate">
+              แทน: {item.original_product_name}
+            </p>
+          )}
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-xs text-gray-500">
             {item.product_sku && <span>SKU: {item.product_sku}</span>}
             {item.lot_number && <span>LOT: {item.lot_number}</span>}
