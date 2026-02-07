@@ -191,41 +191,47 @@ export default function DentistDashboardPage() {
 
         {/* Calendar/Table Section */}
         <Card>
-          {/* Header - Single row on desktop, stacked on mobile */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
-            <div className="flex items-center gap-2 shrink-0">
+          {/* Header Row: Title + View toggle */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-blue-600" />
               <h3 className="text-lg font-semibold text-gray-900">ปฏิทินเคส</h3>
             </div>
-            <div className="flex-1 lg:max-w-2xl">
-              <DateRangePicker value={dateFilter} onChange={setDateFilter} />
-            </div>
-            <div className="shrink-0">
-              <ViewToggle value={viewMode} onChange={setViewMode} />
-            </div>
+            <ViewToggle value={viewMode} onChange={setViewMode} />
           </div>
 
-          {/* Summary stats - attractive cards with centered text */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-5 pb-5 border-b border-gray-100">
-            <div className="col-span-2 sm:col-span-1 flex flex-col items-center justify-center py-3 px-4 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200">
-              <span className="text-3xl font-bold text-blue-600">{statusSummary.total}</span>
-              <span className="text-xs font-medium text-blue-500 mt-0.5">เคส ใน {daysInRange} วัน</span>
+          {/* Date Range Picker */}
+          <div className="mb-5">
+            <DateRangePicker value={dateFilter} onChange={setDateFilter} />
+          </div>
+
+          {/* Summary stats - attractive cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 lg:gap-4 mb-5 pb-5 border-b border-gray-100">
+            {/* Total cases - highlighted */}
+            <div className="col-span-2 sm:col-span-3 lg:col-span-1 flex flex-col items-center justify-center py-4 lg:py-5 px-4 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 shadow-sm">
+              <span className="text-4xl lg:text-5xl font-bold text-blue-600">{statusSummary.total}</span>
+              <span className="text-xs font-medium text-blue-500 mt-1">เคสทั้งหมด</span>
+              <span className="text-[10px] text-blue-400">ใน {daysInRange} วัน</span>
             </div>
-            <div className="flex flex-col items-center justify-center py-3 px-4 rounded-xl bg-gradient-to-br from-green-50 to-green-100 border border-green-200">
-              <span className="text-2xl font-bold text-green-600">{statusSummary.ready}</span>
-              <span className="text-xs font-medium text-green-500 mt-0.5">พร้อม</span>
+            {/* Ready */}
+            <div className="flex flex-col items-center justify-center py-4 lg:py-5 px-4 rounded-xl bg-gradient-to-br from-green-50 to-green-100 border border-green-200 shadow-sm">
+              <span className="text-3xl lg:text-4xl font-bold text-green-600">{statusSummary.ready}</span>
+              <span className="text-xs font-medium text-green-600 mt-1">พร้อม</span>
             </div>
-            <div className="flex flex-col items-center justify-center py-3 px-4 rounded-xl bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200">
-              <span className="text-2xl font-bold text-orange-600">{statusSummary.partial}</span>
-              <span className="text-xs font-medium text-orange-500 mt-0.5">รอของ</span>
+            {/* Waiting */}
+            <div className="flex flex-col items-center justify-center py-4 lg:py-5 px-4 rounded-xl bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 shadow-sm">
+              <span className="text-3xl lg:text-4xl font-bold text-amber-600">{statusSummary.partial}</span>
+              <span className="text-xs font-medium text-amber-600 mt-1">รอของ</span>
             </div>
-            <div className="flex flex-col items-center justify-center py-3 px-4 rounded-xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200">
-              <span className="text-2xl font-bold text-red-600">{statusSummary.notReady}</span>
-              <span className="text-xs font-medium text-red-500 mt-0.5">ขาด</span>
+            {/* Not ready */}
+            <div className="flex flex-col items-center justify-center py-4 lg:py-5 px-4 rounded-xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 shadow-sm">
+              <span className="text-3xl lg:text-4xl font-bold text-red-600">{statusSummary.notReady}</span>
+              <span className="text-xs font-medium text-red-600 mt-1">ขาด</span>
             </div>
-            <div className="flex flex-col items-center justify-center py-3 px-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200">
-              <span className="text-2xl font-bold text-gray-600">{statusSummary.notReserved}</span>
-              <span className="text-xs font-medium text-gray-400 mt-0.5">ยังไม่จอง</span>
+            {/* Not reserved */}
+            <div className="flex flex-col items-center justify-center py-4 lg:py-5 px-4 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 shadow-sm">
+              <span className="text-3xl lg:text-4xl font-bold text-slate-500">{statusSummary.notReserved}</span>
+              <span className="text-xs font-medium text-slate-500 mt-1">ยังไม่จอง</span>
             </div>
           </div>
 

@@ -101,8 +101,9 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
 
   return (
     <div className={cn('space-y-2', className)}>
-      {/* Row 1: Quick filters + Month navigation */}
-      <div className="flex items-center justify-between gap-2">
+      {/* Main controls: stacked on mobile, single row on lg */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2">
+        {/* Quick filters */}
         <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
           {quickFilters.map((filter) => (
             <button
@@ -120,8 +121,9 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
           ))}
         </div>
 
-        {/* Month navigation */}
-        <div className="flex items-center gap-0.5">
+        {/* Date range display + Month navigation */}
+        <div className="flex items-center gap-2">
+          {/* Month navigation */}
           <Button
             variant="ghost"
             size="sm"
@@ -130,6 +132,20 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
+
+          <button
+            onClick={() => setShowCustomPicker(!showCustomPicker)}
+            className={cn(
+              'flex items-center gap-2 px-4 py-2 text-sm border rounded-lg transition-colors',
+              showCustomPicker || value.type === 'custom'
+                ? 'border-blue-500 bg-blue-50 text-blue-700'
+                : 'border-gray-300 hover:border-gray-400'
+            )}
+          >
+            <Calendar className="w-4 h-4 shrink-0" />
+            <span className="whitespace-nowrap">{getDisplayText() || 'เลือกช่วงเวลา'}</span>
+          </button>
+
           <Button
             variant="ghost"
             size="sm"
@@ -140,20 +156,6 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
           </Button>
         </div>
       </div>
-
-      {/* Row 2: Date range display */}
-      <button
-        onClick={() => setShowCustomPicker(!showCustomPicker)}
-        className={cn(
-          'flex items-center gap-2 px-3 py-2 text-sm border rounded-lg transition-colors w-full sm:w-auto',
-          showCustomPicker || value.type === 'custom'
-            ? 'border-blue-500 bg-blue-50 text-blue-700'
-            : 'border-gray-300 hover:border-gray-400'
-        )}
-      >
-        <Calendar className="w-4 h-4 shrink-0" />
-        <span>{getDisplayText() || 'เลือกช่วงเวลา'}</span>
-      </button>
 
       {/* Custom date inputs */}
       {showCustomPicker && (
