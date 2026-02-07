@@ -1021,102 +1021,128 @@ export function ReservationModal({
           setShowOosConfirmModal(false);
           setPendingTemplateLoad(null);
         }}
-        title="วัสดุบางรายการไม่มีในสต็อก"
+        title={
+          pendingTemplateLoad && pendingTemplateLoad.oosItems.length === 0
+            ? 'เลือกวัสดุทดแทนครบแล้ว'
+            : 'วัสดุบางรายการไม่มีในสต็อก'
+        }
         size="lg"
       >
         {pendingTemplateLoad && (
           <div className="space-y-4">
-            <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-              <div className="flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 text-yellow-600 shrink-0 mt-0.5" />
-                <div className="text-sm">
-                  <p className="font-medium text-yellow-800">
-                    &quot;{pendingTemplateLoad.template.name}&quot; มีบางรายการไม่มีในสต็อก
-                  </p>
-                  <p className="text-yellow-700 text-xs mt-0.5">
-                    เลือกวัสดุทดแทนจากหมวดหมู่เดียวกัน หรือจองแจ้งสั่งซื้อ
-                  </p>
+            {/* Banner: changes based on remaining OOS count */}
+            {pendingTemplateLoad.oosItems.length > 0 ? (
+              <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-yellow-600 shrink-0 mt-0.5" />
+                  <div className="text-sm">
+                    <p className="font-medium text-yellow-800">
+                      &quot;{pendingTemplateLoad.template.name}&quot; มีบางรายการไม่มีในสต็อก
+                    </p>
+                    <p className="text-yellow-700 text-xs mt-0.5">
+                      เลือกวัสดุทดแทนจากหมวดหมู่เดียวกัน หรือจองแจ้งสั่งซื้อ
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            {/* OOS items with alternatives */}
-            <div className="space-y-3">
-              {pendingTemplateLoad.oosWithAlternatives.map(({ oosItem, alternatives }) => (
-                <div key={oosItem.id} className="rounded-lg border border-red-200 overflow-hidden">
-                  {/* OOS item header */}
-                  <div className="flex items-center justify-between p-3 bg-red-50">
-                    <div>
-                      <p className="font-medium text-sm text-gray-900">{oosItem.product_name}</p>
-                      <p className="text-xs text-gray-500">
-                        REF: {oosItem.requested_ref || oosItem.ref_number}
-                      </p>
-                    </div>
-                    <span className="text-sm text-red-600 font-medium">x{oosItem.quantity}</span>
+            ) : (
+              <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                <div className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
+                  <div className="text-sm">
+                    <p className="font-medium text-green-800">
+                      เลือกวัสดุทดแทนครบแล้ว พร้อมจอง
+                    </p>
+                    <p className="text-green-700 text-xs mt-0.5">
+                      &quot;{pendingTemplateLoad.template.name}&quot; — {pendingTemplateLoad.cartItems.length} รายการ
+                    </p>
                   </div>
-
-                  {/* Alternative recommendations */}
-                  {alternatives.length > 0 && (
-                    <div className="p-3 bg-blue-50/50 border-t border-red-200">
-                      <p className="text-xs font-semibold text-blue-700 mb-2 flex items-center gap-1">
-                        <Sparkles className="w-3 h-3" />
-                        วัสดุทดแทนที่มีในสต็อก (หมวดเดียวกัน)
-                      </p>
-                      <div className="space-y-1.5">
-                        {alternatives.map((alt) => (
-                          <div
-                            key={alt.inventory_id}
-                            className="flex items-center justify-between p-2 bg-white rounded-lg border border-blue-200 hover:border-blue-400 transition-colors"
-                          >
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-xs text-gray-900 truncate">
-                                {alt.product_name}
-                              </p>
-                              <div className="flex items-center gap-2 mt-0.5 text-[10px] text-gray-500">
-                                {alt.ref_number && <span>REF: {alt.ref_number}</span>}
-                                <span>LOT: {alt.lot_number}</span>
-                                {alt.expiry_date && (
-                                  <span className={cn(
-                                    'font-medium',
-                                    alt.days_until_expiry !== undefined && alt.days_until_expiry <= 90
-                                      ? 'text-amber-600'
-                                      : 'text-gray-500'
-                                  )}>
-                                    Exp: {formatDate(alt.expiry_date)}
-                                  </span>
-                                )}
-                                <span className="text-blue-600 font-medium">
-                                  คงเหลือ {alt.available_quantity}
-                                </span>
-                              </div>
-                            </div>
-                            <button
-                              type="button"
-                              className="ml-2 shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 transition-colors"
-                              onClick={() =>
-                                handleUseAlternative(
-                                  oosItem.product_id,
-                                  alt,
-                                  oosItem.quantity
-                                )
-                              }
-                            >
-                              ใช้แทน
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
-              ))}
-            </div>
-
-            {pendingTemplateLoad.cartItems.length > 0 && (
-              <p className="text-xs text-gray-500">
-                มีในสต็อก: {pendingTemplateLoad.cartItems.length} รายการ
-              </p>
+              </div>
             )}
+
+            {/* OOS items with alternatives (only show if still have OOS) */}
+            {pendingTemplateLoad.oosWithAlternatives.length > 0 && (
+              <div className="space-y-3">
+                {pendingTemplateLoad.oosWithAlternatives.map(({ oosItem, alternatives }) => (
+                  <div key={oosItem.id} className="rounded-lg border border-red-200 overflow-hidden">
+                    {/* OOS item header */}
+                    <div className="flex items-center justify-between p-3 bg-red-50">
+                      <div>
+                        <p className="font-medium text-sm text-gray-900">{oosItem.product_name}</p>
+                        <p className="text-xs text-gray-500">
+                          REF: {oosItem.requested_ref || oosItem.ref_number}
+                        </p>
+                      </div>
+                      <span className="text-sm text-red-600 font-medium">x{oosItem.quantity}</span>
+                    </div>
+
+                    {/* Alternative recommendations */}
+                    {alternatives.length > 0 && (
+                      <div className="p-3 bg-blue-50/50 border-t border-red-200">
+                        <p className="text-xs font-semibold text-blue-700 mb-2 flex items-center gap-1">
+                          <Sparkles className="w-3 h-3" />
+                          วัสดุทดแทนที่มีในสต็อก (หมวดเดียวกัน)
+                        </p>
+                        <div className="space-y-1.5">
+                          {alternatives.map((alt) => (
+                            <div
+                              key={alt.inventory_id}
+                              className="flex items-center justify-between p-2 bg-white rounded-lg border border-blue-200 hover:border-blue-400 transition-colors"
+                            >
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-xs text-gray-900 truncate">
+                                  {alt.product_name}
+                                </p>
+                                <div className="flex items-center gap-2 mt-0.5 text-[10px] text-gray-500">
+                                  {alt.ref_number && <span>REF: {alt.ref_number}</span>}
+                                  <span>LOT: {alt.lot_number}</span>
+                                  {alt.expiry_date && (
+                                    <span className={cn(
+                                      'font-medium',
+                                      alt.days_until_expiry !== undefined && alt.days_until_expiry <= 90
+                                        ? 'text-amber-600'
+                                        : 'text-gray-500'
+                                    )}>
+                                      Exp: {formatDate(alt.expiry_date)}
+                                    </span>
+                                  )}
+                                  <span className="text-blue-600 font-medium">
+                                    คงเหลือ {alt.available_quantity}
+                                  </span>
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                className="ml-2 shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 transition-colors"
+                                onClick={() =>
+                                  handleUseAlternative(
+                                    oosItem.product_id,
+                                    alt,
+                                    oosItem.quantity
+                                  )
+                                }
+                              >
+                                ใช้แทน
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <p className="text-xs text-gray-500">
+              มีในสต็อก: {pendingTemplateLoad.cartItems.length} รายการ
+              {pendingTemplateLoad.oosItems.length > 0 && (
+                <span className="text-red-500 ml-2">
+                  รอสั่งซื้อ: {pendingTemplateLoad.oosItems.length} รายการ
+                </span>
+              )}
+            </p>
           </div>
         )}
         <ModalFooter>
@@ -1129,7 +1155,7 @@ export function ReservationModal({
           >
             ยกเลิก
           </Button>
-          {pendingTemplateLoad && pendingTemplateLoad.cartItems.length > 0 && (
+          {pendingTemplateLoad && pendingTemplateLoad.oosItems.length > 0 && pendingTemplateLoad.cartItems.length > 0 && (
             <Button variant="outline" onClick={confirmTemplateWithoutOos}>
               เฉพาะที่มีสต็อก
             </Button>
