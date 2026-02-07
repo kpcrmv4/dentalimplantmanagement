@@ -137,6 +137,10 @@ export default function InventoryPage() {
             aValue = a.reserved_quantity;
             bValue = b.reserved_quantity;
             break;
+          case 'total':
+            aValue = a.available_quantity + a.reserved_quantity;
+            bValue = b.available_quantity + b.reserved_quantity;
+            break;
           case 'expiry':
             aValue = a.expiry_date ? new Date(a.expiry_date).getTime() : Infinity;
             bValue = b.expiry_date ? new Date(b.expiry_date).getTime() : Infinity;
@@ -399,10 +403,10 @@ export default function InventoryPage() {
           </Card>
         </div>
 
-        <Card>
+        <Card padding="lg">
           {/* Filters */}
-          <div className="space-y-3 sm:space-y-0 sm:flex sm:flex-row sm:gap-4 mb-6">
-            <div className="flex-1">
+          <div className="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:gap-4 lg:gap-6 mb-6">
+            <div className="flex-1 min-w-0">
               <Input
                 placeholder="ค้นหารหัส, REF, ชื่อสินค้า, Lot..."
                 value={search}
@@ -410,12 +414,22 @@ export default function InventoryPage() {
                 leftIcon={<Search className="w-4 h-4" />}
               />
             </div>
-            <Select
-              options={stockFilterOptions}
-              value={stockFilter}
-              onChange={(e) => setStockFilter(e.target.value)}
-              className="w-full sm:w-40"
-            />
+            {categories && categories.length > 0 && (
+              <div className="sm:w-48 sm:flex-shrink-0">
+                <Select
+                  options={[{ value: '', label: 'หมวดหมู่ทั้งหมด' }, ...categories.map(c => ({ value: c.id, label: c.name }))]}
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
+                />
+              </div>
+            )}
+            <div className="sm:w-44 sm:flex-shrink-0">
+              <Select
+                options={stockFilterOptions}
+                value={stockFilter}
+                onChange={(e) => setStockFilter(e.target.value)}
+              />
+            </div>
           </div>
 
           {/* Table */}
@@ -432,64 +446,73 @@ export default function InventoryPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="px-2 sm:px-4">
+                  <TableHead className="px-2 sm:px-4 lg:px-6">
                     <button
                       onClick={() => handleSort('ref')}
-                      className="flex items-center hover:text-blue-600 transition-colors text-xs sm:text-sm"
+                      className="flex items-center hover:text-blue-600 transition-colors text-xs sm:text-sm lg:text-sm"
                     >
                       REF / SKU
                       {getSortIcon('ref')}
                     </button>
                   </TableHead>
-                  <TableHead className="px-2 sm:px-4">
+                  <TableHead className="px-2 sm:px-4 lg:px-6">
                     <button
                       onClick={() => handleSort('name')}
-                      className="flex items-center hover:text-blue-600 transition-colors text-xs sm:text-sm"
+                      className="flex items-center hover:text-blue-600 transition-colors text-xs sm:text-sm lg:text-sm"
                     >
                       ชื่อสินค้า
                       {getSortIcon('name')}
                     </button>
                   </TableHead>
-                  <TableHead className="px-2 sm:px-4">
+                  <TableHead className="px-2 sm:px-4 lg:px-6 hidden sm:table-cell">
                     <button
                       onClick={() => handleSort('lot')}
-                      className="flex items-center hover:text-blue-600 transition-colors text-xs sm:text-sm"
+                      className="flex items-center hover:text-blue-600 transition-colors text-xs sm:text-sm lg:text-sm"
                     >
                       Lot Number
                       {getSortIcon('lot')}
                     </button>
                   </TableHead>
-                  <TableHead className="text-center px-1 sm:px-4">
-                    <button
-                      onClick={() => handleSort('quantity')}
-                      className="flex items-center justify-center hover:text-blue-600 transition-colors w-full text-xs sm:text-sm"
-                    >
-                      คงเหลือ
-                      {getSortIcon('quantity')}
-                    </button>
-                  </TableHead>
-                  <TableHead className="text-center px-1 sm:px-4 hidden sm:table-cell">
+                  <TableHead className="text-center px-1 sm:px-4 hidden lg:table-cell">
                     <button
                       onClick={() => handleSort('reserved')}
-                      className="flex items-center justify-center hover:text-blue-600 transition-colors w-full text-xs sm:text-sm"
+                      className="flex items-center justify-center hover:text-blue-600 transition-colors w-full text-xs sm:text-sm lg:text-sm"
                     >
                       จอง
                       {getSortIcon('reserved')}
                     </button>
                   </TableHead>
+                  <TableHead className="text-center px-1 sm:px-4">
+                    <button
+                      onClick={() => handleSort('quantity')}
+                      className="flex items-center justify-center hover:text-blue-600 transition-colors w-full text-xs sm:text-sm lg:text-sm"
+                    >
+                      คงเหลือ
+                      {getSortIcon('quantity')}
+                    </button>
+                  </TableHead>
+                  <TableHead className="text-center px-1 sm:px-4 hidden lg:table-cell">
+                    <button
+                      onClick={() => handleSort('total')}
+                      className="flex items-center justify-center hover:text-blue-600 transition-colors w-full text-xs sm:text-sm lg:text-sm"
+                    >
+                      ทั้งหมด
+                      {getSortIcon('total')}
+                    </button>
+                  </TableHead>
                   <TableHead className="hidden sm:table-cell">
                     <button
                       onClick={() => handleSort('expiry')}
-                      className="flex items-center hover:text-blue-600 transition-colors"
+                      className="flex items-center hover:text-blue-600 transition-colors text-xs sm:text-sm lg:text-sm"
                     >
                       วันหมดอายุ
                       {getSortIcon('expiry')}
                     </button>
                   </TableHead>
-                  <TableHead className="hidden lg:table-cell">
+                  <TableHead className="hidden xl:table-cell">
                     <button
                       onClick={() => handleSort('location')}
-                      className="flex items-center hover:text-blue-600 transition-colors"
+                      className="flex items-center hover:text-blue-600 transition-colors text-sm"
                     >
                       ที่เก็บ
                       {getSortIcon('location')}
@@ -508,7 +531,7 @@ export default function InventoryPage() {
 
                   return (
                     <TableRow key={item.id}>
-                      <TableCell className="px-2 sm:px-4 py-2 sm:py-4">
+                      <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-4">
                         <div>
                           <span className="font-medium text-blue-600 text-xs sm:text-sm">
                             {item.product?.ref_number || item.product?.sku}
@@ -516,9 +539,11 @@ export default function InventoryPage() {
                           {item.product?.ref_number && (
                             <p className="text-xs text-gray-400 hidden sm:block">{item.product?.sku}</p>
                           )}
+                          {/* Show lot number on mobile inline */}
+                          <p className="text-xs text-gray-400 font-mono sm:hidden">{item.lot_number}</p>
                         </div>
                       </TableCell>
-                      <TableCell className="px-2 sm:px-4 py-2 sm:py-4">
+                      <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-4">
                         <div>
                           <p className="font-medium text-xs sm:text-sm">{item.product?.name}</p>
                           <p className="text-xs text-gray-500">
@@ -534,8 +559,17 @@ export default function InventoryPage() {
                           )}
                         </div>
                       </TableCell>
-                      <TableCell className="px-2 sm:px-4 py-2 sm:py-4">
+                      <TableCell className="px-2 sm:px-4 lg:px-6 py-2 sm:py-4 hidden sm:table-cell">
                         <span className="font-mono text-xs sm:text-sm">{item.lot_number}</span>
+                      </TableCell>
+                      <TableCell className="text-center hidden lg:table-cell">
+                        {item.reserved_quantity > 0 ? (
+                          <Badge variant="info" size="sm">
+                            {item.reserved_quantity}
+                          </Badge>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
                       </TableCell>
                       <TableCell className="text-center px-1 sm:px-4 py-2 sm:py-4">
                         <span
@@ -547,19 +581,15 @@ export default function InventoryPage() {
                         >
                           {item.available_quantity}
                         </span>
-                        {/* Show reserved inline on mobile */}
+                        {/* Show reserved inline on mobile/tablet */}
                         {item.reserved_quantity > 0 && (
-                          <span className="sm:hidden block text-xs text-blue-500">({item.reserved_quantity})</span>
+                          <span className="lg:hidden block text-xs text-blue-500">จอง {item.reserved_quantity}</span>
                         )}
                       </TableCell>
-                      <TableCell className="text-center hidden sm:table-cell">
-                        {item.reserved_quantity > 0 ? (
-                          <Badge variant="info" size="sm">
-                            {item.reserved_quantity}
-                          </Badge>
-                        ) : (
-                          <span className="text-gray-400">-</span>
-                        )}
+                      <TableCell className="text-center hidden lg:table-cell px-1 sm:px-4 py-2 sm:py-4">
+                        <span className="font-medium text-sm">
+                          {item.available_quantity + item.reserved_quantity}
+                        </span>
                       </TableCell>
                       <TableCell className="hidden sm:table-cell">
                         {item.expiry_date ? (
@@ -575,7 +605,7 @@ export default function InventoryPage() {
                           <span className="text-gray-400">-</span>
                         )}
                       </TableCell>
-                      <TableCell className="hidden lg:table-cell">
+                      <TableCell className="hidden xl:table-cell">
                         {item.location ? (
                           <div className="flex items-center gap-1">
                             <MapPin className="w-3 h-3 text-gray-400" />
