@@ -80,8 +80,8 @@ const roleConfigs: Record<UserRole, RoleConfig> = {
       { id: 'dashboard', label: 'ภาพรวม', icon: LayoutDashboard, href: '/dashboard' },
       { id: 'cases', label: 'เคส', icon: FileText, href: '/cases' },
       { id: 'inventory', label: 'สต็อก', icon: Package, href: '/inventory' }, // Center - main action
-      { id: 'orders', label: 'สั่งซื้อ', icon: ShoppingCart, href: '/orders' },
       { id: 'reservations', label: 'เตรียมของ', icon: CalendarCheck, href: '/reservations' },
+      { id: 'orders', label: 'สั่งซื้อ', icon: ShoppingCart, href: '/orders' },
     ],
   },
   assistant: {
