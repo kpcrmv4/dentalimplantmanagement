@@ -41,12 +41,14 @@ export default function AssistantDashboardPage() {
   }, [mutateCases]);
 
   // Mark a reservation as used with photo evidence
+  // Note: Photo here is NOT a confirmation of usage — it's evidence for auditing.
+  // The actual stock deduction happens when the case is closed and the summary is confirmed.
   const handleMarkUsed = useCallback(
     async (reservationId: string, photoUrls: string[]) => {
-      // Fetch reservation to get actual quantity
+      // Fetch reservation to get actual quantity and inventory_id
       const { data: reservation } = await supabase
         .from('case_reservations')
-        .select('quantity')
+        .select('quantity, inventory_id, product_id')
         .eq('id', reservationId)
         .single();
 
@@ -116,10 +118,13 @@ export default function AssistantDashboardPage() {
       if (resError) throw resError;
 
       // If we have inventory, deduct the stock
+      // Note: available_quantity is a GENERATED column (quantity - reserved_quantity)
+      // so we only update 'quantity'. The INSERT trigger already added to reserved_quantity,
+      // and since status is 'used', we need to deduct from quantity as well.
       if (inventoryId) {
         const { data: inv, error: invError } = await supabase
           .from('inventory')
-          .select('quantity, reserved_quantity, available_quantity')
+          .select('quantity')
           .eq('id', inventoryId)
           .single();
 
@@ -128,8 +133,7 @@ export default function AssistantDashboardPage() {
         const { error: updateError } = await supabase
           .from('inventory')
           .update({
-            quantity: inv.quantity - quantity,
-            available_quantity: inv.available_quantity - quantity,
+            quantity: Math.max(0, inv.quantity - quantity),
           })
           .eq('id', inventoryId);
 
@@ -169,17 +173,66 @@ export default function AssistantDashboardPage() {
     [addMaterialCaseId, user?.id, mutateCases]
   );
 
-  // Close a case — cancel unused reservations in parallel, then update case + log
+  // Close a case:
+  // 1. Deduct actual stock (quantity) for all 'used' reservations
+  // 2. Cancel unused reservations (trigger releases reserved_quantity automatically)
+  // 3. Mark case as completed
   const handleCloseCase = useCallback(
     async (unusedReservationIds: string[], notes?: string) => {
       if (!closeCaseItem) return;
 
-      // Cancel unused reservations and restore inventory in parallel
+      // Step 1: Deduct actual stock for used items
+      // For each used reservation: reduce quantity AND release reserved_quantity
+      // Note: The DB trigger only tracks quantity changes on UPDATE, NOT status changes.
+      // So when status changed to 'used' earlier, reserved_quantity was NOT released.
+      // We must manually release it here along with deducting physical stock.
+      // available_quantity is a GENERATED column (quantity - reserved_quantity) — never update directly.
+      const usedReservations = closeCaseItem.reservations.filter((r) => r.status === 'used');
+      await Promise.all(
+        usedReservations.map(async (reservation) => {
+          if (!reservation.inventory_id) return;
+
+          const qty = reservation.used_quantity || reservation.quantity;
+
+          const { data: inv } = await supabase
+            .from('inventory')
+            .select('quantity, reserved_quantity')
+            .eq('id', reservation.inventory_id)
+            .single();
+
+          if (inv) {
+            await supabase
+              .from('inventory')
+              .update({
+                quantity: Math.max(0, inv.quantity - qty),
+                reserved_quantity: Math.max(0, inv.reserved_quantity - qty),
+              })
+              .eq('id', reservation.inventory_id);
+
+            // Record stock movement
+            await supabase.from('stock_movements').insert({
+              inventory_id: reservation.inventory_id,
+              product_id: reservation.product_id,
+              movement_type: 'use',
+              quantity: -qty,
+              reference_type: 'case_reservations',
+              reference_id: reservation.id,
+              notes: `ตัดสต็อก - เคส ${closeCaseItem.case_number}`,
+              performed_by: user?.id,
+            });
+          }
+        })
+      );
+
+      // Step 2: Cancel unused reservations and release reserved_quantity
+      // The DB trigger only adjusts reserved_quantity based on quantity changes,
+      // NOT status changes. So we must manually release reserved_quantity here.
       await Promise.all(
         unusedReservationIds.map(async (reservationId) => {
           const reservation = closeCaseItem.reservations.find((r) => r.id === reservationId);
           if (!reservation) return;
 
+          // Cancel the reservation
           await supabase
             .from('case_reservations')
             .update({
@@ -190,10 +243,11 @@ export default function AssistantDashboardPage() {
             })
             .eq('id', reservationId);
 
+          // Release reserved_quantity manually
           if (reservation.inventory_id) {
             const { data: inv } = await supabase
               .from('inventory')
-              .select('reserved_quantity, available_quantity')
+              .select('reserved_quantity')
               .eq('id', reservation.inventory_id)
               .single();
 
@@ -202,7 +256,6 @@ export default function AssistantDashboardPage() {
                 .from('inventory')
                 .update({
                   reserved_quantity: Math.max(0, inv.reserved_quantity - reservation.quantity),
-                  available_quantity: inv.available_quantity + reservation.quantity,
                 })
                 .eq('id', reservation.inventory_id);
             }
@@ -210,7 +263,7 @@ export default function AssistantDashboardPage() {
         })
       );
 
-      // Update case status and log in parallel
+      // Step 3: Update case status and log in parallel
       await Promise.all([
         supabase
           .from('cases')
@@ -228,8 +281,9 @@ export default function AssistantDashboardPage() {
           details: {
             case_number: closeCaseItem.case_number,
             patient_name: closeCaseItem.patient_name,
-            materials_used: closeCaseItem.reservations.filter((r) => r.status === 'used').length,
+            materials_used: usedReservations.length,
             materials_returned: unusedReservationIds.length,
+            total_pieces_used: usedReservations.reduce((sum, r) => sum + (r.used_quantity || r.quantity), 0),
             notes,
           },
         }),
