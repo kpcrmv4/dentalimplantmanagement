@@ -1,15 +1,16 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { 
-  Bell, 
-  AlertTriangle, 
-  Package, 
+import {
+  Bell,
+  AlertTriangle,
+  Package,
   Calendar,
   Clock,
 } from 'lucide-react';
 import { Header } from '@/components/layout';
 import { useUrgentCases48h, usePendingStockRequests, useLowStockItems } from '@/hooks/useApi';
+import { useAuthStore } from '@/stores/authStore';
 import { formatThaiDate, formatThaiDateTime } from '@/lib/utils';
 import Link from 'next/link';
 
@@ -29,19 +30,32 @@ interface NotificationItem {
 export default function NotificationsPage() {
   const [filter, setFilter] = useState<NotificationType>('all');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const user = useAuthStore((s) => s.user);
+  const userRole = user?.role;
+
+  // Determine which data to fetch based on role
+  // stock_staff & admin: see all notification types
+  // dentist: only urgent cases (filtered to own cases)
+  // assistant/cs: only urgent cases
+  const canSeeStockNotifications = userRole === 'admin' || userRole === 'stock_staff';
 
   // Fetch data from various sources
   const { data: urgentCases, mutate: mutateUrgent } = useUrgentCases48h();
   const { data: outOfStockRequests, mutate: mutateOutOfStock } = usePendingStockRequests();
   const { data: lowStockItems, mutate: mutateLowStock } = useLowStockItems();
 
-  // Combine all notifications
+  // Combine all notifications (filtered by role)
   const notifications = useMemo<NotificationItem[]>(() => {
     const items: NotificationItem[] = [];
 
     // Add urgent cases as notifications
+    // dentist: only their own cases; others: all urgent cases
     if (urgentCases) {
-      urgentCases.forEach((c) => {
+      const filteredCases = userRole === 'dentist'
+        ? urgentCases.filter((c) => c.dentist_id === user?.id)
+        : urgentCases;
+
+      filteredCases.forEach((c) => {
         items.push({
           id: `urgent-${c.id}`,
           type: 'urgent_case',
@@ -55,8 +69,8 @@ export default function NotificationsPage() {
       });
     }
 
-    // Add out of stock requests as notifications
-    if (outOfStockRequests) {
+    // Add out of stock requests as notifications (stock_staff & admin only)
+    if (canSeeStockNotifications && outOfStockRequests) {
       outOfStockRequests.forEach((r) => {
         items.push({
           id: `outofstock-${r.reservation_id}`,
@@ -71,9 +85,8 @@ export default function NotificationsPage() {
       });
     }
 
-    // Add low stock items as notifications
-    // LowStockItem type: { product_id, sku, ref_number, product_name, min_stock_level, current_stock, shortage }
-    if (lowStockItems) {
+    // Add low stock items as notifications (stock_staff & admin only)
+    if (canSeeStockNotifications && lowStockItems) {
       lowStockItems.forEach((item) => {
         items.push({
           id: `lowstock-${item.product_id}`,
@@ -96,7 +109,7 @@ export default function NotificationsPage() {
       }
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
-  }, [urgentCases, outOfStockRequests, lowStockItems]);
+  }, [urgentCases, outOfStockRequests, lowStockItems, userRole, user?.id, canSeeStockNotifications]);
 
   // Filter notifications
   const filteredNotifications = useMemo(() => {
@@ -191,17 +204,19 @@ export default function NotificationsPage() {
             <Clock className="w-4 h-4 inline mr-1" />
             เคสด่วน ({notifications.filter(n => n.type === 'urgent_case').length})
           </button>
-          <button
-            onClick={() => setFilter('stock')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              filter === 'stock'
-                ? 'bg-yellow-600 text-white'
-                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-            }`}
-          >
-            <Package className="w-4 h-4 inline mr-1" />
-            สต็อก ({notifications.filter(n => n.type === 'low_stock' || n.type === 'out_of_stock').length})
-          </button>
+          {canSeeStockNotifications && (
+            <button
+              onClick={() => setFilter('stock')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                filter === 'stock'
+                  ? 'bg-yellow-600 text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+              }`}
+            >
+              <Package className="w-4 h-4 inline mr-1" />
+              สต็อก ({notifications.filter(n => n.type === 'low_stock' || n.type === 'out_of_stock').length})
+            </button>
+          )}
         </div>
 
         {/* Notifications List */}
@@ -262,7 +277,7 @@ export default function NotificationsPage() {
         </div>
 
         {/* Summary Cards */}
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className={`mt-6 grid grid-cols-1 ${canSeeStockNotifications ? 'sm:grid-cols-3' : 'sm:grid-cols-1'} gap-4`}>
           <div className="bg-red-50 rounded-xl p-4 border border-red-100">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-red-100 rounded-lg">
@@ -270,34 +285,42 @@ export default function NotificationsPage() {
               </div>
               <div>
                 <p className="text-sm text-red-600 font-medium">เคสด่วน 48 ชม.</p>
-                <p className="text-2xl font-bold text-red-700">{urgentCases?.length || 0}</p>
+                <p className="text-2xl font-bold text-red-700">
+                  {userRole === 'dentist'
+                    ? (urgentCases?.filter((c) => c.dentist_id === user?.id).length || 0)
+                    : (urgentCases?.length || 0)}
+                </p>
               </div>
             </div>
           </div>
-          
-          <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-100">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-yellow-100 rounded-lg">
-                <Package className="w-5 h-5 text-yellow-600" />
+
+          {canSeeStockNotifications && (
+            <>
+              <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-100">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-yellow-100 rounded-lg">
+                    <Package className="w-5 h-5 text-yellow-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-yellow-600 font-medium">วัสดุใกล้หมด</p>
+                    <p className="text-2xl font-bold text-yellow-700">{lowStockItems?.length || 0}</p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-yellow-600 font-medium">วัสดุใกล้หมด</p>
-                <p className="text-2xl font-bold text-yellow-700">{lowStockItems?.length || 0}</p>
+
+              <div className="bg-orange-50 rounded-xl p-4 border border-orange-100">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-orange-100 rounded-lg">
+                    <AlertTriangle className="w-5 h-5 text-orange-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-orange-600 font-medium">รอสั่งซื้อ</p>
+                    <p className="text-2xl font-bold text-orange-700">{outOfStockRequests?.length || 0}</p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          
-          <div className="bg-orange-50 rounded-xl p-4 border border-orange-100">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <AlertTriangle className="w-5 h-5 text-orange-600" />
-              </div>
-              <div>
-                <p className="text-sm text-orange-600 font-medium">รอสั่งซื้อ</p>
-                <p className="text-2xl font-bold text-orange-700">{outOfStockRequests?.length || 0}</p>
-              </div>
-            </div>
-          </div>
+            </>
+          )}
         </div>
       </div>
     </div>

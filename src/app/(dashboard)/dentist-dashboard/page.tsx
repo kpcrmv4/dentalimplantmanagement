@@ -50,6 +50,7 @@ export default function DentistDashboardPage() {
   }, [cases]);
 
   // New cases (within last 7 days of assignment - using surgery date as proxy)
+  // Exclude cases where material_status is 'ready' since they are already prepared
   const newCases = useMemo(() => {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -57,7 +58,9 @@ export default function DentistDashboardPage() {
       const surgeryDate = new Date(c.surgery_date);
       const today = new Date();
       // Show cases that are upcoming and within the next 14 days
-      return surgeryDate >= today && surgeryDate <= new Date(today.setDate(today.getDate() + 14));
+      // but exclude cases that already have materials ready
+      return surgeryDate >= today && surgeryDate <= new Date(today.setDate(today.getDate() + 14))
+        && c.material_status !== 'ready';
     }).slice(0, 5);
   }, [cases]);
 
