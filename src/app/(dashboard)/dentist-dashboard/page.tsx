@@ -191,38 +191,43 @@ export default function DentistDashboardPage() {
 
         {/* Calendar/Table Section */}
         <Card>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-gray-600" />
-              <h3 className="text-lg font-semibold text-gray-900">ปฏิทินเคส</h3>
-            </div>
-            <div className="flex items-center gap-4">
-              <DateRangePicker value={dateFilter} onChange={setDateFilter} />
+          {/* Header */}
+          <div className="flex flex-col gap-4 mb-5">
+            {/* Row 1: Title + View toggle */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-blue-600" />
+                <h3 className="text-lg font-semibold text-gray-900">ปฏิทินเคส</h3>
+              </div>
               <ViewToggle value={viewMode} onChange={setViewMode} />
             </div>
+
+            {/* Row 2: Date range picker */}
+            <DateRangePicker value={dateFilter} onChange={setDateFilter} />
           </div>
 
-          {/* Summary stats */}
-          <div className="flex items-center gap-4 text-sm text-gray-600 mb-4 pb-4 border-b border-gray-100">
-            <span>
-              สรุป: <strong>{statusSummary.total}</strong> เคส ใน {daysInRange} วัน
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-green-500" />
-              {statusSummary.ready} พร้อม
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-orange-500" />
-              {statusSummary.partial} รอของ
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-red-500" />
-              {statusSummary.notReady} ขาด
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-gray-400" />
-              {statusSummary.notReserved} ยังไม่จอง
-            </span>
+          {/* Summary stats - responsive */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-3 mb-5 pb-5 border-b border-gray-100">
+            <div className="col-span-2 sm:col-span-1 flex items-center gap-2 mb-1 sm:mb-0">
+              <span className="text-2xl font-bold text-blue-600">{statusSummary.total}</span>
+              <span className="text-sm text-gray-500">เคส ใน {daysInRange} วัน</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-50">
+              <span className="w-2 h-2 rounded-full bg-green-500 shrink-0" />
+              <span className="text-sm font-medium text-green-700">{statusSummary.ready} พร้อม</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-orange-50">
+              <span className="w-2 h-2 rounded-full bg-orange-500 shrink-0" />
+              <span className="text-sm font-medium text-orange-700">{statusSummary.partial} รอของ</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50">
+              <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+              <span className="text-sm font-medium text-red-700">{statusSummary.notReady} ขาด</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50">
+              <span className="w-2 h-2 rounded-full bg-gray-400 shrink-0" />
+              <span className="text-sm font-medium text-gray-600">{statusSummary.notReserved} ยังไม่จอง</span>
+            </div>
           </div>
 
           {/* Table or Timeline view */}
