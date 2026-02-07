@@ -80,6 +80,13 @@ export function CloseCaseModal({
     0
   );
 
+  // Check if any reservations are out of stock (blocking)
+  const hasOutOfStock = caseItem.reservations.some(
+    (r) => r.is_out_of_stock && r.status !== 'cancelled'
+  );
+  // Cannot close if no materials used or has out-of-stock items
+  const canProceed = usedItems.length > 0 && !hasOutOfStock && usedWithoutPhoto.length === 0;
+
   const handleSubmit = async () => {
     setError(null);
     setIsSubmitting(true);
@@ -292,6 +299,28 @@ export function CloseCaseModal({
                 </div>
               )}
 
+              {/* Warning: out of stock items */}
+              {hasOutOfStock && (
+                <div className="bg-red-50 border border-red-300 rounded-lg p-3 flex items-start gap-2">
+                  <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                  <div className="text-sm text-red-800">
+                    <p className="font-medium">ไม่สามารถปิดเคสได้</p>
+                    <p>มีวัสดุที่ยังรอสั่งซื้อ กรุณารอจนกว่าวัสดุจะพร้อมครบถ้วน</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Warning: no materials used */}
+              {!hasOutOfStock && usedItems.length === 0 && (unusedItems.length > 0 || pendingItems.length > 0) && (
+                <div className="bg-yellow-50 border border-yellow-300 rounded-lg p-3 flex items-start gap-2">
+                  <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                  <div className="text-sm text-yellow-800">
+                    <p className="font-medium">ยังไม่ได้บันทึกการใช้วัสดุ</p>
+                    <p>กรุณากลับไปบันทึกการใช้วัสดุก่อนปิดเคส</p>
+                  </div>
+                </div>
+              )}
+
               {/* No materials at all */}
               {usedItems.length === 0 &&
                 unusedItems.length === 0 &&
@@ -428,12 +457,16 @@ export function CloseCaseModal({
                 variant="primary"
                 className="flex-1"
                 onClick={() => setStep('confirm')}
-                disabled={usedWithoutPhoto.length > 0}
+                disabled={!canProceed}
               >
-                {usedWithoutPhoto.length > 0
-                  ? `ขาดรูป ${usedWithoutPhoto.length} รายการ`
-                  : 'ตรวจสอบแล้ว'}
-                {usedWithoutPhoto.length === 0 && (
+                {hasOutOfStock
+                  ? 'มีวัสดุรอสั่งซื้อ'
+                  : usedItems.length === 0
+                    ? 'ยังไม่ได้ใช้วัสดุ'
+                    : usedWithoutPhoto.length > 0
+                      ? `ขาดรูป ${usedWithoutPhoto.length} รายการ`
+                      : 'ตรวจสอบแล้ว'}
+                {canProceed && (
                   <ArrowRight className="w-4 h-4 ml-1.5" />
                 )}
               </Button>

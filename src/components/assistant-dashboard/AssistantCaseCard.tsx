@@ -26,6 +26,13 @@ export function AssistantCaseCard({
   const progressPercent = total > 0 ? Math.round((used / total) * 100) : 0;
   const isCompleted = caseItem.status === 'completed';
 
+  // Check if any materials have out-of-stock status (not ready)
+  const hasOutOfStock = caseItem.reservations.some(
+    (r) => r.is_out_of_stock && r.status !== 'cancelled'
+  );
+  // Case can only be closed if at least one material was used and none are out of stock
+  const canCloseCase = used > 0 && !hasOutOfStock;
+
   // Check how many used items still need photos — shown as a warning badge
   const usedWithoutPhotoCount = useMemo(() => {
     return caseItem.reservations.filter(
@@ -143,6 +150,7 @@ export function AssistantCaseCard({
               size="sm"
               className="flex-1"
               onClick={() => onCloseCase(caseItem.id)}
+              disabled={!canCloseCase}
             >
               <CheckCircle className="w-4 h-4 mr-1.5" />
               ปิดเคส
@@ -153,6 +161,26 @@ export function AssistantCaseCard({
               )}
             </Button>
           </div>
+
+          {/* Warning: out of stock items */}
+          {hasOutOfStock && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-2.5 flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+              <p className="text-xs text-red-800">
+                มีวัสดุที่ยังรอสั่งซื้อ ไม่สามารถปิดเคสได้จนกว่าวัสดุจะพร้อม
+              </p>
+            </div>
+          )}
+
+          {/* Warning: no materials used yet */}
+          {!hasOutOfStock && used === 0 && total > 0 && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2.5 flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 text-yellow-600 shrink-0 mt-0.5" />
+              <p className="text-xs text-yellow-800">
+                ยังไม่ได้บันทึกการใช้วัสดุ กรุณาบันทึกการใช้ก่อนปิดเคส
+              </p>
+            </div>
+          )}
 
           {/* Warning: items need photos */}
           {usedWithoutPhotoCount > 0 && (
