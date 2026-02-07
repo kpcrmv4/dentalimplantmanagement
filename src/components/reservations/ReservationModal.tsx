@@ -563,69 +563,82 @@ export function ReservationModal({
 
               {/* Search Results Dropdown */}
               {searchTerm.length >= 2 && (
-                <div className="absolute z-50 w-full mt-1 bg-white rounded-xl shadow-xl border border-gray-200 max-h-80 overflow-y-auto">
+                <div className="absolute z-50 w-full mt-1 bg-white rounded-xl shadow-2xl border border-gray-200 max-h-[420px] overflow-y-auto">
                   {isSearching ? (
-                    <div className="p-4 text-center text-gray-500">
-                      <Loader2 className="w-5 h-5 animate-spin mx-auto" />
-                      <p className="mt-1 text-sm">กำลังค้นหา...</p>
+                    <div className="p-6 text-center text-gray-500">
+                      <Loader2 className="w-6 h-6 animate-spin mx-auto text-blue-500" />
+                      <p className="mt-2 text-sm">กำลังค้นหา...</p>
                     </div>
                   ) : searchResults && searchResults.length > 0 ? (
-                    <div className="divide-y divide-gray-100">
-                      {searchResults.map((product) => {
+                    <div>
+                      {searchResults.map((product, idx) => {
                         const isExpanded = expandedProductId === product.id;
                         return (
-                          <div key={product.id}>
+                          <div key={product.id} className={idx > 0 ? 'border-t border-gray-100' : ''}>
                             {/* Product Row */}
                             <div
                               className={cn(
-                                'px-3 py-2.5 cursor-pointer transition-colors',
-                                isExpanded ? 'bg-blue-50' : 'hover:bg-gray-50'
+                                'px-4 py-3 cursor-pointer transition-all',
+                                isExpanded
+                                  ? 'bg-blue-50 border-l-4 border-l-blue-500'
+                                  : 'hover:bg-gray-50 border-l-4 border-l-transparent'
                               )}
                               onClick={() =>
                                 setExpandedProductId(isExpanded ? null : product.id)
                               }
                             >
-                              <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center justify-between gap-3">
                                 <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium text-sm text-gray-900 truncate">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="font-semibold text-sm text-gray-900">
                                       {product.name}
                                     </span>
                                     {product.is_implant && (
                                       <Badge variant="info" size="sm">Implant</Badge>
                                     )}
                                   </div>
-                                  <div className="flex items-center gap-2 mt-0.5 text-xs text-gray-500">
-                                    <span>REF: {product.ref_number || product.sku}</span>
+                                  <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                                    <span className="font-mono bg-gray-100 px-1.5 py-0.5 rounded">
+                                      REF: {product.ref_number || product.sku}
+                                    </span>
                                     {product.brand && (
-                                      <span className="text-gray-400">{product.brand}</span>
+                                      <span className="text-gray-400">| {product.brand}</span>
                                     )}
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-2 shrink-0">
                                   {product.available_stock > 0 ? (
-                                    <Badge variant="success" size="sm">
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
                                       มี {product.available_stock}
-                                    </Badge>
+                                    </span>
                                   ) : (
-                                    <Badge variant="danger" size="sm">หมด</Badge>
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                                      หมด
+                                    </span>
                                   )}
-                                  {isExpanded ? (
-                                    <ChevronUp className="w-4 h-4 text-gray-400" />
-                                  ) : (
-                                    <ChevronDown className="w-4 h-4 text-gray-400" />
-                                  )}
+                                  <div className={cn(
+                                    'w-6 h-6 rounded-full flex items-center justify-center transition-colors',
+                                    isExpanded ? 'bg-blue-200' : 'bg-gray-100'
+                                  )}>
+                                    {isExpanded ? (
+                                      <ChevronUp className="w-3.5 h-3.5 text-blue-700" />
+                                    ) : (
+                                      <ChevronDown className="w-3.5 h-3.5 text-gray-500" />
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                             </div>
 
                             {/* Expanded LOT Selection */}
                             {isExpanded && (
-                              <div className="px-3 pb-3 bg-blue-50/50">
+                              <div className="px-4 pb-4 pt-2 bg-gradient-to-b from-blue-50 to-slate-50 border-l-4 border-l-blue-500">
                                 {product.inventory_items.length > 0 ? (
-                                  <div className="space-y-1.5">
-                                    <p className="text-xs font-medium text-gray-500 pt-1">
-                                      เลือก LOT:
+                                  <div className="space-y-2">
+                                    <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
+                                      เลือก LOT ที่ต้องการ
                                     </p>
                                     {product.inventory_items.map((inv) => {
                                       const alreadyAdded = cart.some(
@@ -636,34 +649,44 @@ export function ReservationModal({
                                         <div
                                           key={inv.id}
                                           className={cn(
-                                            'flex items-center justify-between p-2 rounded-lg border text-sm',
+                                            'flex items-center justify-between p-3 rounded-xl border-2 transition-all',
                                             alreadyAdded
-                                              ? 'border-gray-200 bg-gray-100 opacity-60'
+                                              ? 'border-gray-200 bg-gray-50 opacity-60'
                                               : rec === 'expiring_soon'
-                                              ? 'border-yellow-200 bg-yellow-50'
+                                              ? 'border-amber-300 bg-amber-50 shadow-sm'
                                               : rec === 'most_stock'
-                                              ? 'border-green-200 bg-green-50'
-                                              : 'border-gray-200 bg-white'
+                                              ? 'border-green-300 bg-green-50 shadow-sm'
+                                              : 'border-gray-200 bg-white shadow-sm hover:border-blue-300 hover:shadow-md'
                                           )}
                                         >
                                           <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2">
-                                              <span className="font-medium text-xs">
-                                                LOT: {inv.lot_number}
+                                            <div className="flex items-center gap-2 flex-wrap">
+                                              <span className="font-mono font-bold text-sm text-gray-800">
+                                                {inv.lot_number}
                                               </span>
                                               {rec === 'expiring_soon' && (
-                                                <Badge variant="warning" size="sm">ใกล้หมดอายุ</Badge>
+                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-200 text-amber-800">
+                                                  <Clock className="w-3 h-3" />
+                                                  ใกล้หมดอายุ
+                                                </span>
                                               )}
                                               {rec === 'most_stock' && (
-                                                <Badge variant="success" size="sm">แนะนำ</Badge>
+                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-200 text-green-800">
+                                                  <Sparkles className="w-3 h-3" />
+                                                  แนะนำ
+                                                </span>
                                               )}
                                             </div>
-                                            <div className="text-xs text-gray-500 mt-0.5">
-                                              {inv.expiry_date
-                                                ? `หมดอายุ: ${formatDate(inv.expiry_date)}`
-                                                : 'ไม่ระบุวันหมดอายุ'}
-                                              <span className="ml-2">
-                                                พร้อมใช้: {inv.available_quantity}
+                                            <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-600">
+                                              <span className="flex items-center gap-1">
+                                                <Clock className="w-3 h-3 text-gray-400" />
+                                                {inv.expiry_date
+                                                  ? formatDate(inv.expiry_date)
+                                                  : 'ไม่ระบุ'}
+                                              </span>
+                                              <span className="flex items-center gap-1 font-semibold text-blue-700">
+                                                <Package className="w-3 h-3" />
+                                                พร้อมใช้ {inv.available_quantity}
                                               </span>
                                             </div>
                                           </div>
@@ -671,10 +694,10 @@ export function ReservationModal({
                                             type="button"
                                             disabled={alreadyAdded}
                                             className={cn(
-                                              'ml-2 shrink-0 p-1.5 rounded-lg transition-colors',
+                                              'ml-3 shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg font-semibold text-sm transition-all',
                                               alreadyAdded
-                                                ? 'text-gray-300 cursor-not-allowed'
-                                                : 'text-blue-600 hover:bg-blue-100 active:bg-blue-200'
+                                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                : 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 shadow-sm hover:shadow-md'
                                             )}
                                             onClick={(e) => {
                                               e.stopPropagation();
@@ -684,9 +707,15 @@ export function ReservationModal({
                                             }}
                                           >
                                             {alreadyAdded ? (
-                                              <CheckCircle className="w-5 h-5" />
+                                              <>
+                                                <CheckCircle className="w-4 h-4" />
+                                                <span className="hidden sm:inline">เพิ่มแล้ว</span>
+                                              </>
                                             ) : (
-                                              <Plus className="w-5 h-5" />
+                                              <>
+                                                <Plus className="w-4 h-4" />
+                                                <span className="hidden sm:inline">เพิ่ม</span>
+                                              </>
                                             )}
                                           </button>
                                         </div>
@@ -695,30 +724,33 @@ export function ReservationModal({
                                     {/* OOS option */}
                                     <button
                                       type="button"
-                                      className="w-full flex items-center justify-center gap-1.5 p-2 rounded-lg border border-dashed border-gray-300 text-xs text-gray-500 hover:border-orange-300 hover:text-orange-600 hover:bg-orange-50 transition-colors"
+                                      className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border-2 border-dashed border-orange-300 text-sm font-medium text-orange-600 bg-orange-50/80 hover:bg-orange-100 hover:border-orange-400 active:bg-orange-200 transition-all"
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         handleAddOutOfStock(product);
                                       }}
                                     >
-                                      <AlertTriangle className="w-3.5 h-3.5" />
+                                      <AlertTriangle className="w-4 h-4" />
                                       ต้องการ REF/LOT อื่นที่ไม่มีในสต็อก
                                     </button>
                                   </div>
                                 ) : (
-                                  <div className="pt-2 text-center">
-                                    <p className="text-sm text-gray-500 mb-2">
+                                  <div className="py-4 text-center">
+                                    <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                      <Package className="w-6 h-6 text-red-400" />
+                                    </div>
+                                    <p className="text-sm font-medium text-gray-700 mb-3">
                                       ไม่มีสินค้านี้ในสต็อก
                                     </p>
                                     <button
                                       type="button"
-                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-orange-300 text-sm text-orange-600 bg-orange-50 hover:bg-orange-100 transition-colors"
+                                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-orange-300 text-sm font-semibold text-orange-700 bg-orange-50 hover:bg-orange-100 active:bg-orange-200 transition-all shadow-sm"
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         handleAddOutOfStock(product);
                                       }}
                                     >
-                                      <AlertTriangle className="w-3.5 h-3.5" />
+                                      <AlertTriangle className="w-4 h-4" />
                                       จองล่วงหน้า (แจ้งให้สั่งซื้อ)
                                     </button>
                                   </div>
@@ -730,9 +762,10 @@ export function ReservationModal({
                       })}
                     </div>
                   ) : (
-                    <div className="p-4 text-center text-gray-500">
-                      <Package className="w-8 h-8 mx-auto mb-1 text-gray-300" />
-                      <p className="text-sm">ไม่พบสินค้าที่ค้นหา</p>
+                    <div className="p-6 text-center text-gray-500">
+                      <Package className="w-10 h-10 mx-auto mb-2 text-gray-300" />
+                      <p className="text-sm font-medium">ไม่พบสินค้าที่ค้นหา</p>
+                      <p className="text-xs text-gray-400 mt-1">ลองใช้คำค้นอื่น</p>
                     </div>
                   )}
                 </div>
