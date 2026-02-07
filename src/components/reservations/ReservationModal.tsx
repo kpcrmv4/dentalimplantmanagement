@@ -607,8 +607,8 @@ export function ReservationModal({
       }
 
       toast.success('จองวัสดุเรียบร้อยแล้ว');
-      onSuccess();
       onClose();
+      onSuccess();
     } catch (error) {
       console.error('Error creating reservation:', error);
       toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่');
