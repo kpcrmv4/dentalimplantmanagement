@@ -128,8 +128,8 @@ export function ReservationModal({
   // Template state
   const [scoredTemplates, setScoredTemplates] = useState<TemplateWithScore[]>([]);
   const [loadingTemplates, setLoadingTemplates] = useState(false);
-  const [showOosConfirmModal, setShowOosConfirmModal] = useState(false);
-  const [pendingTemplateLoad, setPendingTemplateLoad] = useState<TemplateWithScore | null>(null);
+  const [activeTemplateSelection, setActiveTemplateSelection] = useState<TemplateWithScore | null>(null);
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [showCartReplaceConfirm, setShowCartReplaceConfirm] = useState(false);
   const [pendingCartReplaceTemplate, setPendingCartReplaceTemplate] = useState<TemplateWithScore | null>(null);
 
@@ -347,82 +347,125 @@ export function ReservationModal({
   };
 
   const proceedWithTemplate = (scored: TemplateWithScore) => {
-    if (scored.oosItems.length > 0) {
-      setPendingTemplateLoad(scored);
-      setShowOosConfirmModal(true);
-    } else {
-      setCart(scored.cartItems);
-      toast.success(
-        `เพิ่ม "${scored.template.name}" (${scored.cartItems.length} รายการ)`
-      );
-    }
+    // Open template selection view with nothing pre-selected
+    setActiveTemplateSelection(scored);
+    setSelectedItems(new Set());
   };
 
-  // Use alternative product instead of OOS item
-  const handleUseAlternative = (oosProductId: string, alt: AlternativeProduct, quantity: number) => {
-    if (!pendingTemplateLoad) return;
+  // Toggle item selection in template selection view
+  const handleToggleTemplateItem = (itemId: string, isOos: boolean) => {
+    setSelectedItems((prev) => {
+      const next = new Set(prev);
+      if (next.has(itemId)) {
+        next.delete(itemId);
+      } else {
+        next.add(itemId);
+        // If checking an OOS item, warn and uncheck any alternative for this product
+        if (isOos && activeTemplateSelection) {
+          toast('วัสดุนี้ไม่มีในสต็อก ระบบจะแจ้งสั่งซื้อ', { icon: '⚠️' });
+          // Find and uncheck alternatives for this OOS product
+          const oosEntry = activeTemplateSelection.oosWithAlternatives.find(
+            (o) => o.oosItem.id === itemId
+          );
+          if (oosEntry) {
+            oosEntry.alternatives.forEach((alt) => {
+              next.delete(`alt-${alt.product_id}-${alt.inventory_id}`);
+            });
+          }
+        }
+      }
+      return next;
+    });
+  };
 
-    const altCartItem: CartItem = {
-      id: `${alt.product_id}-${alt.inventory_id}`,
-      product_id: alt.product_id,
-      product_name: alt.product_name,
-      product_sku: alt.product_sku,
-      ref_number: alt.ref_number,
-      inventory_id: alt.inventory_id,
-      lot_number: alt.lot_number,
-      expiry_date: alt.expiry_date,
-      quantity,
-      available: alt.available_quantity,
-      is_out_of_stock: false,
-      is_alternative: true,
-      original_product_name: pendingTemplateLoad.oosItems.find(
-        (o) => o.product_id === oosProductId
-      )?.product_name,
-      specifications: alt.specifications,
-    };
+  // Toggle alternative selection (mutually exclusive with original OOS item)
+  const handleToggleAlternative = (altId: string, oosItemId: string) => {
+    setSelectedItems((prev) => {
+      const next = new Set(prev);
+      if (next.has(altId)) {
+        next.delete(altId);
+      } else {
+        next.add(altId);
+        // Uncheck the original OOS item
+        next.delete(oosItemId);
+        // Also uncheck other alternatives for the same OOS item
+        if (activeTemplateSelection) {
+          const oosEntry = activeTemplateSelection.oosWithAlternatives.find(
+            (o) => o.oosItem.id === oosItemId
+          );
+          if (oosEntry) {
+            oosEntry.alternatives.forEach((alt) => {
+              const id = `alt-${alt.product_id}-${alt.inventory_id}`;
+              if (id !== altId) next.delete(id);
+            });
+          }
+        }
+      }
+      return next;
+    });
+  };
 
-    // Replace OOS item with alternative in the pending template
-    const newOosItems = pendingTemplateLoad.oosItems.filter(
-      (o) => o.product_id !== oosProductId
-    );
-    const newCartItems = [...pendingTemplateLoad.cartItems, altCartItem];
-    const newOosWithAlternatives = pendingTemplateLoad.oosWithAlternatives.filter(
-      (o) => o.oosItem.product_id !== oosProductId
-    );
+  // Confirm template selection — build cart from selected items
+  const confirmTemplateSelection = () => {
+    if (!activeTemplateSelection) return;
 
-    setPendingTemplateLoad({
-      ...pendingTemplateLoad,
-      cartItems: newCartItems,
-      oosItems: newOosItems,
-      oosWithAlternatives: newOosWithAlternatives,
-      inStockCount: pendingTemplateLoad.inStockCount + 1,
-      allInStock: newOosItems.length === 0,
+    const newCartItems: CartItem[] = [];
+
+    // Add selected in-stock items
+    activeTemplateSelection.cartItems.forEach((item) => {
+      if (selectedItems.has(item.id)) {
+        newCartItems.push(item);
+      }
     });
 
-    toast.success(`ใช้ ${alt.product_name} แทน`);
-  };
+    // Add selected OOS items
+    activeTemplateSelection.oosItems.forEach((item) => {
+      if (selectedItems.has(item.id)) {
+        newCartItems.push(item);
+      }
+    });
 
-  const confirmTemplateWithOos = () => {
-    if (!pendingTemplateLoad) return;
-    setCart([...pendingTemplateLoad.cartItems, ...pendingTemplateLoad.oosItems]);
-    const oosCount = pendingTemplateLoad.oosItems.length;
-    toast.success(
-      oosCount > 0
-        ? `เพิ่ม "${pendingTemplateLoad.template.name}" (${pendingTemplateLoad.cartItems.length} มีสต็อก, ${oosCount} ไม่มีสต็อก)`
-        : `เพิ่ม "${pendingTemplateLoad.template.name}" (${pendingTemplateLoad.cartItems.length} รายการ)`
-    );
-    setShowOosConfirmModal(false);
-    setPendingTemplateLoad(null);
-  };
+    // Add selected alternatives
+    activeTemplateSelection.oosWithAlternatives.forEach(({ oosItem, alternatives }) => {
+      alternatives.forEach((alt) => {
+        const altId = `alt-${alt.product_id}-${alt.inventory_id}`;
+        if (selectedItems.has(altId)) {
+          newCartItems.push({
+            id: `${alt.product_id}-${alt.inventory_id}`,
+            product_id: alt.product_id,
+            product_name: alt.product_name,
+            product_sku: alt.product_sku,
+            ref_number: alt.ref_number,
+            inventory_id: alt.inventory_id,
+            lot_number: alt.lot_number,
+            expiry_date: alt.expiry_date,
+            quantity: oosItem.quantity,
+            available: alt.available_quantity,
+            is_out_of_stock: false,
+            is_alternative: true,
+            original_product_name: oosItem.product_name,
+            specifications: alt.specifications,
+          });
+        }
+      });
+    });
 
-  const confirmTemplateWithoutOos = () => {
-    if (!pendingTemplateLoad) return;
-    setCart(pendingTemplateLoad.cartItems);
-    toast.success(
-      `เพิ่ม "${pendingTemplateLoad.template.name}" (เฉพาะที่มีสต็อก ${pendingTemplateLoad.cartItems.length} รายการ)`
-    );
-    setShowOosConfirmModal(false);
-    setPendingTemplateLoad(null);
+    if (newCartItems.length === 0) {
+      toast.error('กรุณาเลือกอย่างน้อย 1 รายการ');
+      return;
+    }
+
+    setCart(newCartItems);
+    const oosCount = newCartItems.filter((i) => i.is_out_of_stock).length;
+    const altCount = newCartItems.filter((i) => i.is_alternative).length;
+    let msg = `เพิ่ม "${activeTemplateSelection.template.name}" (${newCartItems.length} รายการ`;
+    if (oosCount > 0) msg += `, ${oosCount} รอสั่งซื้อ`;
+    if (altCount > 0) msg += `, ${altCount} ทดแทน`;
+    msg += ')';
+    toast.success(msg);
+
+    setActiveTemplateSelection(null);
+    setSelectedItems(new Set());
   };
 
   // Cart handlers
@@ -580,7 +623,7 @@ export function ReservationModal({
   return (
     <>
       <Modal
-        isOpen={isOpen && !showOutOfStockModal && !showOosConfirmModal}
+        isOpen={isOpen && !showOutOfStockModal && !activeTemplateSelection}
         onClose={onClose}
         title="จองวัสดุ"
         description={`${caseNumber} - ${patientName} | ผ่าตัด ${formatDate(surgeryDate)}`}
@@ -1014,156 +1057,246 @@ export function ReservationModal({
         </ModalFooter>
       </Modal>
 
-      {/* Template OOS Confirmation */}
+      {/* Template Item Selection Modal */}
       <Modal
-        isOpen={showOosConfirmModal}
+        isOpen={!!activeTemplateSelection}
         onClose={() => {
-          setShowOosConfirmModal(false);
-          setPendingTemplateLoad(null);
+          setActiveTemplateSelection(null);
+          setSelectedItems(new Set());
         }}
-        title={
-          pendingTemplateLoad && pendingTemplateLoad.oosItems.length === 0
-            ? 'เลือกวัสดุทดแทนครบแล้ว'
-            : 'วัสดุบางรายการไม่มีในสต็อก'
-        }
+        title={`เลือกรายการจากเทมเพลท "${activeTemplateSelection?.template.name || ''}"`}
         size="lg"
       >
-        {pendingTemplateLoad && (
+        {activeTemplateSelection && (
           <div className="space-y-4">
-            {/* Banner: changes based on remaining OOS count */}
-            {pendingTemplateLoad.oosItems.length > 0 ? (
-              <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                <div className="flex items-start gap-2">
-                  <AlertTriangle className="w-4 h-4 text-yellow-600 shrink-0 mt-0.5" />
-                  <div className="text-sm">
-                    <p className="font-medium text-yellow-800">
-                      &quot;{pendingTemplateLoad.template.name}&quot; มีบางรายการไม่มีในสต็อก
-                    </p>
-                    <p className="text-yellow-700 text-xs mt-0.5">
-                      เลือกวัสดุทดแทนจากหมวดหมู่เดียวกัน หรือจองแจ้งสั่งซื้อ
-                    </p>
-                  </div>
-                </div>
+            {/* Info banner */}
+            <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="flex items-start gap-2">
+                <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                <p className="text-xs text-blue-700">
+                  เลือกรายการที่ต้องการจอง รายการที่ไม่มีในสต็อกจะแสดงเป็นสีแดง
+                </p>
               </div>
-            ) : (
-              <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-                <div className="flex items-start gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
-                  <div className="text-sm">
-                    <p className="font-medium text-green-800">
-                      เลือกวัสดุทดแทนครบแล้ว พร้อมจอง
-                    </p>
-                    <p className="text-green-700 text-xs mt-0.5">
-                      &quot;{pendingTemplateLoad.template.name}&quot; — {pendingTemplateLoad.cartItems.length} รายการ
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
+            </div>
 
-            {/* OOS items with alternatives (only show if still have OOS) */}
-            {pendingTemplateLoad.oosWithAlternatives.length > 0 && (
-              <div className="space-y-3">
-                {pendingTemplateLoad.oosWithAlternatives.map(({ oosItem, alternatives }) => (
-                  <div key={oosItem.id} className="rounded-lg border border-red-200 overflow-hidden">
-                    {/* OOS item header */}
-                    <div className="flex items-center justify-between p-3 bg-red-50">
-                      <div>
-                        <p className="font-medium text-sm text-gray-900">{oosItem.product_name}</p>
-                        <p className="text-xs text-gray-500">
-                          REF: {oosItem.requested_ref || oosItem.ref_number}
+            {/* Top Section: Template Items */}
+            <div>
+              <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                รายการในเทมเพลท ({activeTemplateSelection.cartItems.length + activeTemplateSelection.oosItems.length} รายการ)
+              </h4>
+              <div className="rounded-lg border border-gray-200 overflow-hidden divide-y divide-gray-100">
+                {/* In-stock items */}
+                {activeTemplateSelection.cartItems.map((item) => {
+                  const isChecked = selectedItems.has(item.id);
+                  return (
+                    <label
+                      key={item.id}
+                      className={cn(
+                        'flex items-center gap-3 p-3 cursor-pointer transition-colors',
+                        isChecked ? 'bg-green-50/50' : 'hover:bg-gray-50'
+                      )}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => handleToggleTemplateItem(item.id, false)}
+                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm text-gray-900 truncate">
+                          {item.product_name}
                         </p>
-                      </div>
-                      <span className="text-sm text-red-600 font-medium">x{oosItem.quantity}</span>
-                    </div>
-
-                    {/* Alternative recommendations */}
-                    {alternatives.length > 0 && (
-                      <div className="p-3 bg-blue-50/50 border-t border-red-200">
-                        <p className="text-xs font-semibold text-blue-700 mb-2 flex items-center gap-1">
-                          <Sparkles className="w-3 h-3" />
-                          วัสดุทดแทนที่มีในสต็อก (หมวดเดียวกัน)
-                        </p>
-                        <div className="space-y-1.5">
-                          {alternatives.map((alt) => (
-                            <div
-                              key={alt.inventory_id}
-                              className="flex items-center justify-between p-2 bg-white rounded-lg border border-blue-200 hover:border-blue-400 transition-colors"
-                            >
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium text-xs text-gray-900 truncate">
-                                  {alt.product_name}
-                                </p>
-                                <div className="flex items-center gap-2 mt-0.5 text-[10px] text-gray-500">
-                                  {alt.ref_number && <span>REF: {alt.ref_number}</span>}
-                                  <span>LOT: {alt.lot_number}</span>
-                                  {alt.expiry_date && (
-                                    <span className={cn(
-                                      'font-medium',
-                                      alt.days_until_expiry !== undefined && alt.days_until_expiry <= 90
-                                        ? 'text-amber-600'
-                                        : 'text-gray-500'
-                                    )}>
-                                      Exp: {formatDate(alt.expiry_date)}
-                                    </span>
-                                  )}
-                                  <span className="text-blue-600 font-medium">
-                                    คงเหลือ {alt.available_quantity}
-                                  </span>
-                                </div>
-                              </div>
-                              <button
-                                type="button"
-                                className="ml-2 shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 transition-colors"
-                                onClick={() =>
-                                  handleUseAlternative(
-                                    oosItem.product_id,
-                                    alt,
-                                    oosItem.quantity
-                                  )
-                                }
-                              >
-                                ใช้แทน
-                              </button>
-                            </div>
-                          ))}
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-[11px] text-gray-500">
+                          {(item.ref_number || item.product_sku) && (
+                            <span className="font-mono bg-gray-100 px-1 rounded">
+                              REF: {item.ref_number || item.product_sku}
+                            </span>
+                          )}
+                          {item.lot_number && <span>LOT: {item.lot_number}</span>}
+                          {item.expiry_date && <span>Exp: {formatDate(item.expiry_date)}</span>}
                         </div>
                       </div>
-                    )}
-                  </div>
-                ))}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-xs text-gray-500">x{item.quantity}</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-100 text-green-700 border border-green-200">
+                          <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                          มี {item.available}
+                        </span>
+                      </div>
+                    </label>
+                  );
+                })}
+
+                {/* OOS items */}
+                {activeTemplateSelection.oosItems.map((item) => {
+                  const isChecked = selectedItems.has(item.id);
+                  // Check if an alternative is selected for this item
+                  const oosEntry = activeTemplateSelection.oosWithAlternatives.find(
+                    (o) => o.oosItem.id === item.id
+                  );
+                  const hasAltSelected = oosEntry?.alternatives.some((alt) =>
+                    selectedItems.has(`alt-${alt.product_id}-${alt.inventory_id}`)
+                  );
+                  return (
+                    <label
+                      key={item.id}
+                      className={cn(
+                        'flex items-center gap-3 p-3 cursor-pointer transition-colors border-l-4',
+                        isChecked
+                          ? 'bg-red-50 border-l-red-500'
+                          : hasAltSelected
+                          ? 'bg-blue-50/30 border-l-blue-400'
+                          : 'bg-red-50/40 border-l-red-300 hover:bg-red-50'
+                      )}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => handleToggleTemplateItem(item.id, true)}
+                        className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500 shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className={cn(
+                          'font-medium text-sm truncate',
+                          isChecked ? 'text-red-800' : 'text-gray-900'
+                        )}>
+                          {item.product_name}
+                        </p>
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-[11px] text-gray-500">
+                          {(item.ref_number || item.product_sku) && (
+                            <span className="font-mono bg-red-100 px-1 rounded text-red-600">
+                              REF: {item.ref_number || item.product_sku}
+                            </span>
+                          )}
+                        </div>
+                        {hasAltSelected && (
+                          <p className="text-[10px] text-blue-600 mt-0.5 flex items-center gap-1">
+                            <Sparkles className="w-2.5 h-2.5" />
+                            เลือกวัสดุทดแทนแล้ว
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-xs text-gray-500">x{item.quantity}</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-700 border border-red-200">
+                          <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                          ไม่มี
+                        </span>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Bottom Section: Alternative Recommendations */}
+            {activeTemplateSelection.oosWithAlternatives.length > 0 &&
+              activeTemplateSelection.oosWithAlternatives.some((o) => o.alternatives.length > 0) && (
+              <div>
+                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-purple-500" />
+                  วัสดุทดแทนที่แนะนำ
+                </h4>
+                <div className="space-y-3">
+                  {activeTemplateSelection.oosWithAlternatives.map(({ oosItem, alternatives }) => {
+                    if (alternatives.length === 0) return null;
+                    return (
+                      <div key={oosItem.id} className="rounded-lg border border-blue-200 overflow-hidden">
+                        {/* Group header: which OOS item these alternatives replace */}
+                        <div className="px-3 py-2 bg-blue-50/80 border-b border-blue-200">
+                          <p className="text-xs font-medium text-blue-800">
+                            ทดแทน: <span className="font-semibold">{oosItem.product_name}</span>
+                          </p>
+                        </div>
+                        <div className="divide-y divide-blue-100">
+                          {alternatives.map((alt) => {
+                            const altId = `alt-${alt.product_id}-${alt.inventory_id}`;
+                            const isChecked = selectedItems.has(altId);
+                            return (
+                              <label
+                                key={altId}
+                                className={cn(
+                                  'flex items-center gap-3 p-3 cursor-pointer transition-colors',
+                                  isChecked ? 'bg-blue-50' : 'hover:bg-gray-50'
+                                )}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={isChecked}
+                                  onChange={() => handleToggleAlternative(altId, oosItem.id)}
+                                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 shrink-0"
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-medium text-xs text-gray-900 truncate">
+                                    {alt.product_name}
+                                  </p>
+                                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-[10px] text-gray-500">
+                                    {alt.ref_number && (
+                                      <span className="font-mono bg-gray-100 px-1 rounded">
+                                        REF: {alt.ref_number}
+                                      </span>
+                                    )}
+                                    <span>LOT: {alt.lot_number}</span>
+                                    {alt.expiry_date && (
+                                      <span className={cn(
+                                        'font-medium',
+                                        alt.days_until_expiry !== undefined && alt.days_until_expiry <= 90
+                                          ? 'text-amber-600'
+                                          : 'text-gray-500'
+                                      )}>
+                                        Exp: {formatDate(alt.expiry_date)}
+                                      </span>
+                                    )}
+                                    <span className="text-blue-600 font-medium">
+                                      คงเหลือ {alt.available_quantity}
+                                    </span>
+                                  </div>
+                                </div>
+                                {isChecked && (
+                                  <CheckCircle className="w-4 h-4 text-blue-600 shrink-0" />
+                                )}
+                              </label>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
 
-            <p className="text-xs text-gray-500">
-              มีในสต็อก: {pendingTemplateLoad.cartItems.length} รายการ
-              {pendingTemplateLoad.oosItems.length > 0 && (
-                <span className="text-red-500 ml-2">
-                  รอสั่งซื้อ: {pendingTemplateLoad.oosItems.length} รายการ
-                </span>
+            {/* Selection summary */}
+            <div className="flex items-center justify-between text-xs text-gray-500 pt-1">
+              <span>เลือกแล้ว {selectedItems.size} รายการ</span>
+              {selectedItems.size > 0 && (
+                <button
+                  type="button"
+                  className="text-red-500 hover:text-red-700 font-medium"
+                  onClick={() => setSelectedItems(new Set())}
+                >
+                  ล้างทั้งหมด
+                </button>
               )}
-            </p>
+            </div>
           </div>
         )}
         <ModalFooter>
           <Button
             variant="outline"
             onClick={() => {
-              setShowOosConfirmModal(false);
-              setPendingTemplateLoad(null);
+              setActiveTemplateSelection(null);
+              setSelectedItems(new Set());
             }}
           >
             ยกเลิก
           </Button>
-          {pendingTemplateLoad && pendingTemplateLoad.oosItems.length > 0 && pendingTemplateLoad.cartItems.length > 0 && (
-            <Button variant="outline" onClick={confirmTemplateWithoutOos}>
-              เฉพาะที่มีสต็อก
-            </Button>
-          )}
-          <Button onClick={confirmTemplateWithOos}>
-            {pendingTemplateLoad && pendingTemplateLoad.oosItems.length > 0
-              ? 'จองทั้งหมด (รวมรอสั่งซื้อ)'
-              : 'ยืนยัน'}
+          <Button
+            onClick={confirmTemplateSelection}
+            disabled={selectedItems.size === 0}
+            leftIcon={<Save className="w-4 h-4" />}
+          >
+            จอง ({selectedItems.size})
           </Button>
         </ModalFooter>
       </Modal>
@@ -1236,6 +1369,7 @@ export function ReservationModal({
         }}
         onConfirm={() => {
           setShowCartReplaceConfirm(false);
+          setCart([]);
           if (pendingCartReplaceTemplate) {
             proceedWithTemplate(pendingCartReplaceTemplate);
             setPendingCartReplaceTemplate(null);
