@@ -1034,16 +1034,19 @@ export function useDentistDashboard(dentistId: string, filter: DateRangeFilter) 
         const pending = reservations.filter((r: any) => r.status === 'pending').length;
         const out_of_stock = reservations.filter((r: any) => r.is_out_of_stock).length;
 
-        let material_status: 'ready' | 'waiting' | 'not_available' | 'not_reserved' = 'not_reserved';
-        if (total === 0) {
-          material_status = 'not_reserved';
-        } else if (out_of_stock > 0) {
-          material_status = 'not_available';
-        } else if (prepared === total) {
-          material_status = 'ready';
-        } else {
-          material_status = 'waiting';
-        }
+        // material_status derives from case traffic light status (green/yellow/red/gray)
+        // to keep summary cards consistent with the spec:
+        //   green  → ready (จองแล้ว มีสต็อกครบ)
+        //   yellow → waiting (สั่งแล้ว อยู่ระหว่างจัดส่ง)
+        //   red    → not_available (ขาด ยังไม่ได้สั่งหรือสั่งไม่ครบ)
+        //   gray   → not_reserved (ยังไม่จอง)
+        const statusMap: Record<string, 'ready' | 'waiting' | 'not_available' | 'not_reserved'> = {
+          green: 'ready',
+          yellow: 'waiting',
+          red: 'not_available',
+          gray: 'not_reserved',
+        };
+        const material_status = statusMap[c.status] || 'not_reserved';
 
         // Count for summary
         totalCases++;

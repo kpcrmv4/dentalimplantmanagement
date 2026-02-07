@@ -221,7 +221,7 @@ export default function DentistDashboardPage() {
             {/* Waiting */}
             <div className="flex flex-col items-center justify-center py-4 lg:py-5 px-4 rounded-xl bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 shadow-sm">
               <span className="text-3xl lg:text-4xl font-bold text-amber-600">{statusSummary.partial}</span>
-              <span className="text-xs font-medium text-amber-600 mt-1">รอของ</span>
+              <span className="text-xs font-medium text-amber-600 mt-1">อยู่ระหว่างจัดส่ง</span>
             </div>
             {/* Not ready */}
             <div className="flex flex-col items-center justify-center py-4 lg:py-5 px-4 rounded-xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 shadow-sm">
