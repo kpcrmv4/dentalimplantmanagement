@@ -26,7 +26,7 @@ export default function EditCasePage({ params }: PageProps) {
   const { id } = use(params);
   const router = useRouter();
   const { user } = useAuthStore();
-  const canEditCase = user?.role === 'admin' || user?.role === 'dentist';
+  const canEditCase = user?.role === 'admin' || user?.role === 'dentist' || user?.role === 'cs';
   const { data: caseData, error: caseError, isLoading: isCaseLoading } = useCase(id);
   const { data: dentists } = useUsers('dentist');
   const { data: assistants } = useUsers('assistant');

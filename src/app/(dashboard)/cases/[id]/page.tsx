@@ -52,8 +52,8 @@ export default function CaseDetailPage({ params }: PageProps) {
   const [isUpdating, setIsUpdating] = useState(false);
 
   const isDentist = user?.role === 'dentist';
-  const canEditCase = user?.role === 'admin' || user?.role === 'dentist';
-  const canCancelCase = user?.role === 'admin' || user?.role === 'dentist';
+  const canEditCase = user?.role === 'admin' || user?.role === 'dentist' || user?.role === 'cs';
+  const canCancelCase = user?.role === 'admin' || user?.role === 'dentist' || user?.role === 'cs';
   const searchParams = useSearchParams();
 
   // Auto-open reservation modal when navigating with ?reserve=true

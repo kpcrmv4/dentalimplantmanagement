@@ -56,8 +56,8 @@ export default function CasesPage() {
   const { data: cases, isLoading, mutate } = useCases();
   const { data: dentists } = useUsers('dentist');
 
-  const canCreateCase = user?.role === 'admin' || user?.role === 'dentist';
-  const canEditCase = user?.role === 'admin' || user?.role === 'dentist';
+  const canCreateCase = user?.role === 'admin' || user?.role === 'dentist' || user?.role === 'cs';
+  const canEditCase = user?.role === 'admin' || user?.role === 'dentist' || user?.role === 'cs';
 
   const filteredCases = useMemo(() => {
     if (!cases) return [];
