@@ -18,7 +18,14 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans);
+  font-family: var(--font-prompt), 'Prompt', system-ui, sans-serif;
+}
+
+/* Force Prompt font on all elements */
+*,
+*::before,
+*::after {
+  font-family: inherit;
 }
 
 /* Custom scrollbar */

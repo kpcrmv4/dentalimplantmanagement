@@ -6,8 +6,8 @@ import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 interface HeaderProps {
-  title: string;
-  subtitle?: string;
+  title: React.ReactNode;
+  subtitle?: React.ReactNode;
   onRefresh?: () => void;
   isRefreshing?: boolean;
   actions?: React.ReactNode;

@@ -43,7 +43,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th">
-      <body className={`${prompt.variable} font-sans antialiased`}>
+      <body className={`${prompt.variable} ${prompt.className} antialiased`}>
         {children}
         <ToasterProvider />
         <ServiceWorkerProvider />

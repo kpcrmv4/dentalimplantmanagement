@@ -222,13 +222,13 @@ export default function InventoryPage() {
   return (
     <div className="min-h-screen">
       <Header
-        title="สต็อกวัสดุและรากเทียม"
-        subtitle="จัดการคลังสินค้าและติดตามสต็อก"
+        title={<><span className="sm:hidden">สต็อก</span><span className="hidden sm:inline">สต็อกวัสดุและรากเทียม</span></>}
+        subtitle={<span className="hidden sm:inline">จัดการคลังสินค้าและติดตามสต็อก</span>}
         actions={
           canManageStock ? (
             <div className="flex gap-2">
               <Link href="/inventory/receive">
-                <Button variant="outline" size="sm" leftIcon={<Package className="w-4 h-4" />}>
+                <Button variant="outline" size="sm" leftIcon={<Package className="w-4 h-4" />} className="!border-green-300 !text-green-700 hover:!bg-green-50">
                   <span className="hidden sm:inline">รับของเข้า</span>
                   <span className="sm:hidden">รับของ</span>
                 </Button>
@@ -236,7 +236,7 @@ export default function InventoryPage() {
               <Link href="/products/new">
                 <Button size="sm" leftIcon={<Plus className="w-4 h-4" />}>
                   <span className="hidden sm:inline">เพิ่มสินค้าใหม่</span>
-                  <span className="sm:hidden">เพิ่ม</span>
+                  <span className="sm:hidden">เพิ่มของ</span>
                 </Button>
               </Link>
             </div>
@@ -249,79 +249,75 @@ export default function InventoryPage() {
         {canManageStock && totalRequestsCount > 0 && (
           <Card className="border-purple-200 bg-purple-50">
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     <ShoppingCart className="w-5 h-5 text-purple-600" />
                   </div>
-                  <div>
-                    <CardTitle className="text-purple-900">
-                      คำขอสินค้าที่ไม่มีในสต็อก
+                  <div className="min-w-0">
+                    <CardTitle className="text-purple-900 text-sm sm:text-base">
+                      <span className="sm:hidden">สินค้าที่ไม่มีในสต็อก</span>
+                      <span className="hidden sm:inline">คำขอสินค้าที่ไม่มีในสต็อก</span>
                     </CardTitle>
-                    <p className="text-sm text-purple-700">
+                    <p className="text-xs text-purple-600 hidden sm:block">
                       สินค้าที่ทันตแพทย์จองแต่ไม่มีในคลัง - ต้องสั่งซื้อเพิ่ม
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 flex-shrink-0">
                   {urgentRequestsCount > 0 && (
-                    <Badge variant="danger">{urgentRequestsCount} ด่วนมาก</Badge>
+                    <Badge variant="danger" size="sm">{urgentRequestsCount} ด่วน</Badge>
                   )}
-                  {soonRequestsCount > 0 && (
-                    <Badge variant="warning">{soonRequestsCount} เร็วๆ นี้</Badge>
-                  )}
-                  <Badge variant="gray">{totalRequestsCount} รายการ</Badge>
+                  <Badge variant="gray" size="sm">{totalRequestsCount} รายการ</Badge>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3 max-h-64 overflow-y-auto">
+              <div className="space-y-2 max-h-64 overflow-y-auto">
                 {pendingRequests?.map((request) => (
                   <div
                     key={request.reservation_id}
                     className={cn(
-                      'p-4 rounded-lg border bg-white cursor-pointer hover:shadow-md transition-shadow',
+                      'p-3 rounded-lg border bg-white cursor-pointer hover:shadow-sm transition-shadow',
                       request.urgency === 'urgent' && 'border-red-200',
                       request.urgency === 'soon' && 'border-yellow-200',
                       request.urgency === 'normal' && 'border-gray-200'
                     )}
                     onClick={() => handleViewRequest(request)}
                   >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-gray-900">
+                    {/* Mobile: stacked layout */}
+                    <div className="flex items-start gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="font-medium text-gray-900 text-sm truncate">
                             {request.product_name}
                           </span>
                           {request.urgency === 'urgent' && (
                             <Badge variant="danger" size="sm">
-                              ด่วน! {request.days_until_surgery <= 0 ? 'วันนี้' : `${request.days_until_surgery} วัน`}
+                              {request.days_until_surgery <= 0 ? 'วันนี้!' : `${request.days_until_surgery}วัน`}
                             </Badge>
                           )}
                           {request.urgency === 'soon' && (
-                            <Badge variant="warning" size="sm">
-                              {request.days_until_surgery} วัน
-                            </Badge>
+                            <Badge variant="warning" size="sm">{request.days_until_surgery}วัน</Badge>
                           )}
                         </div>
-                        <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
-                          <span>REF: {request.requested_ref || request.ref_number || request.sku}</span>
-                          {request.requested_lot && <span>LOT: {request.requested_lot}</span>}
-                          <span>จำนวน: {request.quantity}</span>
+                        <div className="flex items-center gap-2 mt-0.5 text-xs text-gray-500">
+                          <span className="font-mono">{request.requested_ref || request.ref_number || request.sku}</span>
+                          <span>x{request.quantity}</span>
                         </div>
                       </div>
-                      <div className="text-right text-sm">
+                      <div className="text-right flex-shrink-0">
                         <Link
                           href={`/cases/${request.case_id}`}
-                          className="text-blue-600 hover:text-blue-700"
+                          className="text-xs text-blue-600 hover:text-blue-700 font-medium"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          เคส {request.case_number}
+                          {request.case_number}
                         </Link>
-                        <p className="text-gray-500">
-                          ผ่าตัด {formatDate(request.surgery_date)}
+                        <p className="text-xs text-gray-400">
+                          <span className="hidden sm:inline">ผ่าตัด </span>{formatDate(request.surgery_date)}
                         </p>
-                        <p className="text-gray-500">
+                        <p className="text-xs text-gray-400 hidden sm:block">
                           ทพ. {request.dentist_name}
                         </p>
                       </div>
@@ -329,7 +325,7 @@ export default function InventoryPage() {
                   </div>
                 ))}
               </div>
-              <div className="mt-4 pt-4 border-t border-purple-200 flex items-center justify-between">
+              <div className="mt-3 pt-3 border-t border-purple-200">
                 <Link
                   href="/orders/new"
                   className="text-sm font-medium text-purple-600 hover:text-purple-700"
@@ -436,52 +432,52 @@ export default function InventoryPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>
+                  <TableHead className="px-2 sm:px-4">
                     <button
                       onClick={() => handleSort('ref')}
-                      className="flex items-center hover:text-blue-600 transition-colors"
+                      className="flex items-center hover:text-blue-600 transition-colors text-xs sm:text-sm"
                     >
                       REF / SKU
                       {getSortIcon('ref')}
                     </button>
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="px-2 sm:px-4">
                     <button
                       onClick={() => handleSort('name')}
-                      className="flex items-center hover:text-blue-600 transition-colors"
+                      className="flex items-center hover:text-blue-600 transition-colors text-xs sm:text-sm"
                     >
                       ชื่อสินค้า
                       {getSortIcon('name')}
                     </button>
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="px-2 sm:px-4">
                     <button
                       onClick={() => handleSort('lot')}
-                      className="flex items-center hover:text-blue-600 transition-colors"
+                      className="flex items-center hover:text-blue-600 transition-colors text-xs sm:text-sm"
                     >
                       Lot Number
                       {getSortIcon('lot')}
                     </button>
                   </TableHead>
-                  <TableHead className="text-center">
+                  <TableHead className="text-center px-1 sm:px-4">
                     <button
                       onClick={() => handleSort('quantity')}
-                      className="flex items-center justify-center hover:text-blue-600 transition-colors w-full"
+                      className="flex items-center justify-center hover:text-blue-600 transition-colors w-full text-xs sm:text-sm"
                     >
                       คงเหลือ
                       {getSortIcon('quantity')}
                     </button>
                   </TableHead>
-                  <TableHead className="text-center">
+                  <TableHead className="text-center px-1 sm:px-4 hidden sm:table-cell">
                     <button
                       onClick={() => handleSort('reserved')}
-                      className="flex items-center justify-center hover:text-blue-600 transition-colors w-full"
+                      className="flex items-center justify-center hover:text-blue-600 transition-colors w-full text-xs sm:text-sm"
                     >
                       จอง
                       {getSortIcon('reserved')}
                     </button>
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="hidden sm:table-cell">
                     <button
                       onClick={() => handleSort('expiry')}
                       className="flex items-center hover:text-blue-600 transition-colors"
@@ -490,7 +486,7 @@ export default function InventoryPage() {
                       {getSortIcon('expiry')}
                     </button>
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="hidden lg:table-cell">
                     <button
                       onClick={() => handleSort('location')}
                       className="flex items-center hover:text-blue-600 transition-colors"
@@ -499,7 +495,7 @@ export default function InventoryPage() {
                       {getSortIcon('location')}
                     </button>
                   </TableHead>
-                  <TableHead>สถานะ</TableHead>
+                  <TableHead className="px-1 sm:px-4 text-xs sm:text-sm">สถานะ</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -512,39 +508,51 @@ export default function InventoryPage() {
 
                   return (
                     <TableRow key={item.id}>
-                      <TableCell>
+                      <TableCell className="px-2 sm:px-4 py-2 sm:py-4">
                         <div>
-                          <span className="font-medium text-blue-600">
+                          <span className="font-medium text-blue-600 text-xs sm:text-sm">
                             {item.product?.ref_number || item.product?.sku}
                           </span>
                           {item.product?.ref_number && (
-                            <p className="text-xs text-gray-400">{item.product?.sku}</p>
+                            <p className="text-xs text-gray-400 hidden sm:block">{item.product?.sku}</p>
                           )}
                         </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="px-2 sm:px-4 py-2 sm:py-4">
                         <div>
-                          <p className="font-medium">{item.product?.name}</p>
+                          <p className="font-medium text-xs sm:text-sm">{item.product?.name}</p>
                           <p className="text-xs text-gray-500">
                             {item.product?.brand}
                           </p>
+                          {/* Show expiry on mobile inline */}
+                          {expiryStatus && (
+                            <span className="sm:hidden">
+                              <Badge variant={expiryStatus.variant} size="sm" className="mt-0.5">
+                                {expiryStatus.text}
+                              </Badge>
+                            </span>
+                          )}
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <span className="font-mono text-sm">{item.lot_number}</span>
+                      <TableCell className="px-2 sm:px-4 py-2 sm:py-4">
+                        <span className="font-mono text-xs sm:text-sm">{item.lot_number}</span>
                       </TableCell>
-                      <TableCell className="text-center">
+                      <TableCell className="text-center px-1 sm:px-4 py-2 sm:py-4">
                         <span
                           className={cn(
-                            'font-medium',
+                            'font-medium text-xs sm:text-sm',
                             stockStatus?.variant === 'danger' && 'text-red-600',
                             stockStatus?.variant === 'warning' && 'text-yellow-600'
                           )}
                         >
                           {item.available_quantity}
                         </span>
+                        {/* Show reserved inline on mobile */}
+                        {item.reserved_quantity > 0 && (
+                          <span className="sm:hidden block text-xs text-blue-500">({item.reserved_quantity})</span>
+                        )}
                       </TableCell>
-                      <TableCell className="text-center">
+                      <TableCell className="text-center hidden sm:table-cell">
                         {item.reserved_quantity > 0 ? (
                           <Badge variant="info" size="sm">
                             {item.reserved_quantity}
@@ -553,10 +561,10 @@ export default function InventoryPage() {
                           <span className="text-gray-400">-</span>
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="hidden sm:table-cell">
                         {item.expiry_date ? (
                           <div className="flex items-center gap-2">
-                            <span>{formatDate(item.expiry_date)}</span>
+                            <span className="text-sm">{formatDate(item.expiry_date)}</span>
                             {expiryStatus && (
                               <Badge variant={expiryStatus.variant} size="sm">
                                 {expiryStatus.text}
@@ -567,7 +575,7 @@ export default function InventoryPage() {
                           <span className="text-gray-400">-</span>
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="hidden lg:table-cell">
                         {item.location ? (
                           <div className="flex items-center gap-1">
                             <MapPin className="w-3 h-3 text-gray-400" />
@@ -577,7 +585,7 @@ export default function InventoryPage() {
                           <span className="text-gray-400">-</span>
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="px-1 sm:px-4 py-2 sm:py-4">
                         {stockStatus && (
                           <Badge variant={stockStatus.variant} size="sm">
                             {stockStatus.text}
