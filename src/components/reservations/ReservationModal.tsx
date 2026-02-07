@@ -424,7 +424,7 @@ export function ReservationModal({
 
       // Determine new case status
       const hasOutOfStock = cart.some((item) => item.is_out_of_stock);
-      const newStatus = hasOutOfStock ? 'red' : 'yellow';
+      const newStatus = hasOutOfStock ? 'red' : 'green';
 
       await supabase.from('cases').update({ status: newStatus }).eq('id', caseId);
 

@@ -41,7 +41,7 @@ const statusOptions = [
   { value: '', label: 'ทุกสถานะ' },
   { value: 'gray', label: 'ยังไม่จอง' },
   { value: 'green', label: 'พร้อม' },
-  { value: 'yellow', label: 'รอของ' },
+  { value: 'yellow', label: 'อยู่ระหว่างจัดส่ง' },
   { value: 'red', label: 'ขาด' },
   { value: 'completed', label: 'เสร็จสิ้น' },
   { value: 'cancelled', label: 'ยกเลิก' },

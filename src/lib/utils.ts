@@ -91,7 +91,7 @@ export function getCaseStatusText(status: string): string {
   const texts: Record<string, string> = {
     gray: 'ยังไม่จอง',
     green: 'พร้อม',
-    yellow: 'รอของ',
+    yellow: 'อยู่ระหว่างจัดส่ง',
     red: 'ขาด',
     completed: 'เสร็จสิ้น',
     cancelled: 'ยกเลิก',

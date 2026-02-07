@@ -27,7 +27,7 @@ export function DentistCaseTable({ cases, isLoading }: DentistCaseTableProps) {
       { text: string; variant: 'success' | 'warning' | 'danger' | 'gray' }
     > = {
       ready: { text: 'พร้อม', variant: 'success' },
-      waiting: { text: 'รอของ', variant: 'warning' },
+      waiting: { text: 'รอเตรียมของ', variant: 'warning' },
       not_available: { text: 'ขาด', variant: 'danger' },
       not_reserved: { text: 'ยังไม่จอง', variant: 'gray' },
     };

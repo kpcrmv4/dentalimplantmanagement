@@ -445,7 +445,7 @@ export default function NewReservationPage() {
 
       // Determine new case status
       const hasOutOfStock = cart.some((item) => item.is_out_of_stock);
-      const newStatus = hasOutOfStock ? 'red' : 'yellow';
+      const newStatus = hasOutOfStock ? 'red' : 'green';
 
       // Update case status
       await supabase

@@ -204,7 +204,7 @@ export default function CaseDetailPage({ params }: PageProps) {
           newStatus = 'gray';
         } else {
           const hasOOS = remainingReservations.some((r) => r.is_out_of_stock);
-          newStatus = hasOOS ? 'red' : 'yellow';
+          newStatus = hasOOS ? 'red' : 'green';
         }
 
         if (newStatus !== caseData.status) {
