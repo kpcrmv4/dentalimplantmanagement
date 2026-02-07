@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Bell, RefreshCw, Search } from 'lucide-react';
+import { Bell, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
@@ -35,16 +35,6 @@ export function Header({
 
         {/* Right section */}
         <div className="flex items-center gap-2 sm:gap-4">
-          {/* Search - Desktop only */}
-          <div className="hidden md:block relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="ค้นหา..."
-              className="w-64 pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-            />
-          </div>
-
           {/* Notifications */}
           <Link
             href="/notifications"
