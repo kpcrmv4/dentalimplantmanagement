@@ -6,9 +6,6 @@ import {
   Calendar,
   Package,
   CheckCircle,
-  AlertCircle,
-  ClipboardList,
-  Eye,
 } from 'lucide-react';
 import { Header } from '@/components/layout';
 import { Button, Card, Modal, ModalFooter } from '@/components/ui';
@@ -49,30 +46,21 @@ export default function ReservationsPage() {
 
   const { data: cases, isLoading, mutate } = useCasePreparation(dateFilter);
 
-  // Summary calculations
+  // Summary calculations — 3 cards only
   const summary = useMemo(() => {
-    if (!cases) return { total: 0, ready: 0, partial: 0, notStarted: 0, blocked: 0 };
+    if (!cases) return { total: 0, ready: 0, notReady: 0 };
 
     return cases.reduce(
       (acc, c) => {
         acc.total++;
-        switch (c.preparation_status) {
-          case 'ready':
-            acc.ready++;
-            break;
-          case 'partial':
-            acc.partial++;
-            break;
-          case 'not_started':
-            acc.notStarted++;
-            break;
-          case 'blocked':
-            acc.blocked++;
-            break;
+        if (c.preparation_status === 'ready') {
+          acc.ready++;
+        } else {
+          acc.notReady++;
         }
         return acc;
       },
-      { total: 0, ready: 0, partial: 0, notStarted: 0, blocked: 0 }
+      { total: 0, ready: 0, notReady: 0 }
     );
   }, [cases]);
 
@@ -119,12 +107,12 @@ export default function ReservationsPage() {
 
     setIsUpdating(true);
     try {
-      // Get all confirmed reservations for this case
-      const confirmedReservations = selectedCase.reservations?.filter(
-        (r) => r.status === 'confirmed' && !r.is_out_of_stock
+      // Get all preparable reservations (pending or confirmed, not OOS)
+      const preparableReservations = selectedCase.reservations?.filter(
+        (r) => (r.status === 'pending' || r.status === 'confirmed') && !r.is_out_of_stock
       );
 
-      if (!confirmedReservations || confirmedReservations.length === 0) {
+      if (!preparableReservations || preparableReservations.length === 0) {
         toast.error('ไม่มีรายการที่สามารถเตรียมได้');
         return;
       }
@@ -137,7 +125,7 @@ export default function ReservationsPage() {
         })
         .in(
           'id',
-          confirmedReservations.map((r) => r.id)
+          preparableReservations.map((r) => r.id)
         );
 
       if (error) throw error;
@@ -150,11 +138,11 @@ export default function ReservationsPage() {
         details: {
           case_number: selectedCase.case_number,
           patient_name: selectedCase.patient_name,
-          items_prepared: confirmedReservations.length,
+          items_prepared: preparableReservations.length,
         },
       });
 
-      toast.success(`เตรียมของ ${confirmedReservations.length} รายการเรียบร้อยแล้ว`);
+      toast.success(`เตรียมของ ${preparableReservations.length} รายการเรียบร้อยแล้ว`);
       mutate();
       setShowPrepareAllModal(false);
       setSelectedCase(null);
@@ -183,8 +171,8 @@ export default function ReservationsPage() {
       />
 
       <div className="p-4 sm:p-6 lg:p-8">
-        {/* Summary Cards - compact on mobile */}
-        <div className="hidden sm:grid sm:grid-cols-5 gap-4 mb-6">
+        {/* Summary Cards — 3 cards */}
+        <div className="hidden sm:grid sm:grid-cols-3 gap-4 mb-6">
           <Card padding="sm">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -202,41 +190,19 @@ export default function ReservationsPage() {
                 <CheckCircle className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">พร้อมแล้ว</p>
+                <p className="text-sm text-gray-500">เตรียมแล้ว</p>
                 <p className="text-xl font-bold text-green-600">{summary.ready}</p>
               </div>
             </div>
           </Card>
           <Card padding="sm">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <Package className="w-5 h-5 text-yellow-600" />
+              <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                <Package className="w-5 h-5 text-orange-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">เตรียมบางส่วน</p>
-                <p className="text-xl font-bold text-yellow-600">{summary.partial}</p>
-              </div>
-            </div>
-          </Card>
-          <Card padding="sm">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                <ClipboardList className="w-5 h-5 text-gray-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">ยังไม่เริ่ม</p>
-                <p className="text-xl font-bold text-gray-600">{summary.notStarted}</p>
-              </div>
-            </div>
-          </Card>
-          <Card padding="sm">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                <AlertCircle className="w-5 h-5 text-red-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">ติดปัญหา</p>
-                <p className="text-xl font-bold text-red-600">{summary.blocked}</p>
+                <p className="text-sm text-gray-500">ยังไม่เตรียม</p>
+                <p className="text-xl font-bold text-orange-600">{summary.notReady}</p>
               </div>
             </div>
           </Card>
@@ -253,22 +219,12 @@ export default function ReservationsPage() {
               <div className="flex items-center gap-3 text-xs">
                 <span className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-green-500" />
-                  พร้อม {summary.ready}
+                  เตรียมแล้ว {summary.ready}
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-yellow-500" />
-                  บางส่วน {summary.partial}
+                  <span className="w-2 h-2 rounded-full bg-orange-500" />
+                  ยังไม่เตรียม {summary.notReady}
                 </span>
-                <span className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-gray-400" />
-                  ยังไม่เริ่ม {summary.notStarted}
-                </span>
-                {summary.blocked > 0 && (
-                  <span className="flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-red-500" />
-                    ติดปัญหา {summary.blocked}
-                  </span>
-                )}
               </div>
             </div>
           </Card>
@@ -363,7 +319,7 @@ export default function ReservationsPage() {
               <p className="text-sm text-gray-500 mt-2">รายการที่จะเตรียม</p>
               <p className="font-medium">
                 {selectedCase.reservations?.filter(
-                  (r) => r.status === 'confirmed' && !r.is_out_of_stock
+                  (r) => (r.status === 'pending' || r.status === 'confirmed') && !r.is_out_of_stock
                 ).length || 0}{' '}
                 รายการ
               </p>

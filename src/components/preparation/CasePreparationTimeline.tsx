@@ -4,15 +4,11 @@ import Link from 'next/link';
 import {
   Clock,
   User,
-  Package,
   CheckCircle2,
-  AlertCircle,
-  CircleDashed,
-  ArrowRight,
 } from 'lucide-react';
 import { Button, Badge, Card } from '@/components/ui';
-import { formatDate, formatThaiDate, getCaseStatusText } from '@/lib/utils';
-import type { CasePreparationItem, CaseReservation, PreparationStatus } from '@/types/database';
+import { getCaseStatusText } from '@/lib/utils';
+import type { CasePreparationItem, CaseReservation } from '@/types/database';
 import { getCaseStatusVariant } from '@/lib/status';
 import { format, isToday, isTomorrow, parseISO } from 'date-fns';
 import { th } from 'date-fns/locale';
@@ -56,37 +52,23 @@ export function CasePreparationTimeline({
     return format(date, 'EEEE d MMMM yyyy', { locale: th });
   };
 
-  const getPreparationStatusConfig = (status: PreparationStatus) => {
-    const config: Record<
-      PreparationStatus,
-      { icon: React.ReactNode; text: string; color: string; bgColor: string }
-    > = {
-      ready: {
-        icon: <CheckCircle2 className="w-5 h-5" />,
-        text: 'พร้อมแล้ว',
-        color: 'text-green-600',
-        bgColor: 'bg-green-100',
-      },
-      partial: {
-        icon: <CircleDashed className="w-5 h-5" />,
-        text: 'เตรียมบางส่วน',
-        color: 'text-yellow-600',
-        bgColor: 'bg-yellow-100',
-      },
-      not_started: {
-        icon: <Package className="w-5 h-5" />,
-        text: 'ยังไม่เริ่ม',
-        color: 'text-gray-600',
-        bgColor: 'bg-gray-100',
-      },
-      blocked: {
-        icon: <AlertCircle className="w-5 h-5" />,
-        text: 'ติดปัญหา',
-        color: 'text-red-600',
-        bgColor: 'bg-red-100',
-      },
+  // Compute item-level status counts for a case
+  const getItemStatusCounts = (caseItem: CasePreparationItem) => {
+    const reservations = caseItem.reservations || [];
+    return {
+      prepared: reservations.filter((r) => r.status === 'prepared' || r.status === 'used').length,
+      notPrepared: reservations.filter((r) => (r.status === 'pending' || r.status === 'confirmed') && !r.is_out_of_stock).length,
+      waiting: reservations.filter((r) => r.is_out_of_stock && r.status === 'confirmed').length,
+      blocked: reservations.filter((r) => r.is_out_of_stock && r.status === 'pending').length,
+      total: reservations.length,
     };
-    return config[status];
+  };
+
+  // Get timeline dot color
+  const getDotColor = (caseItem: CasePreparationItem) => {
+    if (caseItem.preparation_status === 'ready') return 'bg-green-500';
+    if (caseItem.preparation_status === 'blocked') return 'bg-red-500';
+    return 'bg-gray-300';
   };
 
   if (isLoading) {
@@ -133,10 +115,10 @@ export function CasePreparationTimeline({
             {/* Cases for this date */}
             <div className="space-y-4 pl-4 border-l-2 border-gray-200">
               {dateCases.map((caseItem) => {
-                const prepConfig = getPreparationStatusConfig(caseItem.preparation_status);
-                const { total, prepared, out_of_stock } = caseItem.preparation_summary;
-                const canPrepareAll =
-                  canPrepare && (caseItem.reservations?.some((r) => r.status === 'confirmed') ?? false);
+                const counts = getItemStatusCounts(caseItem);
+                const dotColor = getDotColor(caseItem);
+                const canPrepareAllItems =
+                  canPrepare && (caseItem.reservations?.some((r) => (r.status === 'pending' || r.status === 'confirmed') && !r.is_out_of_stock) ?? false);
 
                 return (
                   <div
@@ -145,7 +127,7 @@ export function CasePreparationTimeline({
                   >
                     {/* Timeline dot */}
                     <div
-                      className={`absolute -left-[25px] top-6 w-4 h-4 rounded-full border-2 border-white ${prepConfig.bgColor}`}
+                      className={`absolute -left-[25px] top-6 w-4 h-4 rounded-full border-2 border-white ${dotColor}`}
                     />
 
                     {/* Header */}
@@ -169,10 +151,6 @@ export function CasePreparationTimeline({
                           {getCaseStatusText(caseItem.status)}
                         </Badge>
                       </div>
-                      <div className={`flex items-center gap-2 ${prepConfig.color}`}>
-                        {prepConfig.icon}
-                        <span className="font-medium">{prepConfig.text}</span>
-                      </div>
                     </div>
 
                     {/* Patient & Dentist info */}
@@ -188,23 +166,38 @@ export function CasePreparationTimeline({
                       )}
                     </div>
 
-                    {/* Material status bar */}
+                    {/* Material status breakdown */}
                     <div className="mb-3">
-                      <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                        <span>ความพร้อมของวัสดุ</span>
-                        <span>
-                          {prepared}/{total} รายการ
-                          {out_of_stock > 0 && (
-                            <span className="text-red-600 ml-1">
-                              ({out_of_stock} ไม่มีสต็อก)
-                            </span>
-                          )}
-                        </span>
+                      <div className="flex items-center gap-3 text-xs mb-1.5">
+                        {counts.prepared > 0 && (
+                          <span className="flex items-center gap-1 text-green-600">
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                            เตรียมแล้ว {counts.prepared}
+                          </span>
+                        )}
+                        {counts.notPrepared > 0 && (
+                          <span className="flex items-center gap-1 text-gray-600">
+                            <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+                            ยังไม่เตรียม {counts.notPrepared}
+                          </span>
+                        )}
+                        {counts.waiting > 0 && (
+                          <span className="flex items-center gap-1 text-yellow-600">
+                            <span className="w-1.5 h-1.5 rounded-full bg-yellow-500" />
+                            รอของ {counts.waiting}
+                          </span>
+                        )}
+                        {counts.blocked > 0 && (
+                          <span className="flex items-center gap-1 text-red-600">
+                            <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                            ของขาด {counts.blocked}
+                          </span>
+                        )}
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-green-500 rounded-full transition-all"
-                          style={{ width: `${total > 0 ? (prepared / total) * 100 : 0}%` }}
+                          style={{ width: `${counts.total > 0 ? (counts.prepared / counts.total) * 100 : 0}%` }}
                         />
                       </div>
                     </div>
@@ -216,7 +209,7 @@ export function CasePreparationTimeline({
                           <div
                             key={res.id}
                             className={`px-2 py-1 text-xs rounded-md ${
-                              res.status === 'prepared'
+                              res.status === 'prepared' || res.status === 'used'
                                 ? 'bg-green-50 text-green-700'
                                 : res.is_out_of_stock
                                   ? 'bg-red-50 text-red-700'
@@ -225,7 +218,7 @@ export function CasePreparationTimeline({
                           >
                             {res.product?.name?.slice(0, 20)}
                             {res.product?.name && res.product.name.length > 20 ? '...' : ''}
-                            {res.status === 'prepared' && (
+                            {(res.status === 'prepared' || res.status === 'used') && (
                               <CheckCircle2 className="w-3 h-3 inline ml-1" />
                             )}
                           </div>
@@ -239,18 +232,13 @@ export function CasePreparationTimeline({
                     )}
 
                     {/* Actions */}
-                    <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-100">
-                      {canPrepareAll && (
+                    {canPrepareAllItems && (
+                      <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-100">
                         <Button variant="primary" size="sm" onClick={() => onPrepareAll(caseItem)}>
                           เตรียมทั้งหมด
                         </Button>
-                      )}
-                      <Link href={`/cases/${caseItem.id}`}>
-                        <Button variant="outline" size="sm" rightIcon={<ArrowRight className="w-4 h-4" />}>
-                          ดูรายละเอียด
-                        </Button>
-                      </Link>
-                    </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}

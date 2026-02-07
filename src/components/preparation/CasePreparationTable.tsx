@@ -8,10 +8,6 @@ import {
   User,
   ChevronDown,
   ChevronRight,
-  Package,
-  CheckCircle2,
-  AlertCircle,
-  CircleDashed,
 } from 'lucide-react';
 import { Button, Badge, Card } from '@/components/ui';
 import {
@@ -23,7 +19,7 @@ import {
   TableCell,
 } from '@/components/ui/Table';
 import { formatDate, getCaseStatusText } from '@/lib/utils';
-import type { CasePreparationItem, CaseReservation, PreparationStatus } from '@/types/database';
+import type { CasePreparationItem, CaseReservation } from '@/types/database';
 import { getCaseStatusVariant } from '@/lib/status';
 
 interface CasePreparationTableProps {
@@ -55,57 +51,25 @@ export function CasePreparationTable({
     });
   };
 
-  const getPreparationStatusDisplay = (status: PreparationStatus) => {
-    const config: Record<
-      PreparationStatus,
-      { icon: React.ReactNode; text: string; variant: 'success' | 'warning' | 'danger' | 'gray' }
-    > = {
-      ready: {
-        icon: <CheckCircle2 className="w-4 h-4" />,
-        text: 'พร้อมแล้ว',
-        variant: 'success',
-      },
-      partial: {
-        icon: <CircleDashed className="w-4 h-4" />,
-        text: 'เตรียมบางส่วน',
-        variant: 'warning',
-      },
-      not_started: {
-        icon: <Package className="w-4 h-4" />,
-        text: 'ยังไม่เริ่ม',
-        variant: 'gray',
-      },
-      blocked: {
-        icon: <AlertCircle className="w-4 h-4" />,
-        text: 'ติดปัญหา',
-        variant: 'danger',
-      },
-    };
-    return config[status];
-  };
-
-  const getReservationStatusVariant = (
-    status: string
-  ): 'success' | 'warning' | 'danger' | 'gray' | 'info' => {
-    const variants: Record<string, 'success' | 'warning' | 'danger' | 'gray' | 'info'> = {
-      pending: 'warning',
-      confirmed: 'info',
-      prepared: 'success',
-      used: 'success',
-      cancelled: 'gray',
-    };
-    return variants[status] || 'gray';
-  };
-
-  const getReservationStatusText = (status: string) => {
-    const texts: Record<string, string> = {
-      pending: 'รอดำเนินการ',
-      confirmed: 'ยืนยันแล้ว',
-      prepared: 'เตรียมแล้ว',
-      used: 'ใช้แล้ว',
-      cancelled: 'ยกเลิก',
-    };
-    return texts[status] || status;
+  // Map reservation to display status based on DB status + is_out_of_stock
+  const getItemDisplayStatus = (
+    status: string,
+    isOutOfStock: boolean
+  ): { text: string; variant: 'success' | 'warning' | 'danger' | 'gray' | 'info' } => {
+    if (status === 'prepared' || status === 'used') {
+      return { text: 'เตรียมแล้ว', variant: 'success' };
+    }
+    if (isOutOfStock && status === 'confirmed') {
+      return { text: 'รอของ', variant: 'warning' };
+    }
+    if (isOutOfStock && status === 'pending') {
+      return { text: 'ของขาด', variant: 'danger' };
+    }
+    if (status === 'cancelled') {
+      return { text: 'ยกเลิก', variant: 'gray' };
+    }
+    // pending or confirmed, not OOS
+    return { text: 'ยังไม่เตรียม', variant: 'gray' };
   };
 
   if (isLoading) {
@@ -147,10 +111,9 @@ export function CasePreparationTable({
         <TableBody>
           {cases.map((caseItem) => {
             const isExpanded = expandedCases.has(caseItem.id);
-            const prepStatus = getPreparationStatusDisplay(caseItem.preparation_status);
-            const { total, prepared, pending, confirmed, out_of_stock } = caseItem.preparation_summary;
+            const { total } = caseItem.preparation_summary;
             const canPrepareAll =
-              canPrepare && (caseItem.reservations?.some((r) => r.status === 'confirmed') ?? false);
+              canPrepare && (caseItem.reservations?.some((r) => (r.status === 'pending' || r.status === 'confirmed') && !r.is_out_of_stock) ?? false);
 
             return (
               <>
@@ -213,20 +176,44 @@ export function CasePreparationTable({
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col gap-1">
-                      <Badge variant={prepStatus.variant} size="sm">
-                        <span className="flex items-center gap-1">
-                          {prepStatus.icon}
-                          {prepStatus.text}
-                        </span>
-                      </Badge>
-                      <span className="text-xs text-gray-500">
-                        {prepared}/{total} รายการ
-                        {out_of_stock > 0 && (
-                          <span className="text-red-600 ml-1">
-                            ({out_of_stock} ไม่มีสต็อก)
-                          </span>
-                        )}
-                      </span>
+                      {(() => {
+                        const reservations = caseItem.reservations || [];
+                        const preparedCount = reservations.filter((r) => r.status === 'prepared' || r.status === 'used').length;
+                        const notPreparedCount = reservations.filter((r) => (r.status === 'pending' || r.status === 'confirmed') && !r.is_out_of_stock).length;
+                        const waitingCount = reservations.filter((r) => r.is_out_of_stock && r.status === 'confirmed').length;
+                        const blockedCount = reservations.filter((r) => r.is_out_of_stock && r.status === 'pending').length;
+                        return (
+                          <div className="space-y-0.5 text-xs">
+                            {preparedCount > 0 && (
+                              <span className="flex items-center gap-1 text-green-600">
+                                <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                                เตรียมแล้ว {preparedCount}
+                              </span>
+                            )}
+                            {notPreparedCount > 0 && (
+                              <span className="flex items-center gap-1 text-gray-600">
+                                <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+                                ยังไม่เตรียม {notPreparedCount}
+                              </span>
+                            )}
+                            {waitingCount > 0 && (
+                              <span className="flex items-center gap-1 text-yellow-600">
+                                <span className="w-1.5 h-1.5 rounded-full bg-yellow-500" />
+                                รอของ {waitingCount}
+                              </span>
+                            )}
+                            {blockedCount > 0 && (
+                              <span className="flex items-center gap-1 text-red-600">
+                                <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                                ของขาด {blockedCount}
+                              </span>
+                            )}
+                            {total === 0 && (
+                              <span className="text-gray-400">ยังไม่มีรายการ</span>
+                            )}
+                          </div>
+                        );
+                      })()}
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
@@ -240,11 +227,6 @@ export function CasePreparationTable({
                           เตรียมทั้งหมด
                         </Button>
                       )}
-                      <Link href={`/cases/${caseItem.id}`}>
-                        <Button variant="outline" size="sm">
-                          ดูรายละเอียด
-                        </Button>
-                      </Link>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -274,20 +256,20 @@ export function CasePreparationTable({
                                       ` | LOT: ${reservation.inventory.lot_number}`}
                                   </p>
                                 </div>
-                                <Badge variant={getReservationStatusVariant(reservation.status)} size="sm">
-                                  {getReservationStatusText(reservation.status)}
-                                </Badge>
-                                {reservation.is_out_of_stock && (
-                                  <Badge variant="danger" size="sm">
-                                    ไม่มีในสต็อก
-                                  </Badge>
-                                )}
+                                {(() => {
+                                  const display = getItemDisplayStatus(reservation.status, reservation.is_out_of_stock);
+                                  return (
+                                    <Badge variant={display.variant} size="sm">
+                                      {display.text}
+                                    </Badge>
+                                  );
+                                })()}
                               </div>
                               <div className="flex items-center gap-3">
                                 <span className="text-sm text-gray-600">
                                   จำนวน: {reservation.quantity}
                                 </span>
-                                {canPrepare && reservation.status === 'confirmed' && !reservation.is_out_of_stock && (
+                                {canPrepare && (reservation.status === 'pending' || reservation.status === 'confirmed') && !reservation.is_out_of_stock && (
                                   <Button
                                     variant="outline"
                                     size="sm"

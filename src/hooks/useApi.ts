@@ -826,14 +826,20 @@ export function useCasePreparation(filter: DateRangeFilter) {
       const pending = reservations.filter((r: any) => r.status === 'pending').length;
       const confirmed = reservations.filter((r: any) => r.status === 'confirmed').length;
       const out_of_stock = reservations.filter((r: any) => r.is_out_of_stock).length;
+      // Item-level status counts for new display
+      const items_not_prepared = reservations.filter((r: any) => (r.status === 'pending' || r.status === 'confirmed') && !r.is_out_of_stock).length;
+      const items_waiting = reservations.filter((r: any) => r.is_out_of_stock && r.status === 'confirmed').length;
+      const items_blocked = reservations.filter((r: any) => r.is_out_of_stock && r.status === 'pending').length;
 
       let preparation_status: PreparationStatus = 'not_started';
       if (total === 0) {
         preparation_status = 'not_started';
-      } else if (out_of_stock > 0) {
+      } else if (items_blocked > 0) {
         preparation_status = 'blocked';
       } else if (prepared === total) {
         preparation_status = 'ready';
+      } else if (items_waiting > 0) {
+        preparation_status = 'partial';
       } else if (prepared > 0) {
         preparation_status = 'partial';
       }
