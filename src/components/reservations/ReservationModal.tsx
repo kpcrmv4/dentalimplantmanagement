@@ -1092,7 +1092,7 @@ export function ReservationModal({
                     <label
                       key={item.id}
                       className={cn(
-                        'flex items-center gap-3 p-3 cursor-pointer transition-colors',
+                        'flex items-start gap-3 p-3 cursor-pointer transition-colors',
                         isChecked ? 'bg-green-50/50' : 'hover:bg-gray-50'
                       )}
                     >
@@ -1100,28 +1100,34 @@ export function ReservationModal({
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => handleToggleTemplateItem(item.id, false)}
-                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 shrink-0"
+                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 shrink-0 mt-0.5"
                       />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm text-gray-900 truncate">
-                          {item.product_name}
-                        </p>
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-[11px] text-gray-500">
-                          {(item.ref_number || item.product_sku) && (
-                            <span className="font-mono bg-gray-100 px-1 rounded">
-                              REF: {item.ref_number || item.product_sku}
+                      <div className="flex-1 min-w-0 space-y-1">
+                        {/* Row 1: Name + Qty + Badge */}
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="font-medium text-sm text-gray-900 truncate">{item.product_name}</p>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-xs text-gray-500">x{item.quantity}</span>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-100 text-green-700 border border-green-200">
+                              <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                              มี {item.available}
                             </span>
-                          )}
-                          {item.lot_number && <span>LOT: {item.lot_number}</span>}
-                          {item.expiry_date && <span>Exp: {formatDate(item.expiry_date)}</span>}
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-xs text-gray-500">x{item.quantity}</span>
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-100 text-green-700 border border-green-200">
-                          <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                          มี {item.available}
-                        </span>
+                        {/* Row 2: REF + LOT */}
+                        <div className="flex items-center gap-3 text-[11px] text-gray-500">
+                          <span className="font-mono bg-gray-100 px-1.5 py-0.5 rounded min-w-[80px]">
+                            REF: {item.ref_number || item.product_sku || '-'}
+                          </span>
+                          <span className="font-mono">
+                            LOT: {item.lot_number || '-'}
+                          </span>
+                        </div>
+                        {/* Row 3: Exp + Stock */}
+                        <div className="flex items-center gap-3 text-[11px] text-gray-500">
+                          <span>Exp: {item.expiry_date ? formatDate(item.expiry_date) : '-'}</span>
+                          <span className="text-green-600 font-medium">คงเหลือ {item.available ?? '-'}</span>
+                        </div>
                       </div>
                     </label>
                   );
@@ -1130,7 +1136,6 @@ export function ReservationModal({
                 {/* OOS items */}
                 {activeTemplateSelection.oosItems.map((item) => {
                   const isChecked = selectedItems.has(item.id);
-                  // Check if an alternative is selected for this item
                   const oosEntry = activeTemplateSelection.oosWithAlternatives.find(
                     (o) => o.oosItem.id === item.id
                   );
@@ -1141,7 +1146,7 @@ export function ReservationModal({
                     <label
                       key={item.id}
                       className={cn(
-                        'flex items-center gap-3 p-3 cursor-pointer transition-colors border-l-4',
+                        'flex items-start gap-3 p-3 cursor-pointer transition-colors border-l-4',
                         isChecked
                           ? 'bg-red-50 border-l-red-500'
                           : hasAltSelected
@@ -1153,35 +1158,45 @@ export function ReservationModal({
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => handleToggleTemplateItem(item.id, true)}
-                        className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500 shrink-0"
+                        className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500 shrink-0 mt-0.5"
                       />
-                      <div className="flex-1 min-w-0">
-                        <p className={cn(
-                          'font-medium text-sm truncate',
-                          isChecked ? 'text-red-800' : 'text-gray-900'
-                        )}>
-                          {item.product_name}
-                        </p>
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-[11px] text-gray-500">
-                          {(item.ref_number || item.product_sku) && (
-                            <span className="font-mono bg-red-100 px-1 rounded text-red-600">
-                              REF: {item.ref_number || item.product_sku}
+                      <div className="flex-1 min-w-0 space-y-1">
+                        {/* Row 1: Name + Qty + Badge */}
+                        <div className="flex items-center justify-between gap-2">
+                          <p className={cn(
+                            'font-medium text-sm truncate',
+                            isChecked ? 'text-red-800' : 'text-gray-900'
+                          )}>
+                            {item.product_name}
+                          </p>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-xs text-gray-500">x{item.quantity}</span>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-700 border border-red-200">
+                              <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                              ไม่มี
                             </span>
-                          )}
+                          </div>
+                        </div>
+                        {/* Row 2: REF + LOT */}
+                        <div className="flex items-center gap-3 text-[11px]">
+                          <span className="font-mono bg-red-100 text-red-600 px-1.5 py-0.5 rounded min-w-[80px]">
+                            REF: {item.ref_number || item.product_sku || '-'}
+                          </span>
+                          <span className="font-mono text-gray-500">
+                            LOT: -
+                          </span>
+                        </div>
+                        {/* Row 3: Exp + Stock */}
+                        <div className="flex items-center gap-3 text-[11px] text-gray-400">
+                          <span>Exp: -</span>
+                          <span>คงเหลือ 0</span>
                         </div>
                         {hasAltSelected && (
-                          <p className="text-[10px] text-blue-600 mt-0.5 flex items-center gap-1">
+                          <p className="text-[10px] text-blue-600 flex items-center gap-1">
                             <Sparkles className="w-2.5 h-2.5" />
                             เลือกวัสดุทดแทนแล้ว
                           </p>
                         )}
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-xs text-gray-500">x{item.quantity}</span>
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-700 border border-red-200">
-                          <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                          ไม่มี
-                        </span>
                       </div>
                     </label>
                   );
@@ -1216,7 +1231,7 @@ export function ReservationModal({
                               <label
                                 key={altId}
                                 className={cn(
-                                  'flex items-center gap-3 p-3 cursor-pointer transition-colors',
+                                  'flex items-start gap-3 p-3 cursor-pointer transition-colors',
                                   isChecked ? 'bg-blue-50' : 'hover:bg-gray-50'
                                 )}
                               >
@@ -1224,37 +1239,41 @@ export function ReservationModal({
                                   type="checkbox"
                                   checked={isChecked}
                                   onChange={() => handleToggleAlternative(altId, oosItem.id)}
-                                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 shrink-0"
+                                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 shrink-0 mt-0.5"
                                 />
-                                <div className="flex-1 min-w-0">
-                                  <p className="font-medium text-xs text-gray-900 truncate">
-                                    {alt.product_name}
-                                  </p>
-                                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-[10px] text-gray-500">
-                                    {alt.ref_number && (
-                                      <span className="font-mono bg-gray-100 px-1 rounded">
-                                        REF: {alt.ref_number}
-                                      </span>
+                                <div className="flex-1 min-w-0 space-y-1">
+                                  {/* Row 1: Name + Check icon */}
+                                  <div className="flex items-center justify-between gap-2">
+                                    <p className="font-medium text-sm text-gray-900 truncate">
+                                      {alt.product_name}
+                                    </p>
+                                    {isChecked && (
+                                      <CheckCircle className="w-4 h-4 text-blue-600 shrink-0" />
                                     )}
-                                    <span>LOT: {alt.lot_number}</span>
-                                    {alt.expiry_date && (
-                                      <span className={cn(
-                                        'font-medium',
-                                        alt.days_until_expiry !== undefined && alt.days_until_expiry <= 90
-                                          ? 'text-amber-600'
-                                          : 'text-gray-500'
-                                      )}>
-                                        Exp: {formatDate(alt.expiry_date)}
-                                      </span>
-                                    )}
+                                  </div>
+                                  {/* Row 2: REF + LOT */}
+                                  <div className="flex items-center gap-3 text-[11px] text-gray-500">
+                                    <span className="font-mono bg-gray-100 px-1.5 py-0.5 rounded min-w-[80px]">
+                                      REF: {alt.ref_number || '-'}
+                                    </span>
+                                    <span className="font-mono">
+                                      LOT: {alt.lot_number}
+                                    </span>
+                                  </div>
+                                  {/* Row 3: Exp + Stock */}
+                                  <div className="flex items-center gap-3 text-[11px] text-gray-500">
+                                    <span className={cn(
+                                      alt.days_until_expiry !== undefined && alt.days_until_expiry <= 90
+                                        ? 'text-amber-600 font-medium'
+                                        : ''
+                                    )}>
+                                      Exp: {alt.expiry_date ? formatDate(alt.expiry_date) : '-'}
+                                    </span>
                                     <span className="text-blue-600 font-medium">
                                       คงเหลือ {alt.available_quantity}
                                     </span>
                                   </div>
                                 </div>
-                                {isChecked && (
-                                  <CheckCircle className="w-4 h-4 text-blue-600 shrink-0" />
-                                )}
                               </label>
                             );
                           })}

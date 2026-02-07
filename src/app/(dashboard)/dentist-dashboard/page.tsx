@@ -1,16 +1,15 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { Plus, AlertTriangle, Calendar, Clock, Package } from 'lucide-react';
+import { Plus, Calendar, Clock, Package, ChevronDown, ChevronUp, CheckCircle } from 'lucide-react';
 import { Header } from '@/components/layout';
 import { Card, Badge } from '@/components/ui';
 import { DateRangePicker, ViewToggle, type ViewMode } from '@/components/preparation';
 import { DentistSummaryCards, DentistCaseTable, DentistCaseTimeline } from '@/components/dentist-dashboard';
 import { useDentistDashboard } from '@/hooks/useApi';
 import { useAuthStore } from '@/stores/authStore';
-import { formatDate, getCaseStatusText } from '@/lib/utils';
-import { getCaseStatusVariant } from '@/lib/status';
+import { formatDate } from '@/lib/utils';
 import type { DateRangeFilter } from '@/types/database';
 import { startOfMonth, endOfMonth, format } from 'date-fns';
 
@@ -28,6 +27,7 @@ export default function DentistDashboardPage() {
     endDate: format(defaultEnd, 'yyyy-MM-dd'),
   });
   const [viewMode, setViewMode] = useState<ViewMode>('table');
+  const [showNewCases, setShowNewCases] = useState(false);
 
   const { data, isLoading } = useDentistDashboard(user?.id || '', dateFilter);
 
@@ -42,27 +42,15 @@ export default function DentistDashboardPage() {
   };
   const cases = data?.cases || [];
 
-  // Filter cases that need action (not reserved or not available)
-  const actionNeededCases = useMemo(() => {
-    return cases.filter(
-      (c) => c.material_status === 'not_reserved' || c.material_status === 'not_available'
-    );
+  // New assigned cases (not yet reserved — need first booking action)
+  const newCases = useMemo(() => {
+    return cases.filter((c) => c.material_status === 'not_reserved');
   }, [cases]);
 
-  // New cases (within last 7 days of assignment - using surgery date as proxy)
-  // Exclude cases where material_status is 'ready' since they are already prepared
-  const newCases = useMemo(() => {
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    return cases.filter((c) => {
-      const surgeryDate = new Date(c.surgery_date);
-      const today = new Date();
-      // Show cases that are upcoming and within the next 14 days
-      // but exclude cases that already have materials ready
-      return surgeryDate >= today && surgeryDate <= new Date(today.setDate(today.getDate() + 14))
-        && c.material_status !== 'ready';
-    }).slice(0, 5);
-  }, [cases]);
+  // Auto-expand new cases section when there are new cases
+  useEffect(() => {
+    if (newCases.length > 0) setShowNewCases(true);
+  }, [newCases.length]);
 
   // Summary by status for calendar view
   const statusSummary = useMemo(() => {
@@ -108,89 +96,74 @@ export default function DentistDashboardPage() {
         {/* Summary Cards */}
         <DentistSummaryCards summary={summary} />
 
-        {/* New Cases & Action Needed Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* New Assigned Cases */}
-          <Card>
-            <div className="flex items-center gap-2 mb-4">
+        {/* New Assigned Cases (collapsible) */}
+        <Card>
+          <button
+            type="button"
+            className="w-full flex items-center justify-between"
+            onClick={() => setShowNewCases(!showNewCases)}
+          >
+            <div className="flex items-center gap-2">
               <Plus className="w-5 h-5 text-blue-600" />
-              <h3 className="text-lg font-semibold text-gray-900">เคสใหม่ที่ได้รับมอบหมาย</h3>
+              <h3 className="text-lg font-semibold text-gray-900">
+                เคสใหม่ที่ได้รับมอบหมาย
+              </h3>
+              {newCases.length > 0 ? (
+                <Badge variant="danger" size="sm">{newCases.length}</Badge>
+              ) : (
+                <Badge variant="gray" size="sm">0</Badge>
+              )}
             </div>
-            {newCases.length === 0 ? (
-              <div className="text-center py-8">
-                <Calendar className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-                <p className="text-gray-500 text-sm">ไม่มีเคสใหม่</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {newCases.map((c) => (
-                  <Link
-                    key={c.id}
-                    href={`/cases/${c.id}`}
-                    className="block p-3 rounded-lg border border-gray-100 hover:border-blue-200 hover:bg-blue-50/50 transition-colors"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">{c.patient_name}</p>
-                        <p className="text-xs text-gray-500">
-                          {formatDate(c.surgery_date)}
-                          {c.surgery_time && ` ${c.surgery_time.slice(0, 5)}`}
-                        </p>
-                      </div>
-                      <Badge variant={getCaseStatusVariant(c.status)} size="sm">
-                        {getCaseStatusText(c.status)}
-                      </Badge>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </Card>
+            <div className="flex items-center gap-2">
+              {newCases.length === 0 && (
+                <span className="text-sm text-gray-400">ยังไม่มีเคสใหม่</span>
+              )}
+              {showNewCases ? (
+                <ChevronUp className="w-5 h-5 text-gray-400" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-gray-400" />
+              )}
+            </div>
+          </button>
 
-          {/* Action Needed */}
-          <Card>
-            <div className="flex items-center gap-2 mb-4">
-              <AlertTriangle className="w-5 h-5 text-orange-500" />
-              <h3 className="text-lg font-semibold text-gray-900">ต้องดำเนินการ</h3>
-            </div>
-            {actionNeededCases.length === 0 ? (
-              <div className="text-center py-8">
-                <Package className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-                <p className="text-gray-500 text-sm">ไม่มีรายการที่ต้องดำเนินการ</p>
-              </div>
-            ) : (
-              <div className="space-y-3 max-h-64 overflow-y-auto">
-                {actionNeededCases.slice(0, 5).map((c) => (
-                  <Link
-                    key={c.id}
-                    href={c.material_status === 'not_reserved' ? `/cases/${c.id}?reserve=true` : `/cases/${c.id}`}
-                    className="block p-3 rounded-lg border border-orange-100 bg-orange-50/50 hover:bg-orange-100/50 transition-colors"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">{c.patient_name}</p>
-                        <p className="text-xs text-gray-600">
-                          {formatDate(c.surgery_date)} - {c.procedure_type || 'ไม่ระบุ'}
-                        </p>
+          {showNewCases && (
+            <div className="mt-4">
+              {newCases.length === 0 ? (
+                <div className="text-center py-6">
+                  <CheckCircle className="w-8 h-8 text-green-300 mx-auto mb-2" />
+                  <p className="text-gray-400 text-sm">ไม่มีเคสใหม่ที่ยังไม่ได้จองวัสดุ</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {newCases.slice(0, 5).map((c) => (
+                    <Link
+                      key={c.id}
+                      href={`/cases/${c.id}?reserve=true`}
+                      className="block p-3 rounded-lg border border-blue-100 bg-blue-50/50 hover:bg-blue-100/50 transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium text-gray-900">{c.patient_name}</p>
+                          <p className="text-xs text-gray-500">
+                            {formatDate(c.surgery_date)}
+                            {c.surgery_time && ` ${c.surgery_time.slice(0, 5)}`}
+                            {c.procedure_type && ` - ${c.procedure_type}`}
+                          </p>
+                        </div>
+                        <Badge variant="gray" size="sm">ยังไม่จอง</Badge>
                       </div>
-                      <Badge
-                        variant={c.material_status === 'not_reserved' ? 'gray' : 'danger'}
-                        size="sm"
-                      >
-                        {c.material_status === 'not_reserved' ? 'ยังไม่จอง' : 'ไม่มีสต็อก'}
-                      </Badge>
-                    </div>
-                  </Link>
-                ))}
-                {actionNeededCases.length > 5 && (
-                  <p className="text-sm text-gray-500 text-center">
-                    และอีก {actionNeededCases.length - 5} รายการ
-                  </p>
-                )}
-              </div>
-            )}
-          </Card>
-        </div>
+                    </Link>
+                  ))}
+                  {newCases.length > 5 && (
+                    <p className="text-sm text-gray-500 text-center pt-1">
+                      และอีก {newCases.length - 5} รายการ
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </Card>
 
         {/* Calendar/Table Section */}
         <Card>
