@@ -77,17 +77,19 @@ export default function CaseDetailPage({ params }: PageProps) {
   }, [searchParams, isDentist, caseData]);
 
   const getReservationDisplay = (status: ReservationStatus, isOutOfStock: boolean) => {
+    // Out of stock items
     if (isOutOfStock && status === 'pending') {
       return { variant: 'danger' as const, text: 'รอสั่งซื้อ' };
     }
     if (isOutOfStock && status === 'confirmed') {
-      return { variant: 'warning' as const, text: 'กำลังสั่งซื้อ' };
+      return { variant: 'warning' as const, text: 'สั่งซื้อแล้ว รอของเข้า' };
     }
 
+    // In-stock items
     const configs: Record<ReservationStatus, { variant: 'success' | 'warning' | 'danger' | 'gray' | 'info'; text: string }> = {
-      pending: { variant: 'warning', text: 'รอดำเนินการ' },
-      confirmed: { variant: 'info', text: 'ยืนยันแล้ว' },
-      prepared: { variant: 'success', text: 'เตรียมของแล้ว' },
+      pending: { variant: 'success', text: 'มีสต็อก' },
+      confirmed: { variant: 'success', text: 'มีสต็อก' },
+      prepared: { variant: 'info', text: 'เตรียมของแล้ว' },
       used: { variant: 'success', text: 'ใช้แล้ว' },
       cancelled: { variant: 'gray', text: 'ยกเลิก' },
     };

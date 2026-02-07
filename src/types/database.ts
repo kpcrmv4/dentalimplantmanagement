@@ -690,6 +690,7 @@ export interface DentistCaseItem {
     confirmed: number;
     pending: number;
     out_of_stock: number;
+    in_stock: number;
   };
 }
 

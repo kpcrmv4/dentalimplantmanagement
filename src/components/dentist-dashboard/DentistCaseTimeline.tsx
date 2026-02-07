@@ -77,8 +77,8 @@ export function DentistCaseTimeline({
                     <span className="text-sm text-gray-500">{c.procedure_type || '-'}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-500">
-                      {c.reservation_summary.prepared}/{c.reservation_summary.total}
+                    <span className={`text-sm ${c.reservation_summary.in_stock === c.reservation_summary.total ? 'text-green-600' : c.reservation_summary.out_of_stock > 0 ? 'text-red-500' : 'text-gray-500'}`}>
+                      {c.reservation_summary.in_stock}/{c.reservation_summary.total}
                     </span>
                   </div>
                 </div>

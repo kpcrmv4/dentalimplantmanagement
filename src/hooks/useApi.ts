@@ -1033,6 +1033,7 @@ export function useDentistDashboard(dentistId: string, filter: DateRangeFilter) 
         const confirmed = reservations.filter((r: any) => r.status === 'confirmed').length;
         const pending = reservations.filter((r: any) => r.status === 'pending').length;
         const out_of_stock = reservations.filter((r: any) => r.is_out_of_stock).length;
+        const in_stock = total - out_of_stock;
 
         // material_status derives from case traffic light status (green/yellow/red/gray)
         // to keep summary cards consistent with the spec:
@@ -1080,6 +1081,7 @@ export function useDentistDashboard(dentistId: string, filter: DateRangeFilter) 
             confirmed,
             pending,
             out_of_stock,
+            in_stock,
           },
         };
       });
