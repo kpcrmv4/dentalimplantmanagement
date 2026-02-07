@@ -17,9 +17,10 @@ import {
   ShoppingCart,
   Phone,
   PhoneCall,
+  Trash2,
 } from 'lucide-react';
 import { Header } from '@/components/layout';
-import { Button, Badge, Card, CardHeader, CardTitle, CardContent, Modal, ModalFooter, Select } from '@/components/ui';
+import { Button, Badge, Card, CardHeader, CardTitle, CardContent, Modal, ModalFooter, Select, ConfirmModal } from '@/components/ui';
 import {
   Table,
   TableHeader,
@@ -40,6 +41,7 @@ import toast from 'react-hot-toast';
 import type { ReservationStatus } from '@/types/database';
 import { getCaseStatusVariant } from '@/lib/status';
 import { ReservationModal } from '@/components/reservations/ReservationModal';
+import { triggerReservationCancelled } from '@/lib/notification-triggers';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -56,6 +58,9 @@ export default function CaseDetailPage({ params }: PageProps) {
   const [confirmationNote, setConfirmationNote] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
   const [isSavingConfirmation, setIsSavingConfirmation] = useState(false);
+  const [showDeleteReservationConfirm, setShowDeleteReservationConfirm] = useState(false);
+  const [pendingDeleteRes, setPendingDeleteRes] = useState<any>(null);
+  const [isDeletingReservation, setIsDeletingReservation] = useState(false);
 
   const isDentist = user?.role === 'dentist';
   const canEditCase = user?.role === 'admin' || user?.role === 'dentist' || user?.role === 'cs';
@@ -156,6 +161,69 @@ export default function CaseDetailPage({ params }: PageProps) {
       toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่');
     } finally {
       setIsSavingConfirmation(false);
+    }
+  };
+
+  const handleDeleteReservation = async () => {
+    if (!pendingDeleteRes) return;
+    setIsDeletingReservation(true);
+
+    try {
+      // Delete the reservation
+      const { error: deleteError } = await supabase
+        .from('case_reservations')
+        .delete()
+        .eq('id', pendingDeleteRes.id);
+
+      if (deleteError) throw deleteError;
+
+      // If reservation was prepared, notify stock staff to return material
+      if (pendingDeleteRes.status === 'prepared') {
+        try {
+          await triggerReservationCancelled({
+            caseId: id,
+            caseNumber: caseData!.case_number,
+            productName: pendingDeleteRes.product?.name || 'ไม่ระบุ',
+            quantity: pendingDeleteRes.quantity,
+            lotNumber: pendingDeleteRes.inventory?.lot_number,
+            dentistName: user?.full_name || 'ทันตแพทย์',
+          });
+        } catch (notifError) {
+          console.error('Error sending cancellation notification:', notifError);
+        }
+      }
+
+      // Recalculate case status based on remaining reservations
+      const remainingReservations = (caseData?.reservations || []).filter(
+        (r) => r.id !== pendingDeleteRes.id && r.status !== 'cancelled'
+      );
+
+      if (caseData && !['completed', 'cancelled'].includes(caseData.status)) {
+        let newStatus = caseData.status;
+        if (remainingReservations.length === 0) {
+          newStatus = 'gray';
+        } else {
+          const hasOOS = remainingReservations.some((r) => r.is_out_of_stock);
+          newStatus = hasOOS ? 'red' : 'yellow';
+        }
+
+        if (newStatus !== caseData.status) {
+          await supabase
+            .from('cases')
+            .update({ status: newStatus })
+            .eq('id', id);
+        }
+      }
+
+      toast.success('ลบรายการจองเรียบร้อย');
+      mutate();
+      setShowDeleteReservationConfirm(false);
+      setPendingDeleteRes(null);
+    } catch (error) {
+      console.error('Error deleting reservation:', error);
+      toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่');
+    } finally {
+      setIsDeletingReservation(false);
     }
   };
 
@@ -447,11 +515,15 @@ export default function CaseDetailPage({ params }: PageProps) {
                             <TableHead>Lot</TableHead>
                             <TableHead className="text-center">จำนวน</TableHead>
                             <TableHead>สถานะ</TableHead>
+                            {isEditable && canAddReservation && (
+                              <TableHead className="text-center w-16"></TableHead>
+                            )}
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {caseData.reservations.map((res) => {
                             const display = getReservationDisplay(res.status, res.is_out_of_stock);
+                            const canDelete = isEditable && canAddReservation && res.status !== 'used';
                             return (
                               <TableRow key={res.id}>
                                 <TableCell className="font-medium">
@@ -467,6 +539,22 @@ export default function CaseDetailPage({ params }: PageProps) {
                                     {display.text}
                                   </Badge>
                                 </TableCell>
+                                {isEditable && canAddReservation && (
+                                  <TableCell className="text-center">
+                                    {canDelete && (
+                                      <button
+                                        onClick={() => {
+                                          setPendingDeleteRes(res);
+                                          setShowDeleteReservationConfirm(true);
+                                        }}
+                                        className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                        title="ลบรายการจอง"
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                      </button>
+                                    )}
+                                  </TableCell>
+                                )}
                               </TableRow>
                             );
                           })}
@@ -478,13 +566,27 @@ export default function CaseDetailPage({ params }: PageProps) {
                     <div className="sm:hidden space-y-2">
                       {caseData.reservations.map((res) => {
                         const display = getReservationDisplay(res.status, res.is_out_of_stock);
+                        const canDelete = isEditable && canAddReservation && res.status !== 'used';
                         return (
                           <div key={res.id} className="border rounded-lg p-3">
                             <div className="flex items-start justify-between gap-2 mb-1.5">
                               <p className="font-medium text-sm leading-tight flex-1">{res.product?.name}</p>
-                              <Badge variant={display.variant} size="sm">
-                                {display.text}
-                              </Badge>
+                              <div className="flex items-center gap-1.5">
+                                <Badge variant={display.variant} size="sm">
+                                  {display.text}
+                                </Badge>
+                                {canDelete && (
+                                  <button
+                                    onClick={() => {
+                                      setPendingDeleteRes(res);
+                                      setShowDeleteReservationConfirm(true);
+                                    }}
+                                    className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
+                              </div>
                             </div>
                             <div className="grid grid-cols-3 gap-2 text-xs text-gray-500">
                               <div>
@@ -722,6 +824,33 @@ export default function CaseDetailPage({ params }: PageProps) {
           </Button>
         </ModalFooter>
       </Modal>
+
+      {/* Delete Reservation Confirmation */}
+      <ConfirmModal
+        isOpen={showDeleteReservationConfirm}
+        onClose={() => {
+          setShowDeleteReservationConfirm(false);
+          setPendingDeleteRes(null);
+        }}
+        onConfirm={handleDeleteReservation}
+        title="ยืนยันลบรายการจอง"
+        message={
+          pendingDeleteRes?.status === 'prepared' ? (
+            <div className="space-y-2">
+              <p>ต้องการลบ <strong>{pendingDeleteRes?.product?.name}</strong> x{pendingDeleteRes?.quantity} ใช่หรือไม่?</p>
+              <div className="p-3 bg-orange-50 rounded-lg border border-orange-200 text-orange-700 text-xs">
+                <strong>วัสดุนี้เตรียมของแล้ว</strong> — ระบบจะแจ้ง stock staff ให้เคลียร์ของคืนสต็อก
+              </div>
+            </div>
+          ) : (
+            <p>ต้องการลบ <strong>{pendingDeleteRes?.product?.name}</strong> x{pendingDeleteRes?.quantity} ใช่หรือไม่?</p>
+          )
+        }
+        variant={pendingDeleteRes?.status === 'prepared' ? 'warning' : 'danger'}
+        confirmText="ลบรายการ"
+        cancelText="ยกเลิก"
+        isLoading={isDeletingReservation}
+      />
 
       {/* Reservation Modal for Dentists */}
       <ReservationModal

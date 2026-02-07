@@ -646,6 +646,36 @@ export async function notifyLowStock(
 }
 
 /**
+ * Notify stock staff when a prepared reservation is cancelled by dentist
+ */
+export async function notifyReservationCancelled(
+  caseId: string,
+  caseNumber: string,
+  productName: string,
+  quantity: number,
+  lotNumber: string | undefined,
+  dentistName: string
+): Promise<NotificationResult> {
+  const lotInfo = lotNumber ? ` LOT: ${lotNumber}` : '';
+  return sendNotification(
+    {
+      title: '⚠️ วัสดุที่เตรียมแล้วถูกยกเลิก',
+      body: `เคส ${caseNumber} — ${productName} x${quantity}${lotInfo}\nโดย ${dentistName}\nกรุณาเคลียร์ของคืนสต็อก`,
+      tag: `reservation-cancelled-${caseId}-${Date.now()}`,
+      data: {
+        url: `/cases/${caseId}`,
+        type: 'reservation_cancelled',
+        referenceId: caseId,
+      },
+    },
+    {
+      roles: ['stock_staff', 'admin'],
+      channels: ['push', 'line', 'in_app'],
+    }
+  );
+}
+
+/**
  * Notify material prepared
  */
 export async function notifyMaterialPrepared(

@@ -8,6 +8,7 @@ import {
   notifyLowStock,
   notifyMaterialPrepared,
   notifyPOCreated,
+  notifyReservationCancelled,
 } from '@/lib/notification-service';
 
 type TriggerType =
@@ -17,7 +18,8 @@ type TriggerType =
   | 'urgent_case'
   | 'low_stock'
   | 'material_prepared'
-  | 'po_created';
+  | 'po_created'
+  | 'reservation_cancelled';
 
 interface TriggerPayload {
   type: TriggerType;
@@ -116,6 +118,17 @@ export async function POST(request: NextRequest) {
           data.caseId as string,
           data.caseNumber as string,
           data.dentistId as string
+        );
+        break;
+
+      case 'reservation_cancelled':
+        result = await notifyReservationCancelled(
+          data.caseId as string,
+          data.caseNumber as string,
+          data.productName as string,
+          data.quantity as number,
+          data.lotNumber as string | undefined,
+          data.dentistName as string
         );
         break;
 

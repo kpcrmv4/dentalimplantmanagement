@@ -129,3 +129,18 @@ export async function triggerMaterialPrepared(params: {
 }): Promise<TriggerResult> {
   return triggerNotification('material_prepared', params);
 }
+
+/**
+ * Trigger notification when a prepared reservation is cancelled by dentist
+ * Notifies stock staff to return the material back to stock
+ */
+export async function triggerReservationCancelled(params: {
+  caseId: string;
+  caseNumber: string;
+  productName: string;
+  quantity: number;
+  lotNumber?: string;
+  dentistName: string;
+}): Promise<TriggerResult> {
+  return triggerNotification('reservation_cancelled', params);
+}
