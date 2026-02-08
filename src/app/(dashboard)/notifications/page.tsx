@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { Header } from '@/components/layout';
 import { useUrgentCases48h, usePendingStockRequests, useLowStockItems } from '@/hooks/useApi';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore, AuthState } from '@/stores/authStore';
 import { formatThaiDate, formatThaiDateTime } from '@/lib/utils';
 import Link from 'next/link';
 
@@ -30,7 +30,7 @@ interface NotificationItem {
 export default function NotificationsPage() {
   const [filter, setFilter] = useState<NotificationType>('all');
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const user = useAuthStore((s) => s.user);
+  const user = useAuthStore((s: AuthState) => s.user);
   const userRole = user?.role;
 
   // Determine which data to fetch based on role
