@@ -2,6 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Prompt } from "next/font/google";
 import "./globals.css";
 import { ToasterProvider } from "@/components/providers/ToasterProvider";
+import { AuthProvider } from "@/components/providers/AuthProvider";
+import { useAuthStore } from "@/stores/authStore";
+import { useEffect, useState } from "react";
 import { ServiceWorkerProvider } from "@/components/providers/ServiceWorkerProvider";
 
 const prompt = Prompt({
@@ -44,10 +47,33 @@ export default function RootLayout({
   return (
     <html lang="th">
       <body className={`${prompt.variable} ${prompt.className} antialiased`}>
-        {children}
+        <AuthProvider>
+          <AuthLoader>{children}</AuthLoader>
+        </AuthProvider>
         <ToasterProvider />
         <ServiceWorkerProvider />
       </body>
     </html>
   );
+}
+
+function AuthLoader({ children }: { children: React.ReactNode }) {
+  const { isAuthReady } = useAuthStore();
+  const [showLoader, setShowLoader] = useState(true);
+
+  useEffect(() => {
+    if (isAuthReady) {
+      setShowLoader(false);
+    }
+  }, [isAuthReady]);
+
+  if (showLoader) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
 }

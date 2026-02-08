@@ -8,6 +8,7 @@ interface AuthState {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isAuthReady: boolean;
   _hasHydrated: boolean;
   setUser: (user: User | null) => void;
   setLoading: (loading: boolean) => void;
@@ -21,11 +22,12 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       isLoading: true,
       isAuthenticated: false,
+      isAuthReady: false,
       _hasHydrated: false,
-      setUser: (user) => set({ user, isAuthenticated: !!user, isLoading: false }),
-      setLoading: (isLoading) => set({ isLoading }),
-      logout: () => set({ user: null, isAuthenticated: false }),
-      setHasHydrated: (state) => set({ _hasHydrated: state }),
+      setUser: (user) => set({ user, isAuthenticated: !!user, isLoading: false, isAuthReady: true }),
+      setLoading: (isLoading) => set({ isLoading, isAuthReady: !isLoading && useAuthStore.getState()._hasHydrated }),
+      logout: () => set({ user: null, isAuthenticated: false, isAuthReady: true }),
+      setHasHydrated: (state) => set({ _hasHydrated: state, isAuthReady: state && !useAuthStore.getState().isLoading }),
     }),
     {
       name: `auth-storage:v${STORE_VERSION}`,

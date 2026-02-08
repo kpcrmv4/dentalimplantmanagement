@@ -17,8 +17,8 @@ export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
   const { user, logout } = useAuthStore();
+  const router = useRouter();
 
   const filteredMenuItems = user?.role ? getMenuItemsForRole(user.role) : [];
 
@@ -28,8 +28,8 @@ export function Sidebar() {
     setLoggingOut(true);
     try {
       await performLogout(user);
-      logout();
-      window.location.href = '/login';
+      logout(); // Clear Zustand store state
+      router.push('/login'); // Redirect to login page
     } catch (error) {
       console.error('Logout error:', error);
     } finally {

@@ -9,7 +9,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const { setUser, setLoading } = useAuthStore();
+  const { setUser, setLoading, setHasHydrated } = useAuthStore();
 
   const fetchUserProfile = useCallback(async (userId: string) => {
     const { data } = await supabase
@@ -24,10 +24,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const initAuth = async () => {
       // Only show loading if there's no cached user from hydration.
       // This prevents a flash of empty state on mobile when navigating
+      // Only show loading if there's no cached user from hydration.
+      // This prevents a flash of empty state on mobile when navigating
       // between pages — the cached user stays visible while we silently
       // re-validate the session in the background.
       const cachedUser = useAuthStore.getState().user;
-      if (!cachedUser) {
+      // Set loading to true only if we don't have a cached user and haven't hydrated yet
+      if (!cachedUser && !useAuthStore.getState()._hasHydrated) {
         setLoading(true);
       }
 
@@ -52,9 +55,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     };
 
-    initAuth();
+    // Wait for Zustand to rehydrate before initializing auth
+    const unsubscribeHydration = useAuthStore.persist.onFinishHydration(() => {
+      initAuth();
+    });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (event === 'SIGNED_IN' && session?.user) {
           const userData = await fetchUserProfile(session.user.id);
@@ -68,9 +74,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     );
 
     return () => {
-      subscription.unsubscribe();
+      unsubscribeHydration();
+      authSubscription.unsubscribe();
     };
-  }, [setUser, setLoading, fetchUserProfile]);
+  }, [setUser, setLoading, fetchUserProfile, setHasHydrated]);
 
   return <>{children}</>;
 }

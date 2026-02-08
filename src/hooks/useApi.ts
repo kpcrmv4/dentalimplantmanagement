@@ -3,6 +3,7 @@
 import useSWR from 'swr';
 import { supabase } from '@/lib/supabase';
 import { getTodayDateString } from '@/lib/utils';
+import { useAuthStore } from '@/stores/authStore';
 import type {
   DashboardSummary,
   LowStockItem,
@@ -59,7 +60,8 @@ const fetcher = async <T>(key: string): Promise<T> => {
 
 // Dashboard hooks
 export function useDashboardSummary() {
-  return useSWR<DashboardSummary>('dashboard_summary', async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<DashboardSummary>(isAuthReady ? "dashboard_summary" : null, async () => {
     const { data, error } = await supabase
       .from('dashboard_summary')
       .select('*')
@@ -70,7 +72,8 @@ export function useDashboardSummary() {
 }
 
 export function useLowStockItems() {
-  return useSWR<LowStockItem[]>('low_stock_items', async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<LowStockItem[]>(isAuthReady ? "low_stock_items" : null, async () => {
     const { data, error } = await supabase
       .from('low_stock_items')
       .select('*')
@@ -81,7 +84,8 @@ export function useLowStockItems() {
 }
 
 export function useExpiringItems() {
-  return useSWR<ExpiringItem[]>('expiring_items', async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<ExpiringItem[]>(isAuthReady ? "expiring_items" : null, async () => {
     const { data, error } = await supabase
       .from('expiring_items')
       .select('*')
@@ -93,9 +97,10 @@ export function useExpiringItems() {
 
 // Calendar hooks
 export function useCalendarCases(month?: Date) {
+  const { isAuthReady } = useAuthStore();
   const monthKey = month ? month.toISOString().slice(0, 7) : 'current';
   
-  return useSWR<CalendarCase[]>(`calendar_cases:${monthKey}`, async () => {
+  return useSWR<CalendarCase[]>(isAuthReady ? `calendar_cases:${monthKey}` : null, async () => {
     const startDate = month 
       ? new Date(month.getFullYear(), month.getMonth(), 1)
       : new Date(new Date().getFullYear(), new Date().getMonth(), 1);
@@ -136,9 +141,10 @@ export function useCalendarCases(month?: Date) {
 
 // Cases hooks
 export function useCases(filters?: { status?: string; dentist_id?: string }) {
+  const { isAuthReady } = useAuthStore();
   const filterKey = filters ? JSON.stringify(filters) : 'all';
   
-  return useSWR<Case[]>(`cases:${filterKey}`, async () => {
+  return useSWR<Case[]>(isAuthReady ? `cases:${filterKey}` : null, async () => {
     let query = supabase
       .from('cases')
       .select(`
@@ -163,7 +169,8 @@ export function useCases(filters?: { status?: string; dentist_id?: string }) {
 }
 
 export function useCase(id: string) {
-  return useSWR<Case>(`case:${id}`, async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<Case>(isAuthReady ? `case:${id}` : null, async () => {
     const { data, error } = await supabase
       .from('cases')
       .select(`
@@ -187,7 +194,8 @@ export function useCase(id: string) {
 
 // Patients hooks
 export function usePatients(search?: string) {
-  return useSWR<Patient[]>(`patients:${search || 'all'}`, async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<Patient[]>(isAuthReady ? `patients:${search || 'all'}` : null, async () => {
     let query = supabase
       .from('patients')
       .select('*')
@@ -205,7 +213,8 @@ export function usePatients(search?: string) {
 }
 
 export function usePatient(id: string) {
-  return useSWR<Patient>(`patient:${id}`, async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<Patient>(isAuthReady ? `patient:${id}` : null, async () => {
     const { data, error } = await supabase
       .from('patients')
       .select('*')
@@ -219,7 +228,8 @@ export function usePatient(id: string) {
 
 // Products hooks
 export function useProducts(categoryId?: string) {
-  return useSWR<Product[]>(`products:${categoryId || 'all'}`, async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<Product[]>(isAuthReady ? `products:${categoryId || 'all'}` : null, async () => {
     let query = supabase
       .from('products')
       .select(`
@@ -241,7 +251,8 @@ export function useProducts(categoryId?: string) {
 
 // Inventory hooks
 export function useInventory(productId?: string) {
-  return useSWR<Inventory[]>(`inventory:${productId || 'all'}`, async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<Inventory[]>(isAuthReady ? `inventory:${productId || 'all'}` : null, async () => {
     let query = supabase
       .from('inventory')
       .select(`
@@ -264,7 +275,8 @@ export function useInventory(productId?: string) {
 
 // Suppliers hooks
 export function useSuppliers() {
-  return useSWR<Supplier[]>('suppliers', async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<Supplier[]>(isAuthReady ? "suppliers" : null, async () => {
     const { data, error } = await supabase
       .from('suppliers')
       .select('*')
@@ -278,7 +290,8 @@ export function useSuppliers() {
 
 // Orders hooks
 export function useOrders(status?: string) {
-  return useSWR<PurchaseOrder[]>(`orders:${status || 'all'}`, async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<PurchaseOrder[]>(isAuthReady ? `orders:${status || 'all'}` : null, async () => {
     let query = supabase
       .from('purchase_orders')
       .select(`
@@ -303,7 +316,8 @@ export function useOrders(status?: string) {
 
 // Transfers hooks
 export function useTransfers(type?: string) {
-  return useSWR<Transfer[]>(`transfers:${type || 'all'}`, async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<Transfer[]>(isAuthReady ? `transfers:${type || 'all'}` : null, async () => {
     let query = supabase
       .from('transfers')
       .select(`
@@ -328,7 +342,8 @@ export function useTransfers(type?: string) {
 
 // Users hooks
 export function useUsers(role?: string) {
-  return useSWR<User[]>(`users:${role || 'all'}`, async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<User[]>(isAuthReady ? `users:${role || 'all'}` : null, async () => {
     let query = supabase
       .from('users')
       .select('*')
@@ -347,7 +362,8 @@ export function useUsers(role?: string) {
 
 // Notifications hooks
 export function useNotifications(userId: string) {
-  return useSWR<Notification[]>(`notifications:${userId}`, async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<Notification[]>(isAuthReady && userId ? `notifications:${userId}` : null, async () => {
     const { data, error } = await supabase
       .from('notifications')
       .select('*')
@@ -361,7 +377,8 @@ export function useNotifications(userId: string) {
 }
 
 export function useUnreadNotificationCount(userId: string) {
-  return useSWR<number>(`notifications_count:${userId}`, async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<number>(isAuthReady && userId ? `notifications_count:${userId}` : null, async () => {
     const { count, error } = await supabase
       .from('notifications')
       .select('*', { count: 'exact', head: true })
@@ -375,7 +392,8 @@ export function useUnreadNotificationCount(userId: string) {
 
 // Categories hooks
 export function useCategories() {
-  return useSWR<any[]>('product_categories', async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<any[]>(isAuthReady ? "product_categories" : null, async () => {
     const { data, error } = await supabase
       .from('product_categories')
       .select('*')
@@ -388,7 +406,8 @@ export function useCategories() {
 
 // Procedure Types hooks
 export function useProcedureTypes() {
-  return useSWR<ProcedureType[]>('procedure_types_active', async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<ProcedureType[]>(isAuthReady ? 'procedure_types_active' : null, async () => {
     const { data, error } = await supabase
       .from('procedure_types')
       .select('*')
@@ -400,7 +419,8 @@ export function useProcedureTypes() {
 }
 
 export function useProcedureTypesAll() {
-  return useSWR<ProcedureType[]>('procedure_types_all', async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<ProcedureType[]>(isAuthReady ? "procedure_types_all" : null, async () => {
     const { data, error } = await supabase
       .from('procedure_types')
       .select('*')
@@ -412,8 +432,9 @@ export function useProcedureTypesAll() {
 
 // Material Templates hooks
 export function useMaterialTemplates(procedureTypeId?: string) {
+  const { isAuthReady } = useAuthStore();
   return useSWR<MaterialTemplate[]>(
-    procedureTypeId ? `material_templates:${procedureTypeId}` : null,
+    isAuthReady && procedureTypeId ? `material_templates:${procedureTypeId}` : null,
     async () => {
       const { data, error } = await supabase
         .from('material_templates')
@@ -434,8 +455,9 @@ export function useMaterialTemplates(procedureTypeId?: string) {
 }
 
 export function useMaterialTemplatesAll(procedureTypeId?: string) {
+  const { isAuthReady } = useAuthStore();
   return useSWR<MaterialTemplate[]>(
-    procedureTypeId ? `material_templates_all:${procedureTypeId}` : 'material_templates_all',
+    isAuthReady && procedureTypeId ? `material_templates_all:${procedureTypeId}` : (isAuthReady ? 'material_templates_all' : null),
     async () => {
       let query = supabase
         .from('material_templates')
@@ -460,9 +482,10 @@ export function useMaterialTemplatesAll(procedureTypeId?: string) {
 
 // Exchanges hooks
 export function useExchanges(filters?: { type?: string; status?: string }) {
+  const { isAuthReady } = useAuthStore();
   const filterKey = filters ? JSON.stringify(filters) : 'all';
   
-  return useSWR<any[]>(`exchanges:${filterKey}`, async () => {
+  return useSWR<any[]>(isAuthReady ? `exchanges:${filterKey}` : null, async () => {
     let query = supabase
       .from('exchanges')
       .select(`
@@ -488,7 +511,8 @@ export function useExchanges(filters?: { type?: string; status?: string }) {
 
 // Reservations hooks
 export function useReservations(caseId?: string) {
-  return useSWR<any[]>(`reservations:${caseId || 'all'}`, async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<any[]>(isAuthReady ? `reservations:${caseId || 'all'}` : null, async () => {
     let query = supabase
       .from('case_reservations')
       .select(`
@@ -518,7 +542,8 @@ import type { UrgentCase48h, PendingStockRequest, UrgentCaseAlert } from '@/type
 
 // Urgent cases within 48 hours
 export function useUrgentCases48h() {
-  return useSWR<UrgentCase48h[]>('urgent_cases_48h', async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<UrgentCase48h[]>(isAuthReady ? "urgent_cases_48h" : null, async () => {
     const today = new Date();
     const twoDaysLater = new Date(today);
     twoDaysLater.setDate(today.getDate() + 2);
@@ -578,7 +603,8 @@ export function useUrgentCases48h() {
 
 // Pending stock requests (out-of-stock reservations)
 export function usePendingStockRequests() {
-  return useSWR<PendingStockRequest[]>('pending_stock_requests', async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<PendingStockRequest[]>(isAuthReady ? "pending_stock_requests" : null, async () => {
     const { data, error } = await supabase
       .from('case_reservations')
       .select(`
@@ -641,7 +667,8 @@ export function usePendingStockRequests() {
 
 // Urgent case alerts
 export function useUrgentAlerts() {
-  return useSWR<UrgentCaseAlert[]>('urgent_alerts', async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<UrgentCaseAlert[]>(isAuthReady ? "urgent_alerts" : null, async () => {
     const { data, error } = await supabase
       .from('urgent_case_alerts')
       .select(`
@@ -661,7 +688,8 @@ export function useUrgentAlerts() {
 
 // Count of urgent alerts for badge
 export function useUrgentAlertCount() {
-  return useSWR<number>('urgent_alert_count', async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<number>(isAuthReady ? "urgent_alert_count" : null, async () => {
     const { count, error } = await supabase
       .from('urgent_case_alerts')
       .select('*', { count: 'exact', head: true })
@@ -784,9 +812,10 @@ export function useProductSearch(searchTerm: string) {
 // =====================================================
 
 export function useCasePreparation(filter: DateRangeFilter) {
+  const { isAuthReady } = useAuthStore();
   const filterKey = JSON.stringify(filter);
 
-  return useSWR<CasePreparationItem[]>(`case_preparation:${filterKey}`, async () => {
+  return useSWR<CasePreparationItem[]>(isAuthReady ? `case_preparation:${filterKey}` : null, async () => {
     if (!filter.startDate || !filter.endDate) {
       return [];
     }
@@ -879,7 +908,8 @@ export function useCasePreparation(filter: DateRangeFilter) {
 // =====================================================
 
 export function useUrgentCasesForPopup() {
-  return useSWR<UrgentCaseForPopup[]>('urgent_cases_popup', async () => {
+  const { isAuthReady } = useAuthStore();
+  return useSWR<UrgentCaseForPopup[]>(isAuthReady ? "urgent_cases_popup" : null, async () => {
     const now = new Date();
     const twoDaysLater = new Date(now);
     twoDaysLater.setDate(now.getDate() + 2);
@@ -972,11 +1002,12 @@ export function useUrgentCasesForPopup() {
 // Dentist Dashboard Hooks
 // =====================================================
 
-export function useDentistDashboard(dentistId: string, filter: DateRangeFilter) {
+export function useDentistDashboard(dentistId: string | null, filter: DateRangeFilter) {
+  const { isAuthReady } = useAuthStore();
   const filterKey = JSON.stringify({ dentistId, filter });
 
   return useSWR<{ summary: DentistDashboardSummary; cases: DentistCaseItem[] }>(
-    dentistId ? `dentist_dashboard:${filterKey}` : null,
+    isAuthReady && dentistId ? `dentist_dashboard:${filterKey}` : null,
     async () => {
       if (!filter.startDate || !filter.endDate) {
         return {
@@ -1113,10 +1144,11 @@ export function useDentistDashboard(dentistId: string, filter: DateRangeFilter) 
 // =====================================================
 
 export function useAssistantCases(assistantId: string | null, dateFilter?: { startDate: string; endDate: string }) {
+  const { isAuthReady } = useAuthStore();
   const filterKey = JSON.stringify({ assistantId, dateFilter });
 
   return useSWR<AssistantCaseItem[]>(
-    assistantId ? `assistant_cases:${filterKey}` : null,
+    isAuthReady && assistantId ? `assistant_cases:${filterKey}` : null,
     async () => {
       let query = supabase
         .from('cases')
