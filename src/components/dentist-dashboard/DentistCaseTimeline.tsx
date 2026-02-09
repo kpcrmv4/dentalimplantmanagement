@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Calendar } from 'lucide-react';
+import { LoadingSpinner } from '@/components/ui';
 import { getMaterialStatusColor } from '@/lib/status';
 import { isToday, isTomorrow, parseISO, format } from 'date-fns';
 import { th } from 'date-fns/locale';
@@ -17,16 +18,14 @@ function getDateLabel(dateStr: string) {
 export function DentistCaseTimeline({
   cases,
   isLoading,
+  onRetry,
 }: {
   cases: DentistCaseItem[];
   isLoading?: boolean;
+  onRetry?: () => void;
 }) {
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-      </div>
-    );
+    return <LoadingSpinner onRetry={onRetry} />;
   }
 
   if (cases.length === 0) {

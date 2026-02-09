@@ -16,7 +16,7 @@ import {
   Package,
 } from 'lucide-react';
 import { Header } from '@/components/layout';
-import { Button, Card, Input, Select, Badge, Modal, ModalFooter } from '@/components/ui';
+import { Button, Card, Input, Select, Badge, Modal, ModalFooter, LoadingSpinner } from '@/components/ui';
 import {
   Table,
   TableHeader,
@@ -393,9 +393,7 @@ export default function OrdersPage() {
 
           {/* Table */}
           {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-            </div>
+            <LoadingSpinner onRetry={() => mutate()} />
           ) : filteredOrders.length === 0 ? (
             <div className="text-center py-12">
               <ShoppingCart className="w-12 h-12 text-gray-300 mx-auto mb-3" />

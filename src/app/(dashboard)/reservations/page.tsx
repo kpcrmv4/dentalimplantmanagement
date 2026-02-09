@@ -244,6 +244,7 @@ export default function ReservationsPage() {
             onPrepareAll={openPrepareAllModal}
             isLoading={isLoading}
             canPrepare={canPrepare}
+            onRetry={() => mutate()}
           />
         ) : (
           <CasePreparationTimeline
@@ -252,6 +253,7 @@ export default function ReservationsPage() {
             onPrepareAll={openPrepareAllModal}
             isLoading={isLoading}
             canPrepare={canPrepare}
+            onRetry={() => mutate()}
           />
         )}
       </div>

@@ -6,7 +6,7 @@ import {
   User,
   CheckCircle2,
 } from 'lucide-react';
-import { Button, Badge, Card } from '@/components/ui';
+import { Button, Badge, Card, LoadingSpinner } from '@/components/ui';
 import { getCaseStatusText } from '@/lib/utils';
 import type { CasePreparationItem, CaseReservation } from '@/types/database';
 import { getCaseStatusVariant } from '@/lib/status';
@@ -19,6 +19,7 @@ interface CasePreparationTimelineProps {
   onPrepareAll: (caseItem: CasePreparationItem) => void;
   isLoading?: boolean;
   canPrepare?: boolean;
+  onRetry?: () => void;
 }
 
 interface GroupedCases {
@@ -31,6 +32,7 @@ export function CasePreparationTimeline({
   onPrepareAll,
   isLoading,
   canPrepare = true,
+  onRetry,
 }: CasePreparationTimelineProps) {
   // Group cases by date
   const groupedCases = cases.reduce<GroupedCases>((acc, caseItem) => {
@@ -72,11 +74,7 @@ export function CasePreparationTimeline({
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-      </div>
-    );
+    return <LoadingSpinner onRetry={onRetry} />;
   }
 
   if (cases.length === 0) {

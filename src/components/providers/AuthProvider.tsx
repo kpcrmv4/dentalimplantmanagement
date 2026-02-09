@@ -1,8 +1,11 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
+
+// Re-validate the session when the page has been hidden for this long
+const SESSION_REVALIDATE_THRESHOLD_MS = 60_000; // 1 minute
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -10,6 +13,7 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const { setUser, setLoading } = useAuthStore();
+  const hiddenAtRef = useRef<number | null>(null);
 
   const fetchUserProfile = useCallback(async (userId: string) => {
     const { data } = await supabase
@@ -67,6 +71,41 @@ export function AuthProvider({ children }: AuthProviderProps) {
       subscription.unsubscribe();
     };
   }, [setUser, setLoading, fetchUserProfile]);
+
+  // Re-validate session when page becomes visible after a long idle.
+  // This catches the mobile scenario where the OS froze the page and
+  // the JWT expired while the app was in the background.
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'hidden') {
+        hiddenAtRef.current = Date.now();
+        return;
+      }
+
+      const hiddenAt = hiddenAtRef.current;
+      hiddenAtRef.current = null;
+      if (hiddenAt === null) return;
+
+      const elapsed = Date.now() - hiddenAt;
+      if (elapsed < SESSION_REVALIDATE_THRESHOLD_MS) return;
+
+      // Silently re-validate — don't set loading to avoid flicker
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const userData = await fetchUserProfile(user.id);
+          setUser(userData ?? null);
+        } else {
+          setUser(null);
+        }
+      } catch {
+        // Network might still be recovering; leave current user in place
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [setUser, fetchUserProfile]);
 
   return <>{children}</>;
 }

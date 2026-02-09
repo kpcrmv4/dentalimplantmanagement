@@ -14,7 +14,7 @@ import {
   Edit,
 } from 'lucide-react';
 import { Header } from '@/components/layout';
-import { Button, Card, Input, Badge } from '@/components/ui';
+import { Button, Card, Input, Badge, LoadingSpinner } from '@/components/ui';
 import {
   Table,
   TableHeader,
@@ -67,9 +67,7 @@ export default function PatientsPage() {
 
           {/* Table */}
           {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-            </div>
+            <LoadingSpinner onRetry={() => mutate()} />
           ) : patientsError ? (
             <div className="text-center py-12">
               <p className="text-gray-500 mb-3">ไม่สามารถโหลดข้อมูลได้</p>

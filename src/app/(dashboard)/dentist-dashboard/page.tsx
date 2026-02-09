@@ -29,7 +29,7 @@ export default function DentistDashboardPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('table');
   const [showNewCases, setShowNewCases] = useState(false);
 
-  const { data, isLoading } = useDentistDashboard(user?.id || '', dateFilter);
+  const { data, isLoading, mutate } = useDentistDashboard(user?.id || '', dateFilter);
 
   const summary = data?.summary || {
     total_cases: 0,
@@ -213,9 +213,9 @@ export default function DentistDashboardPage() {
 
           {/* Table or Timeline view */}
           {viewMode === 'table' ? (
-            <DentistCaseTable cases={cases} isLoading={isLoading} />
+            <DentistCaseTable cases={cases} isLoading={isLoading} onRetry={() => mutate()} />
           ) : (
-            <DentistCaseTimeline cases={cases} isLoading={isLoading} />
+            <DentistCaseTimeline cases={cases} isLoading={isLoading} onRetry={() => mutate()} />
           )}
         </Card>
 

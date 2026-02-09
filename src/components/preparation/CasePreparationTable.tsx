@@ -9,7 +9,7 @@ import {
   ChevronDown,
   ChevronRight,
 } from 'lucide-react';
-import { Button, Badge, Card } from '@/components/ui';
+import { Button, Badge, Card, LoadingSpinner } from '@/components/ui';
 import {
   Table,
   TableHeader,
@@ -28,6 +28,7 @@ interface CasePreparationTableProps {
   onPrepareAll: (caseItem: CasePreparationItem) => void;
   isLoading?: boolean;
   canPrepare?: boolean;
+  onRetry?: () => void;
 }
 
 export function CasePreparationTable({
@@ -36,6 +37,7 @@ export function CasePreparationTable({
   onPrepareAll,
   isLoading,
   canPrepare = true,
+  onRetry,
 }: CasePreparationTableProps) {
   const [expandedCases, setExpandedCases] = useState<Set<string>>(new Set());
 
@@ -75,9 +77,7 @@ export function CasePreparationTable({
   if (isLoading) {
     return (
       <Card>
-        <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-        </div>
+        <LoadingSpinner onRetry={onRetry} />
       </Card>
     );
   }

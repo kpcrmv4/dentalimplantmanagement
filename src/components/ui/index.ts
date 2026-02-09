@@ -5,6 +5,7 @@ export { Badge } from './Badge';
 export { Modal, ModalFooter } from './Modal';
 export { ConfirmModal } from './ConfirmModal';
 export { Select, type SelectOption, type SelectProps } from './Select';
+export { LoadingSpinner } from './LoadingSpinner';
 export {
   Table,
   TableHeader,

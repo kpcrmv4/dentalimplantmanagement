@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Calendar, User, Eye, ShoppingCart, CheckCircle, XCircle } from 'lucide-react';
-import { Button, Badge } from '@/components/ui';
+import { Button, Badge, LoadingSpinner } from '@/components/ui';
 import {
   Table,
   TableHeader,
@@ -18,9 +18,10 @@ import { getCaseStatusVariant } from '@/lib/status';
 interface DentistCaseTableProps {
   cases: DentistCaseItem[];
   isLoading?: boolean;
+  onRetry?: () => void;
 }
 
-export function DentistCaseTable({ cases, isLoading }: DentistCaseTableProps) {
+export function DentistCaseTable({ cases, isLoading, onRetry }: DentistCaseTableProps) {
   const getMaterialStatusDisplay = (status: DentistCaseItem['material_status']) => {
     const config: Record<
       DentistCaseItem['material_status'],
@@ -35,11 +36,7 @@ export function DentistCaseTable({ cases, isLoading }: DentistCaseTableProps) {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-      </div>
-    );
+    return <LoadingSpinner onRetry={onRetry} />;
   }
 
   if (cases.length === 0) {

@@ -12,7 +12,7 @@ import {
   User,
 } from 'lucide-react';
 import { Header } from '@/components/layout';
-import { Card, Badge, Button } from '@/components/ui';
+import { Card, Badge, Button, LoadingSpinner } from '@/components/ui';
 import {
   AssistantCaseCard,
   AddMaterialModal,
@@ -394,9 +394,7 @@ export default function AssistantDashboardPage() {
 
         {/* Timeline Section */}
         {!cases && !casesError && (
-          <div className="flex items-center justify-center py-12">
-            <RefreshCw className="w-6 h-6 animate-spin text-gray-400" />
-          </div>
+          <LoadingSpinner onRetry={() => mutateCases()} />
         )}
 
         {casesError && !cases && (

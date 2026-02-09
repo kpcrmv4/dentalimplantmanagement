@@ -18,7 +18,7 @@ import {
   Phone,
 } from 'lucide-react';
 import { Header } from '@/components/layout';
-import { Button, Badge, Card, Input, Select } from '@/components/ui';
+import { Button, Badge, Card, Input, Select, LoadingSpinner } from '@/components/ui';
 import {
   Table,
   TableHeader,
@@ -129,9 +129,7 @@ export default function CasesPage() {
 
           {/* Table */}
           {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-            </div>
+            <LoadingSpinner onRetry={() => mutate()} />
           ) : filteredCases.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-500">ไม่พบเคสที่ตรงกับเงื่อนไข</p>
