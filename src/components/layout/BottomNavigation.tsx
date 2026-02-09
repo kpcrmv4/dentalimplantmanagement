@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
-import { performLogout } from '@/lib/logout';
+import { performLogout, forceLogout } from '@/lib/logout';
 import { menuItems as allMenuItems } from '@/lib/navigation';
 import {
   LayoutDashboard,
@@ -133,13 +133,12 @@ export function BottomNavigation() {
     setLoggingOut(true);
     try {
       await performLogout(user);
-      logout();
-      window.location.href = '/login';
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      setLoggingOut(false);
-      setShowMoreMenu(false);
+      // Always redirect — even if signOut fails the local state is cleared
+      logout();
+      window.location.href = '/login';
     }
   };
 
@@ -262,6 +261,15 @@ export function BottomNavigation() {
             >
               <LogOut className={cn("w-5 h-5", loggingOut && "animate-pulse")} />
               <span>{loggingOut ? 'กำลังออกจากระบบ...' : 'ออกจากระบบ'}</span>
+            </button>
+
+            {/* Force logout — emergency escape when app is stuck */}
+            <button
+              onClick={forceLogout}
+              className="w-full flex items-center gap-3 p-3 hover:bg-red-50 rounded-xl transition-colors text-red-400 text-sm"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>บังคับออกจากระบบ (แก้ค้าง)</span>
             </button>
           </div>
         </div>

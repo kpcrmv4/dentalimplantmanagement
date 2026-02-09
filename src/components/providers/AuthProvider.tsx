@@ -3,6 +3,9 @@
 import { useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores/authStore';
+import { forceLogout } from '@/lib/logout';
+
+const AUTH_INIT_TIMEOUT_MS = 10_000;
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -26,7 +29,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // This prevents a flash of empty state on mobile when navigating
       // between pages — the cached user stays visible while we silently
       // re-validate the session in the background.
-      setLoading(true);
+      const cachedUser = useAuthStore.getState().user;
+      if (!cachedUser) {
+        setLoading(true);
+      }
+
+      // Safety net: if auth init takes too long, stop loading and
+      // force-redirect to login so the user isn't stuck on a spinner.
+      const timeout = setTimeout(() => {
+        console.warn('Auth init timed out — forcing redirect to login');
+        forceLogout();
+      }, AUTH_INIT_TIMEOUT_MS);
 
       try {
         const { data: { user } } = await supabase.auth.getUser();
@@ -41,9 +54,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         console.error('Auth init error:', error);
         // Only clear user if there's no cached version — a transient
         // network error on mobile shouldn't wipe the UI.
-        setUser(null);
-        setLoading(false);
+        if (!useAuthStore.getState().user) {
+          setUser(null);
+        }
       } finally {
+        clearTimeout(timeout);
         setLoading(false);
       }
     };

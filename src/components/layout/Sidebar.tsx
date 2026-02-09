@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn, getRoleText } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
-import { performLogout } from '@/lib/logout';
+import { performLogout, forceLogout } from '@/lib/logout';
 import { getMenuItemsForRole } from '@/lib/navigation';
 import {
   ChevronLeft,
@@ -28,12 +28,12 @@ export function Sidebar() {
     setLoggingOut(true);
     try {
       await performLogout(user);
-      logout();
-      window.location.href = '/login';
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      setLoggingOut(false);
+      // Always redirect — even if signOut fails the local state is cleared
+      logout();
+      window.location.href = '/login';
     }
   };
 

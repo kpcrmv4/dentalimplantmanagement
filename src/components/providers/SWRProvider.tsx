@@ -1,8 +1,44 @@
 'use client';
 
-import { useCallback } from 'react';
-import { SWRConfig } from 'swr';
+import { useCallback, useEffect, useRef } from 'react';
+import { SWRConfig, useSWRConfig } from 'swr';
 import { supabase } from '@/lib/supabase';
+
+// How long the page must be hidden before we force a full revalidation
+// on return — 10 s catches most "phone locked then unlocked" scenarios.
+const HIDDEN_THRESHOLD_MS = 10_000;
+
+/**
+ * Inner component that lives inside SWRConfig — detects when the page
+ * has been hidden for longer than HIDDEN_THRESHOLD_MS and forces
+ * a full revalidation (+ session refresh) when the user comes back.
+ */
+function VisibilityRevalidator({ children }: { children: React.ReactNode }) {
+  const { mutate } = useSWRConfig();
+  const hiddenAtRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        hiddenAtRef.current = Date.now();
+      } else if (
+        hiddenAtRef.current &&
+        Date.now() - hiddenAtRef.current > HIDDEN_THRESHOLD_MS
+      ) {
+        // Refresh auth session first, then revalidate all SWR keys
+        supabase.auth.getUser().catch(() => {});
+        mutate(() => true, undefined, { revalidate: true });
+        hiddenAtRef.current = null;
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () =>
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [mutate]);
+
+  return <>{children}</>;
+}
 
 export function SWRProvider({ children }: { children: React.ReactNode }) {
   const handleErrorRetry = useCallback(
@@ -48,7 +84,7 @@ export function SWRProvider({ children }: { children: React.ReactNode }) {
         onErrorRetry: handleErrorRetry,
       }}
     >
-      {children}
+      <VisibilityRevalidator>{children}</VisibilityRevalidator>
     </SWRConfig>
   );
 }
