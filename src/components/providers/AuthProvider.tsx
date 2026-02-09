@@ -26,10 +26,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // This prevents a flash of empty state on mobile when navigating
       // between pages — the cached user stays visible while we silently
       // re-validate the session in the background.
-      const cachedUser = useAuthStore.getState().user;
-      if (!cachedUser) {
-        setLoading(true);
-      }
+      setLoading(true);
 
       try {
         const { data: { user } } = await supabase.auth.getUser();
@@ -44,9 +41,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         console.error('Auth init error:', error);
         // Only clear user if there's no cached version — a transient
         // network error on mobile shouldn't wipe the UI.
-        if (!useAuthStore.getState().user) {
-          setUser(null);
-        }
+        setUser(null);
+        setLoading(false);
       } finally {
         setLoading(false);
       }
