@@ -3,8 +3,39 @@
 import { useCallback } from 'react';
 import { SWRConfig } from 'swr';
 import { supabase } from '@/lib/supabase';
+import { useSessionRefresh } from '@/hooks/useSessionRefresh';
+
+/**
+ * Coalesces concurrent session refresh attempts into a single call.
+ * When multiple SWR hooks fail at the same time (e.g. after mobile
+ * wake-up with expired JWT), only one refresh request is made.
+ */
+let pendingRefresh: Promise<void> | null = null;
+
+async function refreshSessionOnce(): Promise<void> {
+  if (pendingRefresh) return pendingRefresh;
+
+  pendingRefresh = supabase.auth.refreshSession()
+    .then(({ error }) => {
+      if (error) {
+        console.warn('[SWR] Session refresh failed:', error.message);
+      }
+    })
+    .catch(() => {
+      // Network error — retries will handle it
+    })
+    .finally(() => {
+      // Allow a new refresh after this one settles
+      pendingRefresh = null;
+    });
+
+  return pendingRefresh;
+}
 
 export function SWRProvider({ children }: { children: React.ReactNode }) {
+  // Proactively refresh session when page becomes visible (before SWR fires)
+  useSessionRefresh();
+
   const handleErrorRetry = useCallback(
     async (
       error: any,
@@ -17,14 +48,10 @@ export function SWRProvider({ children }: { children: React.ReactNode }) {
       if (error?.status >= 400 && error?.status < 500 && error?.status !== 401 && error?.status !== 403) return;
       if (retryCount >= 3) return;
 
-      // On first retry, refresh the Supabase session in case the token expired
-      // (e.g. user left the page open for a long time then navigated)
+      // On first retry, refresh the Supabase session in case the token expired.
+      // Uses coalesced refresh so concurrent hook failures share one request.
       if (retryCount === 0) {
-        try {
-          await supabase.auth.getUser();
-        } catch {
-          // ignore — the retry itself will test if it worked
-        }
+        await refreshSessionOnce();
       }
 
       setTimeout(
@@ -45,6 +72,10 @@ export function SWRProvider({ children }: { children: React.ReactNode }) {
         revalidateOnMount: true,
         keepPreviousData: true,
         errorRetryCount: 3,
+        // Throttle focus revalidation so rapid focus/blur cycles don't
+        // hammer the backend. Also gives the visibility-change session
+        // refresh time to complete before SWR fires.
+        focusThrottleInterval: 10000,
         onErrorRetry: handleErrorRetry,
       }}
     >

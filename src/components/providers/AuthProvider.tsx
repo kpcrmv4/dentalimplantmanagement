@@ -9,7 +9,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const { setUser, setLoading } = useAuthStore();
+  const { user: cachedUser, setUser, setLoading } = useAuthStore();
 
   const fetchUserProfile = useCallback(async (userId: string) => {
     const { data } = await supabase
@@ -22,10 +22,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     const initAuth = async () => {
-      // Only show loading if there's no cached user from hydration.
-      // This prevents a flash of empty state on mobile when navigating
-      // between pages — the cached user stays visible while we silently
-      // re-validate the session in the background.
       setLoading(true);
 
       try {
@@ -41,7 +37,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         console.error('Auth init error:', error);
         // Only clear user if there's no cached version — a transient
         // network error on mobile shouldn't wipe the UI.
-        setUser(null);
+        if (!cachedUser) {
+          setUser(null);
+        }
         setLoading(false);
       } finally {
         setLoading(false);
@@ -57,6 +55,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
           if (userData) {
             setUser(userData);
           }
+        } else if (event === 'TOKEN_REFRESHED' && session?.user) {
+          // Token was refreshed successfully (e.g. after mobile wake-up).
+          // Re-fetch the profile to ensure data is current, but only if
+          // the cached user id matches (don't overwrite a different session).
+          if (cachedUser?.id === session.user.id) {
+            try {
+              const userData = await fetchUserProfile(session.user.id);
+              if (userData) {
+                setUser(userData);
+              }
+            } catch {
+              // Profile fetch failed — keep cached data, don't clear UI
+            }
+          }
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
         }
@@ -66,7 +78,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [setUser, setLoading, fetchUserProfile]);
+  }, [setUser, setLoading, fetchUserProfile, cachedUser]);
 
   return <>{children}</>;
 }
