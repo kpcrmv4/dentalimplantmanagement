@@ -133,14 +133,12 @@ export function BottomNavigation() {
     setLoggingOut(true);
     try {
       await performLogout(user);
-      logout();
-      window.location.href = '/login';
     } catch (error) {
       console.error('Logout error:', error);
-    } finally {
-      setLoggingOut(false);
-      setShowMoreMenu(false);
     }
+    // Always clear store and redirect, even if performLogout threw
+    logout();
+    window.location.href = '/login';
   };
 
   // Show skeleton while hydrating or no user
