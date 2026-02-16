@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { resetSessionState } from '@/lib/session';
 
 /** Race a promise against a timeout. Resolves with the promise or rejects after ms. */
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
@@ -23,6 +24,9 @@ export async function performLogout(user: { id: string; email: string } | null) 
       }),
     }).catch(() => {});
   }
+
+  // Reset session manager so it doesn't think the session is still alive
+  resetSessionState();
 
   // Clear persisted auth store FIRST so the UI doesn't show stale data
   // even if the network call below hangs.
